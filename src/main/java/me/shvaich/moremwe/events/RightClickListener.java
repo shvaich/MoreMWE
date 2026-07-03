@@ -1,0 +1,63 @@
+package me.shvaich.moremwe.events;
+
+import fr.alexdoru.mwe.api.MWEApi;
+import me.shvaich.moremwe.asm.hooks.MinecraftHook_ShovelGuard;
+import me.shvaich.moremwe.config.MoreMWEConfig;
+import me.shvaich.moremwe.features.GuardableBlock;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+public class RightClickListener {
+    @SubscribeEvent
+    public void onRightClick(PlayerInteractEvent e) {
+        // shit code, deal with it
+        if (e.action == Action.RIGHT_CLICK_BLOCK) {
+            boolean hasSearchedClickedBlock = false;
+            GuardableBlock guardableBlock = null; // in the original ideal way guardedBlock was: Set<GuardableBlock>
+
+            if (MoreMWEConfig.areBlocksGuarded && !MoreMWEConfig.guardedBlocks.isEmpty() && getBlockGuardMegaWallsConditionBoolean()) {
+                final ItemStack heldItemStack = e.entityPlayer.getHeldItem();
+                if (MoreMWEConfig.canPickaxeOverrideBlockGuard && heldItemStack != null && heldItemStack.getItem() instanceof ItemPickaxe)
+                    return;
+
+                if (!e.entityPlayer.isSneaking() || (MoreMWEConfig.guardSneakAndEmptyHandClicks && heldItemStack == null)) {
+                    final Block clickedBlock = e.world.getBlockState(e.pos).getBlock();
+                    guardableBlock = GuardableBlock.fromBlock(clickedBlock);
+                    if (guardableBlock != null && MoreMWEConfig.guardedBlocks.contains(guardableBlock.key)) {
+                        e.setCanceled(true);
+                        return;
+                    }
+                    hasSearchedClickedBlock = true;
+                }
+            }
+
+            if (MinecraftHook_ShovelGuard.doShovelGuard(e.entityPlayer)) {
+                if (MoreMWEConfig.canOverrideShovelGuard || e.entityPlayer.isSneaking()) {
+                    if (!hasSearchedClickedBlock) {
+                        final Block clickedBlock = e.world.getBlockState(e.pos).getBlock();
+                        guardableBlock = GuardableBlock.fromBlock(clickedBlock);
+                    }
+                    if (guardableBlock != null) return;
+                }
+                e.setCanceled(true);
+            }
+        }
+        else if (e.action == Action.RIGHT_CLICK_AIR && MinecraftHook_ShovelGuard.doShovelGuard(e.entityPlayer)) {
+            e.setCanceled(true);
+        }
+    }
+
+    private static boolean getBlockGuardMegaWallsConditionBoolean() {
+        if (!MWEApi.Scoreboard.getScoreboardParser().isInMwGame()) return !MoreMWEConfig.isBlockGuardForMegaWallsOnly;
+        switch (MoreMWEConfig.blockGuardMegaWallsCondition) {
+            case 0: return true;
+            case 1: return !MWEApi.Scoreboard.getScoreboardParser().isPrepPhase();
+            case 2: return MWEApi.Scoreboard.getScoreboardParser().isDeathmatch();
+            default: return false; // never run
+        }
+    }
+}

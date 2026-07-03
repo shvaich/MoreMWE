@@ -1,0 +1,60 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = 'https://maven.minecraftforge.net/'
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+version = project.mod_version
+group = project.mod_group
+archivesBaseName = project.mod_base_name
+
+sourceCompatibility = targetCompatibility = 1.8
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    mappings = "stable_22"
+    makeObfSourceJar = false
+
+    ['mod_id', 'mod_name', 'mod_version'].each { property ->
+        replace "@${property.toUpperCase()}@", project.hasProperty(property) ? project[property] : null
+    }
+}
+
+runClient {
+    // disables the updater and shows hidden configs
+    // when working in dev environment
+    jvmArgs += [
+            "-Dmwe.disableUpdater=true",
+            "-Dconfig.lib.showHidden=true"
+    ]
+}
+
+dependencies {
+    implementation files ("libs/MWE-4.3.jar")
+}
+
+processResources {
+    def propertyMap = (file('src/main/resources/mcmod.info').text =~ /\$\{([\w.]+)}/)
+            .collect { it[1] }
+            .unique()
+            .collectEntries { [(it): project.hasProperty(it) ? project[it] : it] }
+
+    inputs.properties propertyMap
+
+    filesMatching('mcmod.info') {
+        expand propertyMap
+    }
+}
+
+jar {
+    manifest.attributes("FMLCorePlugin": 'me.shvaich.moremwe.AddonBootstrap')
+}

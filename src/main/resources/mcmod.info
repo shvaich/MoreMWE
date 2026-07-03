@@ -1,0 +1,12 @@
+[
+  {
+    "modid": "${mod_id}",
+    "name": "${mod_name}",
+    "description": "",
+    "version": "${mod_version}",
+    "url": "",
+    "authorList": ["shvaich"],
+    "credits": "shvaich",
+    "logoFile": ""
+  }
+]
