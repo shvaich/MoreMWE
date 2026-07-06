@@ -97,7 +97,7 @@ abstract class MyAbstractCommand extends CommandBase {
 
     protected static IChatComponent getHelpLineWithShortcut(String command, String desc, String commandToPutOnClick, String shortcut) {
         return getHelpChatComponent(command, desc, commandToPutOnClick)
-                .appendText((StringUtil.isEmpty(shortcut) ? "" : ( "." + EnumChatFormatting.DARK_GRAY + "(" + shortcut + ")" )) + "\n");
+                .appendText((StringUtil.isEmpty(shortcut) ? "" : ( ". " + EnumChatFormatting.DARK_GRAY + "(" + shortcut + ")" )) + "\n");
     }
 
     protected static IChatComponent getHelpLineWithShortcut(String command, String desc, String shortcut) {
