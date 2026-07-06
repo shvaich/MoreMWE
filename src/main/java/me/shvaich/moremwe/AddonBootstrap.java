@@ -1,16 +1,21 @@
 package me.shvaich.moremwe;
 
-import fr.alexdoru.mwe.api.MWEApi;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion("1.8.9")
 public class AddonBootstrap implements IFMLLoadingPlugin {
     public AddonBootstrap() {
-        MWEApi.registerAddon("me.shvaich.moremwe.MoreMWE$IMWEAddon_MoreMWE");
+        // No need to register addon at the moment
+        // MWEApi.registerAddon("me.shvaich.moremwe.MoreMWE$IMWEAddon_MoreMWE");
 
-        MWEApi.Asm.registerTransformer("me.shvaich.moremwe.asm.transformers.mc.MinecraftTransformer_ShovelGuard");
+        // causes crash if addon .jar comes before mwe.jar in the user's filesystem
+        // MWEApi.Asm.registerTransformer("me.shvaich.moremwe.asm.transformers.mc.MinecraftTransformer_ShovelGuard");
+
+        registerTransformer("me.shvaich.moremwe.asm.transformers.mc.MinecraftTransformer_ShovelGuard");
     }
 
     @Override
@@ -34,5 +39,12 @@ public class AddonBootstrap implements IFMLLoadingPlugin {
     @Override
     public String getAccessTransformerClass() {
         return null;
+    }
+
+    private static void registerTransformer(String className) {
+        Object o = Launch.blackboard.computeIfAbsent("mwe.transformers", (k) -> new ArrayList());
+        if (o instanceof ArrayList) {
+            ((ArrayList)o).add(className);
+        }
     }
 }

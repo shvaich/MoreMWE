@@ -1,6 +1,6 @@
 package me.shvaich.moremwe;
 
-import fr.alexdoru.mwe.api.IMWEAddon;
+
 import me.shvaich.moremwe.commands.CommandHypixelGroup;
 import me.shvaich.moremwe.commands.CommandMoreMWE;
 import me.shvaich.moremwe.commands.CommandPlay;
@@ -16,7 +16,6 @@ import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,7 +26,8 @@ import java.io.File;
 @Mod(
     modid = MoreMWE.MOD_ID,
     name = MoreMWE.NAME,
-    version = MoreMWE.VERSION
+    version = MoreMWE.VERSION,
+    dependencies = "required-after:mwenhancements@[4.3,);"
 )
 public class MoreMWE {
 
@@ -37,58 +37,57 @@ public class MoreMWE {
 
     public static final Logger LOGGER = LogManager.getLogger(NAME);
 
-    // separation for now, should be the actual class
-    public static final class IMWEAddon_MoreMWE implements IMWEAddon {
-        @Override
-        public String name() {
-            return MoreMWE.NAME;
-        }
+    @Mod.EventHandler
+    public void preInit(FMLPreInitializationEvent e) {
+        MoreMWEConfig.loadConfig(new File(e.getModConfigurationDirectory(), MOD_ID + ".cfg"));
+    }
 
-        @Override
-        public String targetVersion() {
-            return "4.3";
-        }
+    @Mod.EventHandler
+    public void init(FMLInitializationEvent e) {
+        registerCommands(
+                new CommandMoreMWE(),
+                new CommandPlay(),
+                new CommandHypixelGroup("friend"),
+                new CommandHypixelGroup("party")
+        );
 
-        @Override
-        public void preInit(FMLPreInitializationEvent fmlPreInitializationEvent) {
-            MoreMWEConfig.loadConfig(new File(fmlPreInitializationEvent.getModConfigurationDirectory(), MOD_ID + ".cfg"));
-        }
+        registerEvents(
+                new ModAnnouncement(),
+                new KeybindingListener(),
+                new RightClickListener(),
+                new PlayerEnergyDisplay(),
+                new ShovelGuardHUD()
+        );
 
-        @Override
-        public void init(FMLInitializationEvent fmlInitializationEvent) {
-            registerCommands(
-                    new CommandMoreMWE(),
-                    new CommandPlay(),
-                    new CommandHypixelGroup("friend"),
-                    new CommandHypixelGroup("party")
-            );
+        HUDManager.register();
+    }
 
-            registerEvents(
-                    new ModAnnouncement(),
-                    new KeybindingListener(),
-                    new RightClickListener(),
-                    new PlayerEnergyDisplay(),
-                    new ShovelGuardHUD()
-            );
-
-            HUDManager.register();
-        }
-
-        @Override
-        public void postInit(FMLPostInitializationEvent fmlPostInitializationEvent) {
-
-        }
-
-        private static void registerCommands(ICommand... commands) {
-            for (final ICommand command : commands) {
-                ClientCommandHandler.instance.registerCommand(command);
-            }
-        }
-
-        private static void registerEvents(Object... events) {
-            for (final Object event : events) {
-                MinecraftForge.EVENT_BUS.register(event);
-            }
+    private static void registerCommands(ICommand... commands) {
+        for (final ICommand command : commands) {
+            ClientCommandHandler.instance.registerCommand(command);
         }
     }
+
+    private static void registerEvents(Object... events) {
+        for (final Object event : events) {
+            MinecraftForge.EVENT_BUS.register(event);
+        }
+    }
+
+//    public static final class IMWEAddon_MoreMWE implements IMWEAddon {
+//        @Override
+//        public String name() { return MoreMWE.NAME; }
+//
+//        @Override
+//        public String targetVersion() { return "4.3"; }
+//
+//        @Override
+//        public void preInit(FMLPreInitializationEvent fmlPreInitializationEvent) {}
+//
+//        @Override
+//        public void init(FMLInitializationEvent fmlInitializationEvent) {}
+//
+//        @Override
+//        public void postInit(FMLPostInitializationEvent fmlPostInitializationEvent) {}
+//    }
 }
