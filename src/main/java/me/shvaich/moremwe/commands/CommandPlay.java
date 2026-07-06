@@ -162,7 +162,7 @@ public class CommandPlay extends MyAbstractCommand {
             }
             return modes;
         }
-        if (args.length == 2 && isHelpSubcommand(StringUtil.toLowerCase(args[0]))) {
+        if (args.length > 1 && isHelpSubcommand(StringUtil.toLowerCase(args[0]))) {
             final String lastArg = StringUtil.toLowerCase(args[args.length-1]);
             final List<String> gameNames = new ArrayList<>();
             for (final Game game : GAMES) {
