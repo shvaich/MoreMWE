@@ -62,18 +62,7 @@ public class CommandPlay extends MyAbstractCommand {
                     new Mode("solo_insane", "Insane (Solo)"),
                     new Mode("mega_doubles", "Mega Doubles")
                     //new Mode("?", "Mini")
-            ),
-
-            new Game("sky_wars_laboratory", "Sky Wars (Laboratory)", new String[]{ "lab", "swl", "sky_wars_lab" },
-                    new Mode("solo_insane_tnt_madness", "Solo TNT Madness"),
-                    new Mode("teams_insane_tnt_madness", "Teams TNT Madness"),
-                    new Mode("solo_insane_rush", "Solo Rush"),
-                    new Mode("teams_insane_rush", "Teams Rush"),
-                    new Mode("solo_insane_lucky", "Solo Lucky Blocks"),
-                    new Mode("teams_insane_lucky", "Teams Lucky Blocks"),
-                    new Mode("solo_insane_slime", "Solo Slime"),
-                    new Mode("teams_insane_slime", "Teams Slime")
-            ),
+            )
     };
 
     static {
