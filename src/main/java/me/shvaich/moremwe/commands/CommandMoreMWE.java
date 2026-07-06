@@ -24,7 +24,7 @@ public class CommandMoreMWE extends MyAbstractCommand {
 
     @Override
     public List<String> getCommandAliases() {
-        return Arrays.asList("mmwe", "m_mwe", "more_mwe");
+        return Arrays.asList("mmwe", "more_mwe");
     }
 
     @Override
