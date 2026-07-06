@@ -56,5 +56,8 @@ processResources {
 }
 
 jar {
-    manifest.attributes("FMLCorePlugin": 'me.shvaich.moremwe.AddonBootstrap')
+    manifest.attributes(
+            "FMLCorePlugin": 'me.shvaich.moremwe.AddonBootstrap',
+            "FMLCorePluginContainsFMLMod": "true"
+    )
 }
