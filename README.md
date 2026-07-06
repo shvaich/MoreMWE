@@ -3,6 +3,9 @@
 ## Usage
 `/moremwe` **-> Open GUI Screen**
 
+## Download
+Download the latest release **[here](https://github.com/shvaich/MoreMWE/releases/latest)**
+
 ## Features
 
 <details>
