@@ -104,6 +104,10 @@ public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            GuiUtil.openScreen(parentScreen);
+            return;
+        }
         if (keyCode == Keyboard.KEY_TAB) {
             if ((++this.selectedSliderIndex) >= this.colorSliders.size())
                 this.selectedSliderIndex = 0;  // change to -1 if you want a "none selected buffer" between cycles
@@ -128,7 +132,6 @@ public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider
             throw new RuntimeException("Failed to save: " + colorButton.getName(), e);
         }
         super.onGuiClosed();
-        GuiUtil.openScreen(parentScreen);
     }
 
     @Override

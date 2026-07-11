@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
@@ -129,10 +130,18 @@ public class MyRendererEditGuiScreen extends GuiScreen {
     }
 
     @Override
+    protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            GuiUtil.openScreen(parentScreen);
+            return;
+        }
+        super.keyTyped(typedChar, keyCode);
+    }
+
+    @Override
     public void onGuiClosed() {
         rendererPosition.savePositionToRelative(this.width - renderer.getDummyWidth(), this.height - renderer.getDummyHeight()); // (height) + 1
         super.onGuiClosed();
-        GuiUtil.openScreen(parentScreen);
     }
 
     @Override
