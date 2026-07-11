@@ -74,7 +74,7 @@ public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider
             drawDefaultBackground();
             GuiUtil.endClearRect();
         }
-        drawCenteredString(fontRendererObj, colorButton.getName(), this.width / 2, firstSliderY - TOP_BOTTOM_MARGIN - fontRendererObj.FONT_HEIGHT / 2, ModResources.WHITE);
+        drawCenteredString(fontRendererObj, colorButton.getCategory() + " - " + colorButton.getName(), this.width / 2, firstSliderY - TOP_BOTTOM_MARGIN - fontRendererObj.FONT_HEIGHT / 2, ModResources.WHITE);
         super.drawScreen(mouseX, mouseY, partialTicks);
         if (this.selectedSliderIndex != -1) {
             final GuiSlider slider = colorSliders.get(this.selectedSliderIndex);
