@@ -13,7 +13,7 @@ import net.minecraft.util.*;
 import java.util.Collection;
 import java.util.List;
 
-abstract class MyAbstractCommand extends CommandBase {
+public abstract class MyAbstractCommand extends CommandBase {
 
     protected static final Minecraft mc = Minecraft.getMinecraft();
 
@@ -116,7 +116,16 @@ abstract class MyAbstractCommand extends CommandBase {
 //    }
 
     protected static IChatComponent getHelpChatComponent(String command, String desc, String commandToPutOnClick) {
-        return new ChatComponentText(EnumChatFormatting.YELLOW + command + EnumChatFormatting.GRAY + " - " + EnumChatFormatting.AQUA + desc)
+        return getCommandChatComponent(EnumChatFormatting.YELLOW + command + EnumChatFormatting.GRAY + " - " + EnumChatFormatting.AQUA + desc, commandToPutOnClick);
+//                new ChatComponentText()
+//                .setChatStyle(new ChatStyle()
+//                        .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(EnumChatFormatting.GRAY + "Click to put the command in chat.")))
+//                        .setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToPutOnClick))
+//                );
+    }
+
+    public static IChatComponent getCommandChatComponent(String text, String commandToPutOnClick) {
+        return new ChatComponentText(text)
                 .setChatStyle(new ChatStyle()
                         .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(EnumChatFormatting.GRAY + "Click to put the command in chat.")))
                         .setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToPutOnClick))
