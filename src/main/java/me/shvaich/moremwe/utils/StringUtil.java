@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class StringUtil {
     public static String toLowerCase(String str) {
-        return isEmpty(str) ? "" : str.toLowerCase(Locale.ROOT);
+        return isEmpty(str) ? "" : str.toLowerCase(Locale.ENGLISH);
     }
 
     public static String toUpperCase(String str) { return isEmpty(str) ? "" : str.toUpperCase(Locale.ENGLISH); }
@@ -20,7 +20,7 @@ public class StringUtil {
         return (value > 0 ? "+" : "") + value;
     }
 
-    public static boolean isEmpty(String str) { return str == null || str.isEmpty(); }
+    public static boolean isEmpty(CharSequence cs) { return cs == null || cs.length() == 0; }
 
     public static String capitalize(String str) {
         if (isEmpty(str)) return "";
@@ -44,7 +44,7 @@ public class StringUtil {
         Objects.requireNonNull(elements);
         StringBuilder builder = null;
         for (final CharSequence cs : elements) {
-            if (cs != null && cs.length() > 0) {
+            if (!isEmpty(cs)) {
                 (builder == null ? (builder = new StringBuilder()) : builder.append(delimiter)).append(cs);
             }
         }
