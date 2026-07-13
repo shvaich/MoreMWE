@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiUtil {
 
     public static final int MOUSE_LEFT = 0;
+    public static final int MOUSE_RIGHT = 1;
     public static final int DIGIT_AND_SIGN_WIDTH = 6;
 
     /// Gui.drawRect(left, top, right, bottom) - left & top: inclusive, right & bottom: exclusive;
