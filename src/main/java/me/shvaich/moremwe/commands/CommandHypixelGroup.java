@@ -39,9 +39,14 @@ public class CommandHypixelGroup extends MyAbstractCommand {
                 return;
             }
 
-            if ("mwu_h".equals(subcommand) || "mwu_help".equals(subcommand)) {
-                printHelpMessage();
-                return;
+            switch (subcommand) {
+                case "mmwe_h":
+                case "mmwe_help":
+                case "moremwe_h":
+                case "moremwe_help": {
+                    printHelpMessage();
+                    return;
+                }
             }
 
             if (isBulkSubcommand(subcommand)) {
