@@ -47,10 +47,10 @@ public class CompassHUD extends AbstractRenderer {
     public CompassHUD() {
         super(MoreMWEConfig.compassHUDPosition);
         this.dummyPlayers = new PlayerTrackingData[]{
-                new PlayerTrackingData(new ResourceLocation("textures/entity/steve.png"), ColorPalette.VanillaColors.GREEN, 0, 0, 20),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/alex.png"), ColorPalette.VanillaColors.BLUE, 1, 1, 10),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie/zombie.png"), ColorPalette.VanillaColors.RED, -1, 1, 5),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie_pigman.png"), ColorPalette.VanillaColors.YELLOW, 5, 10, 40)
+                new PlayerTrackingData(new ResourceLocation("textures/entity/steve.png"), ColorPalette.VanillaColors.GREEN, 0, 0, 40),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/alex.png"), ColorPalette.VanillaColors.BLUE, 1, 1, 20),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie/zombie.png"), ColorPalette.VanillaColors.RED, -1, 1, 10),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie_pigman.png"), ColorPalette.VanillaColors.YELLOW, 5, 10, 5)
         };
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -286,7 +286,7 @@ public class CompassHUD extends AbstractRenderer {
                 continue;
             }
             if (prioritizeUniqueTeams) {
-                // this might look a bit weird, but it works & is cheap
+                // this might look a bit weird, but it works
                 int targetIndex = -1;
                 double targetDistance = -1;
                 final int pTeamIndex = pData.teamColorIndex;
@@ -391,7 +391,6 @@ public class CompassHUD extends AbstractRenderer {
         public final float health;
 
         public PlayerTrackingData(EntityPlayer trackedPlayer, EntityPlayerSP me, NetHandlerPlayClient netHandler, boolean isInMwGame, char myTeamChar) {
-            // this.name = player.getName();
             final double distX = trackedPlayer.posX - me.posX;
             final double distY = trackedPlayer.posY - me.posY;
             final double distZ = trackedPlayer.posZ - me.posZ;
@@ -490,11 +489,8 @@ public class CompassHUD extends AbstractRenderer {
             this.teamColor = teamColor;
             this.distanceY = distanceY;
             this.distance = distance;
-//            relativeYaw = (relativeYaw + 180) % 360;
-//            if (relativeYaw < 0) relativeYaw += 360;
-//            relativeYaw -= 180;
-            this.teamColorIndex = -1;
             this.health = health;
+            this.teamColorIndex = -1;
             this.relativeYaw = 0;
         }
     }
