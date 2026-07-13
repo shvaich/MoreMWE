@@ -39,8 +39,8 @@ public class CommandMoreMWE extends MyAbstractCommand {
                         .appendSibling(getHelpLineWithShortcut(slashCommand + " energy toggle", "Toggles automatic full energy announcement", "t"))
                         .appendText("\n" + getHelpHeader("Hypixel Command Helpers"))
                         .appendSibling(getHelpLine("/play", "See /play help", "/play help"))
-                        .appendSibling(getHelpLineWithShortcut("/friend", "See /friend mwu_help", "/friend mwu_help", "f"))
-                        .appendSibling(getHelpLineWithShortcut("/party", "See /party mwu_help", "/party mwu_help", "p"))
+                        .appendSibling(getHelpLineWithShortcut("/friend", "See /friend moremwe_help", "/friend moremwe_help", "f"))
+                        .appendSibling(getHelpLineWithShortcut("/party", "See /party moremwe_help", "/party moremwe_help", "p"))
                         .appendText("\n" + ChatUtil.centerLine(EnumChatFormatting.GRAY + "Some commands have a shortcut. Shortcuts are shown in parentheses after the description\n") + getHelpBar());
 
                 ChatUtil.addChatMessage(msg);
