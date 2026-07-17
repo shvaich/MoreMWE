@@ -2,9 +2,9 @@
   {
     "modid": "${mod_id}",
     "name": "${mod_name}",
-    "description": "",
+    "description": "view /moremwe help",
     "version": "${mod_version}",
-    "url": "",
+    "url": "https://github.com/shvaich/MoreMWE",
     "authorList": ["shvaich"],
     "credits": "shvaich",
     "logoFile": ""
