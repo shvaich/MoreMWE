@@ -15,8 +15,6 @@ import java.util.List;
 
 public abstract class MyAbstractCommand extends CommandBase {
 
-    protected static final Minecraft mc = Minecraft.getMinecraft();
-
     /**
      * User text is right-trimmed, every space character adds an empty string to args
      * and every other character is added to the current last string in args.
