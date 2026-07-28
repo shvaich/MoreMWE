@@ -6,14 +6,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.event.HoverEvent;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 
 import java.util.Collection;
 import java.util.List;
 
-public abstract class MyAbstractCommand extends CommandBase {
+abstract class MyAbstractCommand extends CommandBase {
 
     /**
      * User text is right-trimmed, every space character adds an empty string to args
@@ -102,42 +102,9 @@ public abstract class MyAbstractCommand extends CommandBase {
         return getHelpLineWithShortcut(command, desc, command, shortcut);
     }
 
-//    protected static IChatComponent getHelpLine(String command, String desc, String commandToPutOnClick, String shortcut) {
-//        final String shortcutStr = StringUtil.isEmpty(shortcut) ? "" : (
-//                ". " + EnumChatFormatting.DARK_GRAY + "(" + shortcut + ")"
-//        );
-//        return new ChatComponentText(EnumChatFormatting.YELLOW + command + EnumChatFormatting.GRAY + " - " + EnumChatFormatting.AQUA + desc + shortcutStr + "\n")
-//                .setChatStyle(new ChatStyle()
-//                        .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(EnumChatFormatting.GRAY + "Click to put the command in chat.")))
-//                        .setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToPutOnClick))
-//                );
-//    }
-
     protected static IChatComponent getHelpChatComponent(String command, String desc, String commandToPutOnClick) {
-        return getCommandChatComponent(EnumChatFormatting.YELLOW + command + EnumChatFormatting.GRAY + " - " + EnumChatFormatting.AQUA + desc, commandToPutOnClick);
-//                new ChatComponentText()
-//                .setChatStyle(new ChatStyle()
-//                        .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(EnumChatFormatting.GRAY + "Click to put the command in chat.")))
-//                        .setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToPutOnClick))
-//                );
+        return ChatUtil.getCommandMessage(EnumChatFormatting.YELLOW + command + EnumChatFormatting.GRAY + " - " + EnumChatFormatting.AQUA + desc, commandToPutOnClick);
     }
-
-    public static IChatComponent getCommandChatComponent(String text, String commandToPutOnClick) {
-        return new ChatComponentText(text)
-                .setChatStyle(new ChatStyle()
-                        .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(EnumChatFormatting.GRAY + "Click to put the command in chat.")))
-                        .setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, commandToPutOnClick))
-                );
-    }
-
-
-//    protected static IChatComponent getHelpLineWithShortcut(String command, String desc, String commandToPutOnClick, String shortcut) {
-//        final IChatComponent msg = getHelpLine(command, desc, commandToPutOnClick);
-//        if (!StringUtil.isEmpty(shortcut)) {
-//            //msg.appendText();
-//        }
-//        return msg;
-//    }
 
     protected static boolean isHelpSubcommand(String str) {
         return "h".equals(str) || "help".equals(str);
