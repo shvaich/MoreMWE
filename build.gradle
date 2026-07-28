@@ -24,7 +24,7 @@ minecraft {
     mappings = "stable_22"
     makeObfSourceJar = false
 
-    ['mod_id', 'mod_name', 'mod_version'].each { property ->
+    ['mod_id', 'mod_name', 'mod_version', 'target_mwe_version'].each { property ->
         replace "@${property.toUpperCase()}@", project.hasProperty(property) ? project[property] : null
     }
 }
@@ -38,8 +38,13 @@ runClient {
     ]
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
-    implementation files ("libs/MWE-4.3.jar")
+    implementation "com.github.Alexdoru:MWE:${project.target_mwe_version}"
 }
 
 processResources {

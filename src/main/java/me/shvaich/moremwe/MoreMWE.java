@@ -27,13 +27,14 @@ import java.io.File;
     modid = MoreMWE.MOD_ID,
     name = MoreMWE.NAME,
     version = MoreMWE.VERSION,
-    dependencies = "required-after:mwenhancements@[4.3,);"
+    dependencies = "required-after:mwenhancements@[" + MoreMWE.TARGET_MWE_VERSION + ",);"
 )
 public class MoreMWE {
 
     public static final String MOD_ID = "@MOD_ID@";
     public static final String NAME = "@MOD_NAME@";
     public static final String VERSION = "@MOD_VERSION@";
+	public static final String TARGET_MWE_VERSION = "@TARGET_MWE_VERSION@";
 
     public static final Logger LOGGER = LogManager.getLogger(NAME);
 
