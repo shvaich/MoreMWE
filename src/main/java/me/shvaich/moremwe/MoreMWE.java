@@ -8,6 +8,7 @@ import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.KeybindingListener;
 import me.shvaich.moremwe.events.ModAnnouncement;
 import me.shvaich.moremwe.events.RightClickListener;
+import me.shvaich.moremwe.features.MyModUpdater;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.gui.data.HUDManager;
 import me.shvaich.moremwe.gui.huds.ShovelGuardHUD;
@@ -41,6 +42,10 @@ public class MoreMWE {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
         MoreMWEConfig.loadConfig(new File(e.getModConfigurationDirectory(), MOD_ID + ".cfg"));
+
+        if (MoreMWEConfig.checkForUpdate && !Boolean.getBoolean("mwe.disableUpdater")) {
+            new MyModUpdater(e.getSourceFile()).start();
+        }
     }
 
     @Mod.EventHandler
@@ -74,21 +79,4 @@ public class MoreMWE {
             MinecraftForge.EVENT_BUS.register(event);
         }
     }
-
-//    public static final class IMWEAddon_MoreMWE implements IMWEAddon {
-//        @Override
-//        public String name() { return MoreMWE.NAME; }
-//
-//        @Override
-//        public String targetVersion() { return "4.3"; }
-//
-//        @Override
-//        public void preInit(FMLPreInitializationEvent fmlPreInitializationEvent) {}
-//
-//        @Override
-//        public void init(FMLInitializationEvent fmlInitializationEvent) {}
-//
-//        @Override
-//        public void postInit(FMLPostInitializationEvent fmlPostInitializationEvent) {}
-//    }
 }
