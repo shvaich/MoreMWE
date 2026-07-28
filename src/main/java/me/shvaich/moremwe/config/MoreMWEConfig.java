@@ -1,5 +1,6 @@
 package me.shvaich.moremwe.config;
 
+import fr.alexdoru.configlib.api.ColorPalette;
 import me.shvaich.moremwe.config.data.*;
 import me.shvaich.moremwe.features.GuardableBlock;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
@@ -8,6 +9,7 @@ import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,8 +21,8 @@ public class MoreMWEConfig extends AbstractConfig {
     public static final String BLOCK_GUARD = "BlockGuard";
 
     @ConfigCategory(
-            comment = "Designed for Moleman players in Hypixel Mega Walls.\n" +
-                    "Every feature will only work in Mega Walls"
+            comment = "Designed for Moleman players in Hypixel Mega Walls"
+                    + ".\nEvery feature will only work in Mega Walls"
     )
     public static final String SHOVEL_GUARD = "ShovelGuard";
 
@@ -59,8 +61,8 @@ public class MoreMWEConfig extends AbstractConfig {
             name = "HUD Keybind Mode",
             category = "Compass",
             subcategory = "Behaviour",
-            comment = "\"Toggle HUD\" - enables or disables the HUD when the \"Compass HUD Control\" keybind is pressed.\n"
-                    + "\"Hold to Show\" - requires the \"Compass HUD Control\" keybind to be held in addition to all other display conditions",
+            comment = "\"Toggle HUD\" - enables or disables the HUD when the \"Compass HUD Control\" keybind is pressed"
+                    + "\n\"Hold to Show\" - requires the \"Compass HUD Control\" keybind to be held in addition to all other display conditions",
             options = { "Toggle HUD", "Hold to Show" }
     )
     public static int compassKeybindMode = 0;
@@ -79,7 +81,8 @@ public class MoreMWEConfig extends AbstractConfig {
             name = "Hide Other Spectators",
             category = "Compass",
             subcategory = "Behaviour",
-            comment = "When spectating, try to hide other spectators from the HUD.\n§eSpectator detection may not work correctly on all servers or game modes"
+            comment = "When spectating, try to hide other spectators from the HUD"
+                    + ".\n§eSpectator detection may not work correctly on all servers or game modes"
     )
     public static boolean ignoreOtherSpectators = false;
 
@@ -174,7 +177,7 @@ public class MoreMWEConfig extends AbstractConfig {
             comment = "Color used for displaying teammates in the HUD",
             allowsTransparency = false
     )
-    public static int customTeammateColor = 0xFFFF55FF;
+    public static int customTeammateColor = ColorPalette.VanillaColors.LIGHT_PURPLE;
 
 
     @ConfigProperty(
@@ -262,9 +265,9 @@ public class MoreMWEConfig extends AbstractConfig {
             name = "Entity Right-Click Guard",
             category = SHOVEL_GUARD,
             subcategory = "Behaviour",
-            comment = "\"All Entities\" - Guard all entity right-clicks\n"
-                    + "\"Teammates Only\" - Guard only teammate right-clicks\n"
-                    + "\"Disabled\" - Don't guard entity right-clicks",
+            comment = "\"All Entities\" - Guard all entity right-clicks"
+                    + "\n\"Teammates Only\" - Guard only teammate right-clicks"
+                    + "\n\"Disabled\" - Don't guard entity right-clicks",
             options = {
                     "All Entities",
                     "Teammates Only",
@@ -278,8 +281,8 @@ public class MoreMWEConfig extends AbstractConfig {
             name = "Smart Guard",
             category = SHOVEL_GUARD,
             subcategory = "Behaviour",
-            comment = "Don't guard right-clicks on unguarded blocks\n"
-                    + "(disabling this can cause unintended behaviour)"
+            comment = "Don't guard right-clicks on unguarded blocks"
+                    + "\n(disabling this can cause unintended behaviour)"
     )
     public static boolean canOverrideShovelGuard = true;
 
@@ -306,7 +309,7 @@ public class MoreMWEConfig extends AbstractConfig {
             subcategory = "HUD",
             name = SHOVEL_GUARD + " HUD Color"
     )
-    public static int shovelGuardHudColor = 0x55FF0000;
+    public static int shovelGuardHudColor = new Color(0xFF, 0, 0, 0x55).getRGB();
 
 
     @ConfigProperty(
