@@ -29,32 +29,27 @@ public class ConfigSliderButton extends ConfigGuiButton {
         this.sliderValue = (int) fieldData.getValue();
         this.sliderButtonOffset = MathHelper.clamp_int(SLIDER_WIDTH * (sliderValue - minValue) / (maxValue - minValue), 0, SLIDER_WIDTH);
         updateDisplayFromDependency();
-    }
 
-    @Override
-    protected int getRightSideContentWidth() {
-        return (SIDE_BUTTON_SIZE + SLIDER_BUTTON_SIZE / 2 + 1) * 2 + SLIDER_WIDTH + 6;
-    }
-
-    @Override
-    protected int getRightSideContentHeight() {
-        return SLIDER_BUTTON_SIZE + mc.fontRendererObj.FONT_HEIGHT + 5;
+        this.rightSideContentWidth = (SIDE_BUTTON_SIZE + SLIDER_BUTTON_SIZE / 2 + 1) * 2 + SLIDER_WIDTH + 6;
+        this.rightSideContentHeight = SLIDER_BUTTON_SIZE + mc.fontRendererObj.FONT_HEIGHT + 6;
     }
 
     @Override
     public void draw(int x, int y, int mouseX, int mouseY) {
         super.draw(x, y, mouseX, mouseY);
         final int halfSliderButtonSize = SLIDER_BUTTON_SIZE / 2;
+        this.sliderX = contentLeft + SIDE_BUTTON_SIZE + 1 + halfSliderButtonSize;
+        this.sliderY = y + getCenterYOffset(SLIDER_HEIGHT);
         this.minusButtonX = contentLeft;
-        this.sliderX = minusButtonX + SIDE_BUTTON_SIZE + halfSliderButtonSize + 1;
         this.plusButtonX = sliderX + SLIDER_WIDTH + halfSliderButtonSize + 1;
-        this.sliderY = y + (drawHeight - SLIDER_HEIGHT) / 2;
-        this.sliderButtonY = sliderY + (SLIDER_HEIGHT - SLIDER_BUTTON_SIZE) / 2;
         this.sideButtonY = sliderY + (SLIDER_HEIGHT - SIDE_BUTTON_SIZE) / 2;
+
         if (isDragging) {
             updateSliderFromPosition(mouseX - sliderX);
         }
         this.sliderButtonX = sliderX + sliderButtonOffset - halfSliderButtonSize;
+        this.sliderButtonY = sliderY + (SLIDER_HEIGHT - SLIDER_BUTTON_SIZE) / 2;
+
         GuiUtil.drawRectBorder(sliderX, sliderY, sliderX + SLIDER_WIDTH, sliderY + SLIDER_HEIGHT, 1, 0xFF3E3E3E);
         if (sliderButtonX > (sliderX + 1)) {
             final int top = sliderY + 1;

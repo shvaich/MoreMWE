@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigCategoryHeader extends ConfigGuiElement {
+    private static final int COMMENT_TOP_MARGIN = 4;
+
     private final String categoryName;
     private final String comment;
     private final boolean hasComment;
@@ -49,7 +51,7 @@ public class ConfigCategoryHeader extends ConfigGuiElement {
         }
         GlStateManager.popMatrix();
         if (hasComment) {
-            int drawY = y + mc.fontRendererObj.FONT_HEIGHT * 2 + 4;
+            int drawY = y + mc.fontRendererObj.FONT_HEIGHT * 2 + COMMENT_TOP_MARGIN;
             for (final String commentLine : commentLines) {
                 final int drawX = centerX - mc.fontRendererObj.getStringWidth(commentLine) / 2;
                 mc.fontRendererObj.drawStringWithShadow(commentLine, drawX, drawY, ModResources.COMMENT_COLOR);
@@ -76,9 +78,7 @@ public class ConfigCategoryHeader extends ConfigGuiElement {
     @Override
     public int getHeight() {
         final int fontHeight = Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT;
-        if (hasComment)
-            return (fontHeight * 2 + getBottomMargin()) + commentLines.size() * fontHeight;
-        return fontHeight * 2;
+        return fontHeight * 2 + (hasComment ? COMMENT_TOP_MARGIN + commentLines.size() * fontHeight : 0);
     }
 
     @Override

@@ -25,18 +25,14 @@ public class ConfigColorButton extends ConfigGuiButton {
         this.allowsTransparency = fieldData.getAnnotation().allowsTransparency() || !ColorUtil.isOpaque(this.defaultColor);
         this.button = getMcGuiButton("Change");
         this.COLOR_BOX_SIZE = button.height;
-    }
-
-    @Override
-    public void onResize(int elementRectWidth) {
-        //this.button = getMcGuiButton(getMcButtonText("Change"));
-        super.onResize(elementRectWidth);
+        this.rightSideContentWidth = button.width + BUTTON_RIGHT_MARGIN + COLOR_BOX_SIZE + 1;
+        this.rightSideContentHeight = button.height; // Math.max(button.height, COLOR_BOX_SIZE);
     }
 
     @Override
     public void draw(int x, int y, int mouseX, int mouseY) {
         super.draw(x, y, mouseX, mouseY);
-        final int drawY = y + (drawHeight - button.height) / 2;
+        final int drawY = y + getCenterYOffset(rightSideContentHeight);
         GuiUtil.drawRectWithBorder(contentLeft, drawY, contentLeft + COLOR_BOX_SIZE, drawY + COLOR_BOX_SIZE, ColorUtil.toOpaque(this.color), ModResources.BLACK);
         button.xPosition = contentLeft + COLOR_BOX_SIZE + 1;
         button.yPosition = drawY;
@@ -46,16 +42,6 @@ public class ConfigColorButton extends ConfigGuiButton {
     @Override
     public void updateDisplayFromDependency() {
         this.button.displayString = getMcButtonText("Change");
-    }
-
-    @Override
-    protected int getRightSideContentWidth() {
-        return button.width + BUTTON_RIGHT_MARGIN + COLOR_BOX_SIZE + 1;
-    }
-
-    @Override
-    protected int getRightSideContentHeight() {
-        return button.height;
     }
 
     @Override

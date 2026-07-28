@@ -23,29 +23,15 @@ public class ConfigBooleanButton extends ConfigGuiButton {
         super.initialize();
         this.isOn = getBoolean();
         this.button = getMcGuiButton(getMcButtonText(isOn));
-    }
-
-    @Override
-    protected int getRightSideContentWidth() {
-        return button.width + BUTTON_RIGHT_MARGIN;
-    }
-
-    @Override
-    protected int getRightSideContentHeight() {
-        return button.height;
-    }
-
-    @Override
-    public void onResize(int elementRectWidth) {
-        //this.button = getMcGuiButton(getMcButtonText(isOn));
-        super.onResize(elementRectWidth);
+        this.rightSideContentWidth = button.width + BUTTON_RIGHT_MARGIN;
+        this.rightSideContentHeight = button.height;
     }
 
     @Override
     public void draw(int x, int y, int mouseX, int mouseY) {
         super.draw(x, y, mouseX, mouseY);
         button.xPosition = contentLeft;
-        button.yPosition = y + (drawHeight - button.height) / 2;
+        button.yPosition = y + getCenterYOffset(rightSideContentHeight);
         button.drawButton(mc, mouseX, mouseY);
     }
 

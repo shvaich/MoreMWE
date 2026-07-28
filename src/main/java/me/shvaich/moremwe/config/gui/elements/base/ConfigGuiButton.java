@@ -18,6 +18,9 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
 
     protected static final int PADDING = 8;
     protected static final int BUTTON_RIGHT_MARGIN = 20;
+
+    private static final int COMMENT_TOP_MARGIN = 4;
+
     private final List<String> commentLines = new ArrayList<>();
     protected boolean hasComment;
 
@@ -25,8 +28,14 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
     protected final Minecraft mc = Minecraft.getMinecraft();
     protected final ConfigFieldContainer fieldData;
 
+    /** The distance between the left-most position of the content (button) and the right side of the rect */
+    protected int rightSideContentWidth;
+
+    /** The entire height of the right side content (buttons, slider, etc...) */
+    protected int rightSideContentHeight;
+
     protected int contentLeft;
-    protected int drawHeight;
+    private int boxHeight;
 
     public ConfigGuiButton(MyConfigGuiScreen screen, ConfigFieldContainer fieldData) throws IllegalAccessException {
         this(screen, fieldData, true);
@@ -42,13 +51,6 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
         this.hasComment = !getComment().isEmpty();
     }
 
-    /**
-     * @return The distance between the left-most position of the content (button) and the right side of the rect
-     */
-    protected abstract int getRightSideContentWidth();
-
-    protected abstract int getRightSideContentHeight();
-
     /** Called when this needs to update its display from its dependency */
     public abstract void updateDisplayFromDependency();
 
@@ -58,11 +60,12 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
 
     protected String getComment() { return fieldData.getAnnotation().comment(); }
 
+    /** {@link #rightSideContentWidth} must be correctly set before this is called */
     @Override
     public void onResize(int elementRectWidth) {
         super.onResize(elementRectWidth);
         if (hasComment) {
-            final int wrapWidth = elementRectWidth - getLeftPadding() - getRightSideContentWidth() - 12; // 20
+            final int wrapWidth = elementRectWidth - getLeftPadding() - rightSideContentWidth - 16; // 20
             commentLines.clear();
             commentLines.addAll(getCommentLines(mc, getComment(), wrapWidth));
         }
@@ -71,14 +74,14 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
     @Override
     public void draw(int x, int y, int mouseX, int mouseY) {
         final int right = x + elementRectWidth;
-        this.drawHeight = getHeight();
-        this.contentLeft = right - getRightSideContentWidth();
+        this.boxHeight = getHeight();
+        this.contentLeft = right - rightSideContentWidth;
         final int textX = x + getLeftPadding();
-        final int textY = y + (hasComment ? PADDING : ((drawHeight - mc.fontRendererObj.FONT_HEIGHT) / 2));
-        GuiUtil.drawRectWithBorder(x, y, right, y + drawHeight, ModResources.ELEMENT_BACKGROUND, ModResources.ELEMENT_BORDER);
+        final int textY = y + (hasComment ? PADDING : ((boxHeight - mc.fontRendererObj.FONT_HEIGHT) / 2));
+        GuiUtil.drawRectWithBorder(x, y, right, y + boxHeight, ModResources.ELEMENT_BACKGROUND, ModResources.ELEMENT_BORDER);
         mc.fontRendererObj.drawStringWithShadow(getName(), textX, textY, ModResources.WHITE);
         if (hasComment) {
-            int drawY = y + PADDING + mc.fontRendererObj.FONT_HEIGHT + 6;
+            int drawY = textY + mc.fontRendererObj.FONT_HEIGHT + COMMENT_TOP_MARGIN;
             for (final String comment : commentLines) {
                 mc.fontRendererObj.drawStringWithShadow(comment, textX, drawY, ModResources.COMMENT_COLOR);
                 drawY += mc.fontRendererObj.FONT_HEIGHT;
@@ -90,9 +93,9 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
     public int getHeight() {
         int textHeight = mc.fontRendererObj.FONT_HEIGHT;
         if (hasComment)
-            textHeight += 6 + mc.fontRendererObj.FONT_HEIGHT * commentLines.size();
+            textHeight += COMMENT_TOP_MARGIN + mc.fontRendererObj.FONT_HEIGHT * commentLines.size();
 
-        return PADDING * 2 + Math.max(textHeight, getRightSideContentHeight()); // - 1
+        return PADDING + Math.max(textHeight, rightSideContentHeight) + PADDING; // - 1
     }
 
     @Override
@@ -122,6 +125,8 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
             StringUtil.defaultIfEmpty(StringUtil.toLowerCase(getSubcategory()), "general").contains(search) ||
             StringUtil.toLowerCase(getName()).contains(search);
     }
+
+    protected final int getCenterYOffset(int height) { return (boxHeight - height) / 2; }
 
     protected int getLeftPadding() { return PADDING; }
 

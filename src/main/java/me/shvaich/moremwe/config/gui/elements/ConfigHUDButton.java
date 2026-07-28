@@ -21,16 +21,8 @@ public class ConfigHUDButton extends ConfigGuiButton {
         this.rendererPosition = (MyRendererPosition) fieldData.getValue();
         this.enabledButton = getMcGuiButton(getMcButtonText(rendererPosition.isEnabled()));
         this.editButton = getMcGuiButton(getMcButtonText("Position"));
-    }
-
-    @Override
-    protected int getRightSideContentWidth() {
-        return enabledButton.width + BUTTON_RIGHT_MARGIN;
-    }
-
-    @Override
-    protected int getRightSideContentHeight() {
-        return enabledButton.height + 1 + editButton.height;
+        this.rightSideContentWidth = Math.max(enabledButton.width, editButton.width) + BUTTON_RIGHT_MARGIN;
+        this.rightSideContentHeight = enabledButton.height + 1 + editButton.height;
     }
 
     @Override
@@ -48,7 +40,7 @@ public class ConfigHUDButton extends ConfigGuiButton {
     public void draw(int x, int y, int mouseX, int mouseY) {
         super.draw(x, y, mouseX, mouseY);
         enabledButton.xPosition = contentLeft;
-        enabledButton.yPosition = y + (drawHeight - getRightSideContentHeight()) / 2;
+        enabledButton.yPosition = y + getCenterYOffset(rightSideContentHeight);
         enabledButton.drawButton(mc, mouseX, mouseY);
 
         editButton.xPosition = enabledButton.xPosition;

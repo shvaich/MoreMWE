@@ -53,24 +53,16 @@ public class ConfigSelectorButton extends ConfigGuiButton {
 
         this.buttonWidth = Math.max((int)(mc.fontRendererObj.getStringWidth(longestString) * 0.75f) + 24, getMainButtonWidth());
         this.buttonHeight = mc.fontRendererObj.FONT_HEIGHT + 6;
+        this.rightSideContentWidth = BUTTON_RIGHT_MARGIN + buttonWidth;
+        this.rightSideContentHeight = buttonHeight;
         super.onResize(elementRectWidth);
-    }
-
-    @Override
-    protected int getRightSideContentWidth() {
-        return BUTTON_RIGHT_MARGIN + this.buttonWidth;
-    }
-
-    @Override
-    protected int getRightSideContentHeight() {
-        return buttonHeight;
     }
 
     @Override
     public void draw(int x, int y, int mouseX, int mouseY) {
         super.draw(x, y, mouseX, mouseY);
         this.buttonLeft = contentLeft;
-        this.buttonTop = y + (drawHeight - buttonHeight) / 2;
+        this.buttonTop = y + getCenterYOffset(rightSideContentHeight);
         this.buttonRight = this.buttonLeft + this.buttonWidth;
         this.buttonBottom = this.buttonTop + this.buttonHeight;
         this.isMouseOverButton = screen.canMouseVisuallyBeOverElement() && GuiUtil.isMouseInRect(mouseX, mouseY, buttonLeft, buttonTop, buttonRight, buttonBottom);

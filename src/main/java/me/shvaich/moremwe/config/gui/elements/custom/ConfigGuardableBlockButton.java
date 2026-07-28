@@ -38,7 +38,7 @@ public class ConfigGuardableBlockButton extends ConfigBooleanButton {
     @Override
     public void draw(int x, int y, int mouseX, int mouseY) {
         super.draw(x, y, mouseX, mouseY);
-        final int iconY = y + (drawHeight - 16) / 2;
+        final int iconY = y + getCenterYOffset(16);
         RenderHelper.enableGUIStandardItemLighting();
         mc.getRenderItem().renderItemAndEffectIntoGUI(blockItem, x + 4, iconY);
         RenderHelper.disableStandardItemLighting();

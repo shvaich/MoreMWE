@@ -26,9 +26,9 @@ public abstract class ConfigGuiElement {
         return null;
     }
 
-    public int getTopMargin() { return 0; }
+    public int getTopMargin() { return 2; }
 
-    public int getBottomMargin() { return 4; }
+    public int getBottomMargin() { return 2; }
 
     protected final List<String> getCommentLines(Minecraft mc, String comment, int wrapWidth) {
         final List<String> commentLines = new ArrayList<>();

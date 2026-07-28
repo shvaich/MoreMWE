@@ -24,25 +24,17 @@ public class ConfigNumberButton extends ConfigGuiButton {
         this.maxValue = fieldData.getAnnotation().max();
         this.value = (int) fieldData.getValue();
         updateDisplayFromDependency();
-    }
-
-    @Override
-    protected int getRightSideContentWidth() {
-        return BUTTON_RIGHT_MARGIN + GuiUtil.getNumberWidth(value) + 4 + ICON_WIDTH + 4;
-    }
-
-    @Override
-    protected int getRightSideContentHeight() {
-        return (ICON_HEIGHT + 4) * 2;
+        this.rightSideContentWidth = BUTTON_RIGHT_MARGIN + GuiUtil.getNumberWidth(value) + 4 + ICON_WIDTH + 4;
+        this.rightSideContentHeight = (ICON_HEIGHT + 4) * 2;
     }
 
     @Override
     public void draw(int x, int y, int mouseX, int mouseY) {
         super.draw(x, y, mouseX, mouseY);
         int drawX = contentLeft;
-        drawX = 4 + mc.fontRendererObj.drawStringWithShadow(String.valueOf(value), drawX, y + (drawHeight - mc.fontRendererObj.FONT_HEIGHT) / 2, ModResources.WHITE);
+        drawX = 4 + mc.fontRendererObj.drawStringWithShadow(String.valueOf(value), drawX, y + getCenterYOffset(mc.fontRendererObj.FONT_HEIGHT), ModResources.WHITE);
         this.buttonX = drawX + 1;
-        int buttonTop = y + (drawHeight - getRightSideContentHeight()) / 2;
+        int buttonTop = y + getCenterYOffset(rightSideContentHeight);
         this.upButtonY = buttonTop + 1;
         final int rectRight = drawX + ICON_WIDTH + 4;
         final int rectHeight = ICON_HEIGHT + 4;
