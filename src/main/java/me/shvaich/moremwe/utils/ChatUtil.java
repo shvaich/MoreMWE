@@ -2,7 +2,10 @@ package me.shvaich.moremwe.utils;
 
 import me.shvaich.moremwe.MoreMWE;
 import net.minecraft.client.Minecraft;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
 import net.minecraft.util.IChatComponent;
 
 import static net.minecraft.util.EnumChatFormatting.*;
@@ -70,5 +73,22 @@ public class ChatUtil {
     public static String repeatToChatWidth(char ch) {
         final Minecraft mc = Minecraft.getMinecraft();
         return StringUtil.repeat(ch, mc.ingameGUI.getChatGUI().getChatWidth() / mc.fontRendererObj.getCharWidth(ch));
+    }
+
+
+    public static IChatComponent getURLMessage(String msg, String url) {
+        return getActionMessage(msg, ClickEvent.Action.OPEN_URL, url, YELLOW + url);
+    }
+
+    public static IChatComponent getCommandMessage(String msg, String command) {
+        return getActionMessage(msg, ClickEvent.Action.SUGGEST_COMMAND, command, GRAY + "Click to put the command in chat.");
+    }
+
+    private static IChatComponent getActionMessage(String msg, ClickEvent.Action action, String actionValue, String hoverMsg) {
+        return new ChatComponentText(msg)
+                .setChatStyle(new ChatStyle()
+                        .setChatClickEvent(new ClickEvent(action, actionValue))
+                        .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverMsg)))
+                );
     }
 }
