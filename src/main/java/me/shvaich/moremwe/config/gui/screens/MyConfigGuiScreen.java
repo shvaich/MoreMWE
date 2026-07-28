@@ -272,7 +272,9 @@ public class MyConfigGuiScreen extends GuiScreen {
                     }
                 }
                 catch (Exception e) { throw new RuntimeException("click on dropdown caused error!!!", e); }
-                selectorToClose = currentlyExpandedSelector;
+                if (currentlyExpandedSelector.isExpanded()) {
+                    selectorToClose = currentlyExpandedSelector;
+                }
                 this.currentlyExpandedSelector = null;
             }
 
@@ -329,7 +331,7 @@ public class MyConfigGuiScreen extends GuiScreen {
             searchbar.unfocus();
         }
 
-        if (selectorToClose != null && (currentlyExpandedSelector == null || currentlyExpandedSelector != selectorToClose)) {
+        if (selectorToClose != null && selectorToClose != currentlyExpandedSelector) {
             selectorToClose.close();
         }
     }

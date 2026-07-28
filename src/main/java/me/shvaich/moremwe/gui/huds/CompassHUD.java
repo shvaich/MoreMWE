@@ -208,9 +208,7 @@ public class CompassHUD extends AbstractRenderer {
     private static void drawBackground(int left, int top, int thisWidth, int thisHeight) {
         if (MoreMWEConfig.showCompassHUDBackground) {
             final int PADDING = 2;
-            left -= PADDING;
-            top -= PADDING;
-            GuiUtil.drawRect(left, top, left + thisWidth + PADDING * 2, top + thisHeight + PADDING * 2, MoreMWEConfig.compassHUDBackgroundColor);
+            GuiUtil.drawRect(left - PADDING, top - PADDING, left + thisWidth + PADDING, top + thisHeight + PADDING, MoreMWEConfig.compassHUDBackgroundColor);
         }
     }
 
