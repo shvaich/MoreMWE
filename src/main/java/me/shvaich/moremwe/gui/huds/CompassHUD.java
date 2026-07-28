@@ -75,10 +75,13 @@ public class CompassHUD extends AbstractRenderer {
     @Override
     public void render(int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
         if (trackedPlayersCount == 0) {
-            mc.fontRendererObj.drawStringWithShadow("None!", rendererPosition.getDrawX(), rendererPosition.getDrawY(), ColorPalette.VanillaColors.RED);
+            final int x = rendererPosition.getDrawX();
+            final int y = rendererPosition.getDrawY();
+            drawBackground(x, y, thisWidth, thisHeight);
+            mc.fontRendererObj.drawStringWithShadow("None!", x, y, ColorPalette.VanillaColors.RED);
             return;
         }
-        renderCompassHUD(compassTrackedPlayers, trackedPlayersCount, thisWidth);
+        renderCompassHUD(compassTrackedPlayers, trackedPlayersCount, thisWidth, thisHeight);
     }
 
     @Override
@@ -96,7 +99,7 @@ public class CompassHUD extends AbstractRenderer {
     @Override
     public void renderDummy(int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
         final int renderedDummiesCount = getDummiesToRenderCount();
-        renderCompassHUD(dummyPlayers, renderedDummiesCount, thisWidth);
+        renderCompassHUD(dummyPlayers, renderedDummiesCount, thisWidth, thisHeight);
         if (renderedDummiesCount < MoreMWEConfig.maxCompassTrackedPlayers) {
             final int missing = MoreMWEConfig.maxCompassTrackedPlayers - renderedDummiesCount;
             final String text = "+" + missing + " More";
@@ -122,7 +125,7 @@ public class CompassHUD extends AbstractRenderer {
         return height;
     }
 
-    private void renderCompassHUD(PlayerTrackingData[] pArr, int length, int thisWidth) {
+    private void renderCompassHUD(PlayerTrackingData[] pArr, int length, int thisWidth, int thisHeight) {
         final int x = rendererPosition.getDrawX();
         int y = rendererPosition.getDrawY();
         int distanceX = x + skinWidth;
@@ -155,6 +158,7 @@ public class CompassHUD extends AbstractRenderer {
         else {
             thePlayerMaxHP = 0;
         }
+        drawBackground(x, y, thisWidth, thisHeight);
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
@@ -199,6 +203,15 @@ public class CompassHUD extends AbstractRenderer {
         }
         //GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
+    }
+
+    private static void drawBackground(int left, int top, int thisWidth, int thisHeight) {
+        if (MoreMWEConfig.showCompassHUDBackground) {
+            final int PADDING = 2;
+            left -= PADDING;
+            top -= PADDING;
+            GuiUtil.drawRect(left, top, left + thisWidth + PADDING * 2, top + thisHeight + PADDING * 2, MoreMWEConfig.compassHUDBackgroundColor);
+        }
     }
 
     private int getMaxColumnWidth(PlayerTrackingData[] pArr, int length) {

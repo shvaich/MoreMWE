@@ -129,6 +129,22 @@ public class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
+            name = "Show Background",
+            category = "Compass",
+            subcategory = "Display"
+    )
+    public static boolean showCompassHUDBackground = false;
+
+    @ConfigProperty(
+            type = PropertyType.COLOR,
+            name = "Background Color",
+            category = "Compass",
+            subcategory = "Display"
+    )
+    public static int compassHUDBackgroundColor = new Color(8, 8, 8, 0xC0).getRGB();
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
             name = "Mega Walls Only",
             category = "Compass",
             subcategory = "Mega Walls",
@@ -355,6 +371,7 @@ public class MoreMWEConfig extends AbstractConfig {
                 "showCompassWhenSpectator",
                 "showDistanceUnitInCompassHUD",
                 "showHPInCompassHUD",
+                "showCompassHUDBackground",
                 "isCompassForMegaWallsOnly",
                 "compassMegaWallsRenderCondition",
                 "prioritizeUniqueTeams",
@@ -364,6 +381,7 @@ public class MoreMWEConfig extends AbstractConfig {
         addDependency("ignoreOtherSpectators", "showCompassWhenSpectator");
         addDependency("hpCompassDisplayPosition", "showHPInCompassHUD");
         addDependency("showHPIconInCompassHUD", "showHPInCompassHUD");
+        addDependency("compassHUDBackgroundColor", "showCompassHUDBackground");
         addDependency("customTeammateColor", "renderCustomTeammateColor");
 
 
