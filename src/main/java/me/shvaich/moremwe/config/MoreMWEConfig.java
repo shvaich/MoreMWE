@@ -350,6 +350,23 @@ public class MoreMWEConfig extends AbstractConfig {
     )
     public static int energyMessageMegaWallsCondition = 1;
 
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Check for Update",
+            category = GENERAL_CATEGORY,
+            subcategory = "Update",
+            comment = "Check if an update is available"
+    )
+    public static boolean checkForUpdate = true;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Automatic Update",
+            category = GENERAL_CATEGORY,
+            subcategory = "Update",
+            comment = "Updates the mod automatically"
+    )
+    public static boolean automaticUpdate = false;
 
     private static MoreMWEConfig instance;
 
@@ -405,5 +422,7 @@ public class MoreMWEConfig extends AbstractConfig {
 
 
         addDependency("energyMessageMegaWallsCondition", "sendEnergyMessageWhenFullyCharged");
+
+        addDependency("automaticUpdate", "checkForUpdate");
     }
 }
