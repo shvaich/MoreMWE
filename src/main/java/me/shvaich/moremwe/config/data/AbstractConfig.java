@@ -22,6 +22,9 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public class AbstractConfig {
+
+    protected static final String GENERAL_CATEGORY = "General";
+
     @ConfigProperty(
         type = PropertyType.SELECTOR,
         category = "General",

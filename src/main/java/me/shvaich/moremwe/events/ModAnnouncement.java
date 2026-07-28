@@ -1,6 +1,5 @@
 package me.shvaich.moremwe.events;
 
-import me.shvaich.moremwe.commands.MyAbstractCommand;
 import me.shvaich.moremwe.utils.ChatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
@@ -18,7 +17,7 @@ public class ModAnnouncement {
         if (mc.theWorld != null && mc.thePlayer != null && e.phase == TickEvent.Phase.START) {
             if (ticksDelay <= 0) {
                 MinecraftForge.EVENT_BUS.unregister(this);
-                ChatUtil.addChatMessage(MyAbstractCommand.getCommandChatComponent(ChatUtil.getModTag() + EnumChatFormatting.GRAY + "view /moremwe help", "/moremwe help"));
+                ChatUtil.addChatMessage(ChatUtil.getCommandMessage(ChatUtil.getModTag() + EnumChatFormatting.GRAY + "view /moremwe help", "/moremwe help"));
             }
             ticksDelay--;
         }
