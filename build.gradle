@@ -44,7 +44,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.Alexdoru:MWE:${project.target_mwe_version}"
+    compile "com.github.Alexdoru:MWE:${project.target_mwe_version}"
 }
 
 processResources {
