@@ -30,7 +30,7 @@ public class MoreMWEConfig extends AbstractConfig {
             category = "Compass",
             comment = "Displays directional information about tracked players"
     )
-    public static final MyRendererPosition compassHUDPosition = new MyRendererPosition(false, 0, 0);
+    public static final MyRendererPosition compassHUDPosition = new MyRendererPosition(false, 1, 1);
 
     @ConfigProperty(
             type = PropertyType.NUMBER,
