@@ -13,8 +13,8 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = project.mod_version
-group = project.mod_group
-archivesBaseName = project.mod_base_name
+group = project.mod_package_name
+archivesBaseName = project.mod_name
 
 sourceCompatibility = targetCompatibility = 1.8
 
@@ -62,7 +62,7 @@ processResources {
 
 jar {
     manifest.attributes(
-            "FMLCorePlugin": 'me.shvaich.moremwe.AddonBootstrap',
+            "FMLCorePlugin": "${project.mod_package_name}.AddonBootstrap",
             "FMLCorePluginContainsFMLMod": "true"
     )
 }
