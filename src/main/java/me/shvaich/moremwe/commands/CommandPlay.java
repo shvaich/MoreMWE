@@ -107,7 +107,7 @@ public class CommandPlay extends MyAbstractCommand {
                     }
                     boolean addMsg = true;
                     if (!invalidNames.isEmpty()) {
-                        msg.appendText("\n" + ChatUtil.centerLine(getSkippedMessage(invalidNames, "invalid games")) + "\n");
+                        msg.appendText("\n" + ChatUtil.centerLine(getSkippedMessage(invalidNames, "unknown games")) + "\n");
                     }
                     else if (addedGames.isEmpty()) {
                         addMsg = false;
