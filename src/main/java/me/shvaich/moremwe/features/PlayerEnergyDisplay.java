@@ -238,15 +238,19 @@ public class PlayerEnergyDisplay {
 
     private static String getHitsNeededString(int energy, int energyPerMeleeHit, int energyPerArrowHit) {
         final int missingEnergy = 100 - energy;
-        String hitsNeededStr = "";
-        if (energyPerMeleeHit != 0) {
-            final int meleeHitsNeeded = (missingEnergy + energyPerMeleeHit - 1) / energyPerMeleeHit;
-            hitsNeededStr = "Need " + meleeHitsNeeded + " melee " + (meleeHitsNeeded == 1 ? "hit" : "hits");
+        final int meleeHitsNeeded = energyPerMeleeHit != 0 ? ((missingEnergy + energyPerMeleeHit - 1) / energyPerMeleeHit) : 0;
+        final int arrowHitsNeeded = energyPerArrowHit != 0 ? ((missingEnergy + energyPerArrowHit - 1) / energyPerArrowHit) : 0;
+        if (meleeHitsNeeded == arrowHitsNeeded) {
+            return "Need " + meleeHitsNeeded + " more hit" + (meleeHitsNeeded == 1 ? "" : "s");
         }
-        if (energyPerArrowHit != 0) {
-            final int arrowHitsNeeded = (missingEnergy + energyPerArrowHit - 1) / energyPerArrowHit;
+
+        String hitsNeededStr = "";
+        if (meleeHitsNeeded != 0) {
+            hitsNeededStr = "Need " + meleeHitsNeeded + " melee hit" + (meleeHitsNeeded == 1 ? "" : "s");
+        }
+        if (arrowHitsNeeded != 0) {
             hitsNeededStr += hitsNeededStr.isEmpty() ? "Need " : " or ";
-            hitsNeededStr += arrowHitsNeeded + " arrow " + (arrowHitsNeeded == 1 ? "hit" : "hits");
+            hitsNeededStr += arrowHitsNeeded + " arrow hit" + (arrowHitsNeeded == 1 ? "" : "s");
         }
         return hitsNeededStr;
     }
