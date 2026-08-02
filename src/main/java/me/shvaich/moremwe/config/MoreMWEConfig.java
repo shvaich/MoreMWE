@@ -97,6 +97,15 @@ public class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
+            name = "Color Y-Distance",
+            category = "Compass",
+            subcategory = "Display",
+            comment = "Green if the player is above you, red if they are below you"
+    )
+    public static boolean colorYDistanceInCompassHUD = false;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
             name = "Show HP",
             category = "Compass",
             subcategory = "Display",

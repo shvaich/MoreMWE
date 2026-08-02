@@ -1,7 +1,7 @@
 package me.shvaich.moremwe.gui.huds;
 
 
-import fr.alexdoru.configlib.api.ColorPalette;
+import fr.alexdoru.configlib.api.ColorPalette.VanillaColors;
 import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.KeybindingListener;
@@ -47,10 +47,10 @@ public class CompassHUD extends AbstractRenderer {
     public CompassHUD() {
         super(MoreMWEConfig.compassHUDPosition);
         this.dummyPlayers = new PlayerTrackingData[]{
-                new PlayerTrackingData(new ResourceLocation("textures/entity/steve.png"), ColorPalette.VanillaColors.GREEN, 0, 0, 40),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/alex.png"), ColorPalette.VanillaColors.BLUE, 1, 1, 20),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie/zombie.png"), ColorPalette.VanillaColors.RED, -1, 1, 10),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie_pigman.png"), ColorPalette.VanillaColors.YELLOW, 5, 10, 5)
+                new PlayerTrackingData(new ResourceLocation("textures/entity/steve.png"), VanillaColors.GREEN, 0, 0, 40),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/alex.png"), VanillaColors.BLUE, 1, 1, 20),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie/zombie.png"), VanillaColors.RED, -1, 1, 10),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie_pigman.png"), VanillaColors.YELLOW, 5, 10, 5)
         };
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -78,7 +78,7 @@ public class CompassHUD extends AbstractRenderer {
             final int x = rendererPosition.getDrawX();
             final int y = rendererPosition.getDrawY();
             drawBackground(x, y, thisWidth, thisHeight);
-            mc.fontRendererObj.drawStringWithShadow("None!", x, y, ColorPalette.VanillaColors.RED);
+            mc.fontRendererObj.drawStringWithShadow("None!", x, y, VanillaColors.RED);
             return;
         }
         renderCompassHUD(compassTrackedPlayers, trackedPlayersCount, thisWidth, thisHeight);
@@ -190,8 +190,11 @@ public class CompassHUD extends AbstractRenderer {
             }
             GlStateManager.popMatrix();
             GlStateManager.color(1, 1, 1, 1);
+            final int yDistance = (int) player.distanceY;
             final int yDistanceX = arrowX + 8 + COLUMN_GAP;
-            mc.fontRendererObj.drawStringWithShadow(StringUtil.getIntWithSign((int) player.distanceY, false), yDistanceX, y, ColorPalette.VanillaColors.GRAY);
+            final int yDistanceColor = (!MoreMWEConfig.colorYDistanceInCompassHUD || yDistance == 0) ? VanillaColors.GRAY
+                    : (yDistance < 0 ? VanillaColors.DARK_RED : VanillaColors.DARK_GREEN);
+            mc.fontRendererObj.drawStringWithShadow(StringUtil.getIntWithSign(yDistance, false), yDistanceX, y, yDistanceColor);
             if (healthX != -1) {
                 String text = ColorUtil.getHPColor(thePlayerMaxHP, player.health) + String.valueOf(getDisplayHP(player.health));
                 if (MoreMWEConfig.showHPIconInCompassHUD) {
@@ -426,57 +429,57 @@ public class CompassHUD extends AbstractRenderer {
             if (isInMwGame && (teamColorChar = MWEApi.Player.getPlayerInfo(trackedPlayer).getPlayerTeamColor()) != '\0') {
                 switch (teamColorChar) {
                     case 'c': { // RED
-                        teamColorIn = ColorPalette.VanillaColors.RED;
+                        teamColorIn = VanillaColors.RED;
                         teamColorIndexIn = 1;
                     } break;
 
                     case 'd': { // LIGHT_PURPLE
-                        teamColorIn = ColorPalette.VanillaColors.LIGHT_PURPLE;
+                        teamColorIn = VanillaColors.LIGHT_PURPLE;
                         teamColorIndexIn = 2;
                     } break;
 
                     case '5': { // DARK_PURPLE
-                        teamColorIn = ColorPalette.VanillaColors.DARK_PURPLE;
+                        teamColorIn = VanillaColors.DARK_PURPLE;
                         teamColorIndexIn = 3;
                     } break;
 
                     case 'a': { // GREEN
-                        teamColorIn = ColorPalette.VanillaColors.GREEN;
+                        teamColorIn = VanillaColors.GREEN;
                         teamColorIndexIn = 4;
                     } break;
 
                     case '2': { // DARK_GREEN
-                        teamColorIn = ColorPalette.VanillaColors.DARK_GREEN;
+                        teamColorIn = VanillaColors.DARK_GREEN;
                         teamColorIndexIn = 5;
                     } break;
 
                     case '8': { // DARK_GRAY
-                        teamColorIn = ColorPalette.VanillaColors.DARK_GRAY;
+                        teamColorIn = VanillaColors.DARK_GRAY;
                         teamColorIndexIn = 6;
                     } break;
 
                     case '9': { // BLUE
-                        teamColorIn = ColorPalette.VanillaColors.BLUE;
+                        teamColorIn = VanillaColors.BLUE;
                         teamColorIndexIn = 7;
                     } break;
 
                     case '1': { // DARK_BLUE
-                        teamColorIn = ColorPalette.VanillaColors.DARK_BLUE;
+                        teamColorIn = VanillaColors.DARK_BLUE;
                         teamColorIndexIn = 8;
                     } break;
 
                     case '3': { // DARK_AQUA
-                        teamColorIn = ColorPalette.VanillaColors.DARK_AQUA;
+                        teamColorIn = VanillaColors.DARK_AQUA;
                         teamColorIndexIn = 9;
                     } break;
 
                     case 'e': { // YELLOW
-                        teamColorIn = ColorPalette.VanillaColors.YELLOW;
+                        teamColorIn = VanillaColors.YELLOW;
                         teamColorIndexIn = 10;
                     } break;
 
                     case '6': { // GOLD
-                        teamColorIn = ColorPalette.VanillaColors.GOLD;
+                        teamColorIn = VanillaColors.GOLD;
                         teamColorIndexIn = 11;
                     } break;
 
