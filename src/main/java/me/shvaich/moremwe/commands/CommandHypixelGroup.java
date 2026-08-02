@@ -51,7 +51,7 @@ public class CommandHypixelGroup extends MyAbstractCommand {
 
             if (isBulkSubcommand(subcommand)) {
                 if (args.length == 1) {
-                    ChatUtil.addErrorMessage("Usage: /" + name + " bulk <player> [<player>...]");
+                    addUsageErrorMessage("bulk <player...>");
                     return;
                 }
                 final int delayInc = 25;
@@ -61,8 +61,9 @@ public class CommandHypixelGroup extends MyAbstractCommand {
                 final Set<String> duplicateNames = new LinkedHashSet<>();
                 for (int i = 1; i < args.length; i++) {
                     final String arg = args[i];
+                    if (arg.isEmpty()) continue;
                     if (!PlayerUtil.isValidUsername(arg)) {
-                        if (!arg.isEmpty()) invalidNames.add(arg);
+                        invalidNames.add(arg);
                         continue;
                     }
                     if (!addedNames.add(arg)) {
@@ -78,7 +79,7 @@ public class CommandHypixelGroup extends MyAbstractCommand {
                 if (!errorMsg.isEmpty()) {
                     if (count > 0) {
                         count--;
-                        new DelayedTask(() -> ChatUtil.addChatMessage(errorMsg), count * delayInc);
+                        new DelayedTask(() -> ChatUtil.addChatMessage(errorMsg), count * delayInc + 5);
                     }
                     else ChatUtil.addChatMessage(errorMsg);
                 }
@@ -99,7 +100,7 @@ public class CommandHypixelGroup extends MyAbstractCommand {
     private void printHelpMessage() {
         final String slashCommand = '/' + name;
         final IChatComponent msg = new ChatComponentText(getHelpBar() + "\n" + getHelpHeader(MoreMWE.NAME + " " + StringUtil.capitalize(name) + " Help"))
-                .appendSibling(getHelpLineWithShortcut(slashCommand + " bulk <player> [<player>...]", "Repeats the command for each specified player", slashCommand + " bulk", "b"))
+                .appendSibling(getHelpLineWithShortcut(slashCommand + " bulk <player...>", "Repeats the command for each specified player", slashCommand + " bulk", "b"))
                 .appendText(getHelpBar());
 
         ChatUtil.addChatMessage(msg);
