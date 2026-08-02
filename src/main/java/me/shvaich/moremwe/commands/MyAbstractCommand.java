@@ -60,6 +60,10 @@ abstract class MyAbstractCommand extends CommandBase {
         return this.onTabComplete(sender, args);
     }
 
+    protected final void addUsageErrorMessage(String usage) {
+        ChatUtil.addErrorMessage("Usage: /" + getCommandName() + " " + usage);
+    }
+
     protected final void sendCommand() {
         sendChatMessage('/' + getCommandName());
     }
