@@ -92,8 +92,8 @@ public class CompassHUD extends AbstractRenderer {
 
     @Override
     public int getHeight() {
-        if (trackedPlayersCount == 0) return mc.fontRendererObj.FONT_HEIGHT;
-        return getRowHeight() * trackedPlayersCount - ROW_GAP;
+        if (trackedPlayersCount == 0) return mc.fontRendererObj.FONT_HEIGHT - 1;
+        return getRowHeight() * trackedPlayersCount - ROW_GAP - 1;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class CompassHUD extends AbstractRenderer {
             final int missing = MoreMWEConfig.maxCompassTrackedPlayers - renderedDummiesCount;
             final String text = "+" + missing + " More";
             final int x = rendererPosition.getDrawX() + (thisWidth - mc.fontRendererObj.getStringWidth(text)) / 2;
-            final int y = rendererPosition.getDrawY() + thisHeight - mc.fontRendererObj.FONT_HEIGHT;
+            final int y = rendererPosition.getDrawY() + thisHeight - mc.fontRendererObj.FONT_HEIGHT + 1;
             mc.fontRendererObj.drawStringWithShadow(text, x, y, ModResources.WHITE);
         }
     }
@@ -122,7 +122,7 @@ public class CompassHUD extends AbstractRenderer {
         if (renderedDummiesCount < MoreMWEConfig.maxCompassTrackedPlayers)
             height += ROW_GAP + mc.fontRendererObj.FONT_HEIGHT;
 
-        return height;
+        return height - 1;
     }
 
     private void renderCompassHUD(PlayerTrackingData[] pArr, int length, int thisWidth, int thisHeight) {
