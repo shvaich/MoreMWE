@@ -20,7 +20,7 @@ public class PlayerUtil {
     public static List<String> getTabPlayerNames(boolean ignoreSelf) {
         final Minecraft mc = Minecraft.getMinecraft();
         final NetHandlerPlayClient netHandler = mc.getNetHandler();
-        if (netHandler == null) return Collections.emptyList();
+        if (netHandler == null) return new ArrayList<>();
         UUID thePlayerUUID = null;
         if (ignoreSelf && mc.thePlayer != null) {
             thePlayerUUID = mc.thePlayer.getUniqueID();
