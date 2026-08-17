@@ -6,8 +6,6 @@ import me.shvaich.moremwe.utils.DelayedTask;
 import me.shvaich.moremwe.utils.PlayerUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 
 import java.util.*;
 
@@ -35,7 +33,7 @@ public class CommandHypixelGroup extends MyAbstractCommand {
             final String subcommand = StringUtil.toLowerCase(args[0]);
             if (isHelpSubcommand(subcommand)) {
                 sendCommand("help");
-                new DelayedTask(this::printHelpMessage, 5);
+                new DelayedTask(this::printCommandHelp, 5);
                 return;
             }
 
@@ -44,7 +42,7 @@ public class CommandHypixelGroup extends MyAbstractCommand {
                 case "mmwe_help":
                 case "moremwe_h":
                 case "moremwe_help": {
-                    printHelpMessage();
+                    printCommandHelp();
                     return;
                 }
             }
@@ -97,13 +95,11 @@ public class CommandHypixelGroup extends MyAbstractCommand {
         return Collections.emptyList();
     }
 
-    private void printHelpMessage() {
-        final String slashCommand = '/' + name;
-        final IChatComponent msg = new ChatComponentText(getHelpBar() + "\n" + getHelpHeader(MoreMWE.NAME + " " + StringUtil.capitalize(name) + " Help"))
-                .appendSibling(getHelpLineWithShortcut(slashCommand + " bulk <player...>", "Repeats the command for each specified player", slashCommand + " bulk", "b"))
-                .appendText(getHelpBar());
-
-        ChatUtil.addChatMessage(msg);
+    @Override
+    protected void printCommandHelp(String slashCommand) {
+        printCommandHelpBlock(getHelpBarColor(), MoreMWE.NAME + " " + StringUtil.capitalize(name) + " Help", new String[][]{
+                { slashCommand + " bulk <player...>", "Repeats the command for each specified player", slashCommand + " bulk" }
+        });
     }
 
     private static boolean isBulkSubcommand(String s) {

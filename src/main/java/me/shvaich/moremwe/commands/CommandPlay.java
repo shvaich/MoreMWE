@@ -1,11 +1,10 @@
 package me.shvaich.moremwe.commands;
 
+import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 
 import java.util.*;
 
@@ -88,9 +87,10 @@ public class CommandPlay extends MyAbstractCommand {
                     final int cap = args.length - 1;
                     final Set<Game> addedGames = new HashSet<>(cap);
                     final Set<String> invalidNames = new LinkedHashSet<>(cap);
-                    final IChatComponent msg = new ChatComponentText(getHelpBar());
+                    boolean printedGameHelpBlock = false;
                     for (int i = 1; i < args.length; i++) {
                         final String gameArg = args[i];
+                        if (gameArg.isEmpty()) continue;
                         Game matchedGame = null;
                         for (final Game game : GAMES) {
                             if (game.matches(gameArg)) {
@@ -99,31 +99,31 @@ public class CommandPlay extends MyAbstractCommand {
                             }
                         }
                         if (matchedGame == null) {
-                            if (!gameArg.isEmpty()) invalidNames.add(gameArg);
+                            invalidNames.add(gameArg);
                         }
                         else if (addedGames.add(matchedGame)) {
-                            appendGameHelp(msg, matchedGame);
+                            if (printedGameHelpBlock) MWEApi.Chat.addChatMessage("");
+                            else MWEApi.Chat.addChatMessage(getHelpBarColor() + ChatUtil.bar());
+                            printGameHelpBlock(matchedGame);
+                            printedGameHelpBlock = true;
                         }
                     }
-                    boolean addMsg = true;
                     if (!invalidNames.isEmpty()) {
-                        msg.appendText("\n" + ChatUtil.centerLine(getSkippedMessage(invalidNames, "unknown games")) + "\n");
+                        MWEApi.Chat.addChatMessage((printedGameHelpBlock ? "\n" : ChatUtil.getModTag()) + getSkippedMessage(invalidNames, "unknown games"));
+                        if (!printedGameHelpBlock) return;
                     }
-                    else if (addedGames.isEmpty()) {
-                        addMsg = false;
-                    }
-                    if (addMsg) {
-                        msg.appendText(getHelpBar());
-                        ChatUtil.addChatMessage(msg);
+                    if (printedGameHelpBlock) {
+                        MWEApi.Chat.addChatMessage(getHelpBarColor() + ChatUtil.bar());
                         return;
                     }
                 }
-                final IChatComponent msg = new ChatComponentText(getHelpBar() + "\n" + ChatUtil.centerLine(EnumChatFormatting.GRAY + "Hypixel Play Commands\n"));
+                final String bar = getHelpBarColor() + ChatUtil.bar();
+                MWEApi.Chat.addChatMessage(bar + "\n" + ChatUtil.centerLine(EnumChatFormatting.GRAY + EnumChatFormatting.BOLD.toString() + "Hypixel Play Commands"));
                 for (final Game game : GAMES) {
-                    appendGameHelp(msg, game);
+                    MWEApi.Chat.addChatMessage("");
+                    printGameHelpBlock(game);
                 }
-                msg.appendText(getHelpBar());
-                ChatUtil.addChatMessage(msg);
+                MWEApi.Chat.addChatMessage(bar);
                 return;
             }
             if (args.length == 1) {
@@ -164,11 +164,13 @@ public class CommandPlay extends MyAbstractCommand {
         return Collections.emptyList();
     }
 
-    private static void appendGameHelp(IChatComponent msg, Game game) {
-        msg.appendText("\n" + getHelpHeader(game.name));
+    private static void printGameHelpBlock(Game game) {
+        final String[][] helpLines = new String[game.modes.length][];
+        int i = 0;
         for (final Mode mode : game.modes) {
-            msg.appendSibling(getHelpLineWithShortcut("/play " + mode.key, mode.name, mode.getShortcut()));
+            helpLines[i] = new String[]{ "/play " + mode.key, mode.name };
         }
+        printCommandHelpBlock(game.name, helpLines);
     }
 
 
@@ -205,10 +207,6 @@ public class CommandPlay extends MyAbstractCommand {
                 if (alias.equals(gameStr)) return true;
             return false;
         }
-
-//        public String getShortcut() {
-//            return aliases == NO_ALIASES ? "" : aliases[0];
-//        }
     }
 
     private static class Mode {
@@ -224,10 +222,6 @@ public class CommandPlay extends MyAbstractCommand {
 
         public Mode(String key, String name) {
             this(key, name, NO_ALIASES);
-        }
-
-        public String getShortcut() {
-            return aliases == NO_ALIASES ? "" : aliases[0];
         }
     }
 }

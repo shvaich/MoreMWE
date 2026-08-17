@@ -1,5 +1,6 @@
 package me.shvaich.moremwe.commands;
 
+import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
@@ -7,9 +8,6 @@ import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,20 +28,9 @@ public class CommandMoreMWE extends MyAbstractCommand {
     @Override
     protected void onCommand(ICommandSender sender, String[] args) {
         if (args.length > 0) {
-            final String subcommand = StringUtil.toLowerCase(args[0]);
+            final String subcommand = args[0];
             if (isHelpSubcommand(subcommand)) {
-                final String slashCommand = '/' + getCommandName();
-                final IChatComponent msg = new ChatComponentText(getHelpBar() + "\n" + getHelpHeader(MoreMWE.NAME + " Help"))
-                        .appendSibling(getHelpLineWithShortcut(slashCommand, "Opens the configuration GUI", "mmwe"))
-                        .appendSibling(getHelpLineWithShortcut(slashCommand + " energy", "Sends a chat message with your current energy", "e"))
-                        .appendSibling(getHelpLineWithShortcut(slashCommand + " energy toggle", "Toggles automatic full energy announcement", "t"))
-                        .appendText("\n" + getHelpHeader("Hypixel Command Helpers"))
-                        .appendSibling(getHelpLine("/play", "See /play help", "/play help"))
-                        .appendSibling(getHelpLineWithShortcut("/friend", "See /friend moremwe_help", "/friend moremwe_help", "f"))
-                        .appendSibling(getHelpLineWithShortcut("/party", "See /party moremwe_help", "/party moremwe_help", "p"))
-                        .appendText("\n" + ChatUtil.centerLine(EnumChatFormatting.GRAY + "Some commands have a shortcut. Shortcuts are shown in parentheses after the description\n") + getHelpBar());
-
-                ChatUtil.addChatMessage(msg);
+                printCommandHelp();
                 return;
             }
 
@@ -71,13 +58,31 @@ public class CommandMoreMWE extends MyAbstractCommand {
         if (args.length <= 1) {
             return getListOfStringsMatchingLastWord(args, "energy", "help");
         }
-        else if (args.length == 2 && isEnergySubcommand(StringUtil.toLowerCase(args[0]))) {
+        else if (args.length == 2 && isEnergySubcommand(args[0])) {
             return getListOfStringsMatchingLastWord(args, "toggle");
         }
         return Collections.emptyList();
     }
 
+    @Override
+    protected void printCommandHelp(String slashCommand) {
+        final String bar = getHelpBarColor() + ChatUtil.bar();
+        MWEApi.Chat.addChatMessage(bar);
+        printCommandHelpBlock(MoreMWE.NAME + " Help", new String[][]{
+                { slashCommand, "Opens the configuration GUI" },
+                { slashCommand + " energy", "Sends a chat message with your current energy" },
+                { slashCommand + " energy toggle", "Toggles automatic full energy announcement" }
+        });
+        MWEApi.Chat.addChatMessage("");
+        printCommandHelpBlock("Hypixel Command Helpers", new String[][]{
+                { "/play", "See /play help", "/play help" },
+                { "/friend", "See /friend moremwe_help", "/friend moremwe_help" },
+                { "/party", "See /party moremwe_help", "/party moremwe_help" }
+        });
+        MWEApi.Chat.addChatMessage(bar);
+    }
+
     private static boolean isEnergySubcommand(String str) {
-        return "e".equals(str) || "energy".equals(str);
+        return "e".equalsIgnoreCase(str) || "energy".equalsIgnoreCase(str);
     }
 }
