@@ -1,6 +1,7 @@
 package me.shvaich.moremwe.gui.huds;
 
 import fr.alexdoru.mwe.api.MWEApi;
+import fr.alexdoru.mwe.api.enums.MWClass;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.utils.ColorUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
@@ -19,7 +20,7 @@ public class ShovelGuardHUD {
 
     @SubscribeEvent
     public void onRenderGUI(RenderGameOverlayEvent.Post e) {
-        if (e.type != ElementType.HOTBAR || !isRenderingShovelGuardHUD()) return;
+        if (e.type != ElementType.HOTBAR || !renderShovelGuardHUD()) return;
         final int hotbarX = e.resolution.getScaledWidth() / 2 - 91 + 3;
         final int hotbarY = e.resolution.getScaledHeight() - 16 - 3;
         final boolean renderLineOver = MoreMWEConfig.shovelGuardHudStyle == 1;
@@ -49,11 +50,12 @@ public class ShovelGuardHUD {
         GlStateManager.disableBlend();
     }
 
-    private static boolean isRenderingShovelGuardHUD() {
+    private static boolean renderShovelGuardHUD() {
         return MoreMWEConfig.isShovelGuarded
                 && MoreMWEConfig.renderShovelGuardHUD
                 && (ColorUtil.getAlpha(MoreMWEConfig.shovelGuardHudColor) > 3)
                 && MWEApi.Scoreboard.getScoreboardParser().isInMwGame()
+                && MWEApi.Player.getPlayerInfo(Minecraft.getMinecraft().thePlayer).getMWClass() == MWClass.MOLEMAN
                 && !PlayerUtil.isTheMcPlayerSpectator(Minecraft.getMinecraft().thePlayer);
     }
 }
