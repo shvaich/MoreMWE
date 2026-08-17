@@ -3,10 +3,9 @@ package me.shvaich.moremwe.asm.transformers;
 import fr.alexdoru.mwe.api.MWEApi;
 import fr.alexdoru.mwe.api.asm.IClassNodeTransformer;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
+
+import java.util.ArrayList;
 
 public interface MyTransformer extends IClassNodeTransformer {
     default String mapMethodName(ClassNode classNode, MethodNode methodNode) {
@@ -48,6 +47,36 @@ public interface MyTransformer extends IClassNodeTransformer {
 
     default boolean checkMcMethodInsn(AbstractInsnNode insnNode, int opcode, String owner, String mcpName, String srgName, String desc) {
         return checkMcMethodInsn(insnNode, opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+    }
+
+    default FieldInsnNode getMcFieldInsnNode(int opcode, String owner, String mcpName, String srgName, String desc) {
+        return new FieldInsnNode(opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+    }
+
+    default MethodInsnNode getMcMethodInsnNode(int opcode, String owner, String mcpName, String srgName, String desc, boolean isInterface) {
+        return new MethodInsnNode(opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc, isInterface);
+    }
+
+    default MethodNode getMcOverrideMethod(int opcode, String mcpName, String srgName, String desc) {
+        final MethodNode m = new MethodNode(
+                opcode,
+                MWEApi.Asm.isObfuscatedEnvironment() ? mcpName : srgName,
+                desc,
+                null,
+                null
+        );
+        if (m.visibleAnnotations == null) {
+            m.visibleAnnotations = new ArrayList<>(1);
+        }
+        m.visibleAnnotations.add(new AnnotationNode("Ljava/lang/Override;"));
+        return m;
+    }
+
+    default InsnList getBooleanReturnInsn(boolean value) {
+        final InsnList list = new InsnList();
+        list.add(new InsnNode(value ? ICONST_1 : ICONST_0));
+        list.add(new InsnNode(IRETURN));
+        return list;
     }
 
     default String getHookClass(String name) {
