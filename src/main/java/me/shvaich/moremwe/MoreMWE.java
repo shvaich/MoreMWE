@@ -1,9 +1,7 @@
 package me.shvaich.moremwe;
 
 
-import me.shvaich.moremwe.commands.CommandHypixelGroup;
-import me.shvaich.moremwe.commands.CommandMoreMWE;
-import me.shvaich.moremwe.commands.CommandPlay;
+import me.shvaich.moremwe.commands.*;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.KeybindingListener;
 import me.shvaich.moremwe.events.ModAnnouncement;
@@ -53,6 +51,7 @@ public class MoreMWE {
         registerCommands(
                 new CommandMoreMWE(),
                 new CommandPlay(),
+                new CommandVisibleBarriers(),
                 new CommandHypixelGroup("friend"),
                 new CommandHypixelGroup("party")
         );
