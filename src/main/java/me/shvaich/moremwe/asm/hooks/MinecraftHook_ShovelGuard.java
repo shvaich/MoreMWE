@@ -9,7 +9,7 @@ import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 
 public class MinecraftHook_ShovelGuard {
-    public static boolean shouldCancelRightClick(Minecraft mc) {
+    public static boolean shouldCancelEntityRightClick(Minecraft mc) {
         if (MoreMWEConfig.shovelEntityInteractionCondition != 2 && doShovelGuard(mc.thePlayer)) {
             if (MoreMWEConfig.shovelEntityInteractionCondition == 1 && mc.objectMouseOver.entityHit instanceof EntityPlayer) {
                 final char thePlayerTeam = MWEApi.Player.getPlayerInfo(mc.thePlayer).getPlayerTeamColor();

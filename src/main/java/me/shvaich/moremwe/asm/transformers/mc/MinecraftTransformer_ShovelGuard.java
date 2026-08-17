@@ -31,7 +31,7 @@ public class MinecraftTransformer_ShovelGuard implements MyTransformer {
                         list.add(new MethodInsnNode(
                                 INVOKESTATIC,
                                 getHookClass("MinecraftHook_ShovelGuard"),
-                                "shouldCancelRightClick",
+                                "shouldCancelEntityRightClick",
                                 "(Lnet/minecraft/client/Minecraft;)Z",
                                 false
                         ));
