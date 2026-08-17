@@ -395,6 +395,10 @@ public class MyConfigGuiScreen extends GuiScreen {
 
     @Override
     public void onGuiClosed() {
+        if (this.searchbarTask != null) {
+            searchbarTask.stop();
+            this.searchbarTask = null;
+        }
         clearActiveSlider(); // saves slider value (potentially unsaved if screen closed without mouseRelease)
         this.configHandler.save();
         super.onGuiClosed();
@@ -559,7 +563,7 @@ public class MyConfigGuiScreen extends GuiScreen {
         updateConfigScrollbar(renderedElementsHeight, configScrollbar);
     }
 
-    /** Releases the active slider, saves its value to field and clears it. (set to null) */
+    /** Releases the active slider; saves its value to field and clears it. (set to null) */
     private void clearActiveSlider() {
         if (activeSlider != null) {
             activeSlider.release();
