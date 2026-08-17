@@ -3,6 +3,7 @@ package me.shvaich.moremwe.events;
 import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
+import me.shvaich.moremwe.features.VisibleBarriers;
 import me.shvaich.moremwe.utils.ChatUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -17,12 +18,14 @@ public class KeybindingListener {
     private static final KeyBinding blockGuardKeyBinding = create("Toggle " + MoreMWEConfig.BLOCK_GUARD);
     private static final KeyBinding shovelGuardKeyBinding = create("Toggle " + MoreMWEConfig.SHOVEL_GUARD);
     private static final KeyBinding sendPlayerEnergyMessageKey = create("Send Energy Status");
+    private static final KeyBinding visibleBarriersKey = create("Toggle Visible Barriers");
 
     public KeybindingListener() {
         ClientRegistry.registerKeyBinding(showCompassHUDKey);
         ClientRegistry.registerKeyBinding(blockGuardKeyBinding);
         ClientRegistry.registerKeyBinding(shovelGuardKeyBinding);
         ClientRegistry.registerKeyBinding(sendPlayerEnergyMessageKey);
+        ClientRegistry.registerKeyBinding(visibleBarriersKey);
     }
 
     @SubscribeEvent
@@ -33,6 +36,11 @@ public class KeybindingListener {
 
         if (sendPlayerEnergyMessageKey.isPressed()) {
             PlayerEnergyDisplay.sendEnergyMessage();
+            return;
+        }
+
+        if (visibleBarriersKey.isPressed()) {
+            VisibleBarriers.toggle();
             return;
         }
 
