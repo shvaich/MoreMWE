@@ -1,19 +1,15 @@
 package me.shvaich.moremwe.commands;
 
+import fr.alexdoru.mwe.api.MWECommandBase;
 import me.shvaich.moremwe.utils.ChatUtil;
-import me.shvaich.moremwe.utils.StringUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.IChatComponent;
 
 import java.util.Collection;
 import java.util.List;
 
-abstract class MyAbstractCommand extends CommandBase {
+abstract class MyAbstractCommand extends MWECommandBase {
 
     /**
      * User text is right-trimmed, every space character adds an empty string to args
@@ -41,16 +37,6 @@ abstract class MyAbstractCommand extends CommandBase {
     protected abstract List<String> onTabComplete(ICommandSender sender, String[] args);
 
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return true;
-    }
-
-    @Override
-    public String getCommandUsage(ICommandSender sender) {
-        return '/' + this.getCommandName();
-    }
-
-    @Override
     public void processCommand(ICommandSender sender, String[] args) {
         this.onCommand(sender, args);
     }
@@ -60,61 +46,29 @@ abstract class MyAbstractCommand extends CommandBase {
         return this.onTabComplete(sender, args);
     }
 
-    protected final void addUsageErrorMessage(String usage) {
-        ChatUtil.addErrorMessage("Usage: /" + getCommandName() + " " + usage);
+    @Override
+    public String getCommandUsage(ICommandSender sender) {
+        return "/" + getCommandName();
     }
 
-    protected final void sendCommand() {
-        sendChatMessage('/' + getCommandName());
+    @Override
+    protected void printCommandHelp() {
+        printCommandHelp('/' + getCommandName());
     }
+
+    protected void printCommandHelp(String slashCommand) {}
 
     protected final void sendCommand(String arg) {
-        sendChatMessage('/' + getCommandName() + " " + arg);
+        sendCommand(new String[]{arg});
     }
 
-    protected final void sendCommand(String[] args) {
-        sendChatMessage('/' + getCommandName() + " " + buildString(args, 0));
-    }
-
-    protected static void sendChatMessage(String msg) {
-        final EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
-        if (thePlayer != null) {
-            thePlayer.sendChatMessage(msg);
-        }
-    }
-
-    protected static String getHelpBar() { return EnumChatFormatting.GREEN + ChatUtil.bar(); }
-
-    protected static String getHelpHeader(String name) {
-        return ChatUtil.centerLine(EnumChatFormatting.GOLD + name + "\n\n");
-    }
-
-    protected static IChatComponent getHelpLine(String command, String desc, String commandToPutOnClick) {
-        return getHelpChatComponent(command, desc, commandToPutOnClick).appendText("\n");
-    }
-
-    protected static IChatComponent getHelpLine(String command, String desc) {
-        return getHelpLine(command, desc, command);
-    }
-
-    protected static IChatComponent getHelpLineWithShortcut(String command, String desc, String commandToPutOnClick, String shortcut) {
-        return getHelpChatComponent(command, desc, commandToPutOnClick)
-                .appendText((StringUtil.isEmpty(shortcut) ? "" : ( ". " + EnumChatFormatting.DARK_GRAY + "(" + shortcut + ")" )) + "\n");
-    }
-
-    protected static IChatComponent getHelpLineWithShortcut(String command, String desc, String shortcut) {
-        return getHelpLineWithShortcut(command, desc, command, shortcut);
-    }
-
-    protected static IChatComponent getHelpChatComponent(String command, String desc, String commandToPutOnClick) {
-        return ChatUtil.getCommandMessage(EnumChatFormatting.YELLOW + command + EnumChatFormatting.GRAY + " - " + EnumChatFormatting.AQUA + desc, commandToPutOnClick);
-    }
-
-    protected static boolean isHelpSubcommand(String str) {
-        return "h".equals(str) || "help".equals(str);
+    protected final void addUsageErrorMessage(String usage) {
+        ChatUtil.addErrorMessage("Usage: /" + getCommandName() + " " + usage);
     }
 
     protected static String getSkippedMessage(Collection<String> skippedNames, String desc) {
         return EnumChatFormatting.RED + "Skipped (" + skippedNames.size() + ") " + desc + ": " + String.join(", ", skippedNames);
     }
+
+    protected static EnumChatFormatting getHelpBarColor() { return EnumChatFormatting.GREEN; }
 }
