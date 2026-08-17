@@ -57,29 +57,3 @@ public class BlockStateMapperTransformer_RemoveBarrier implements MyTransformer 
     }
 
 }
-
-//                        list.add(new MethodInsnNode(
-//                                INVOKESTATIC,
-//                                getHookClass("VisibleBarriersHook"),
-//                                "removeBarrierFromBlockStateMapper",
-//                                "(Ljava/util/Set;)V",
-//                                false
-//                        ));
-
-//                for (final AbstractInsnNode insnNode : methodNode.instructions.toArray()) {
-//                    if (insnNode instanceof FieldInsnNode) {
-//                        final FieldInsnNode fieldNode = (FieldInsnNode) insnNode;
-//                        logger.info("Owner: [{}], Name: [{}], Desc: [{}]", fieldNode.owner, fieldNode.name, fieldNode.desc);
-//                    }
-//                }
-//                logger.info("MCP Try: {}", FMLDeobfuscatingRemapper.INSTANCE.mapFieldName(
-//                        "net/minecraft/client/renderer/block/statemap/BlockStateMapper",
-//                        "setBuiltInBlocks",
-//                        "Ljava/util/Set;"
-//                ));
-//
-//                logger.info("SRG Try: {}", FMLDeobfuscatingRemapper.INSTANCE.mapFieldName(
-//                        "net/minecraft/client/renderer/block/statemap/BlockStateMapper",
-//                        "field_178449_b",
-//                        "Ljava/util/Set;"
-//                ));
