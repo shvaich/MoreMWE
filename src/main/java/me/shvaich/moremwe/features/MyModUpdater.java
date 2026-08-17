@@ -28,14 +28,18 @@ public final class MyModUpdater extends ModUpdater {
                     .appendSibling(ChatUtil.getURLMessage(ChatUtil.centerLine(YELLOW + "Click here to view the changelog & download page"), "https://github.com/shvaich/MoreMWE/releases"));
 
             if (this.automaticUpdate) {
-                msg.appendSibling(new ChatComponentText(""));
+                msg.appendText("");
                 if (this.isFeatherClient) {
-                    msg.appendSibling(new ChatComponentText(RED + "✘ The automatic updater is disabled on Feather"));
-                } else if (this.downloadSuccess) {
-                    msg.appendSibling(new ChatComponentText(GREEN + "✔ Update has been downloaded and will be installed automatically when closing the game"));
+                    msg.appendText(RED + "✘ The automatic updater is disabled on Feather");
+                }
+                else if (this.downloadSuccess) {
+                    msg.appendText(GREEN + "✔ Update has been downloaded and will be installed automatically when closing the game");
+                }
+                else {
+                    msg.appendText(RED + "✘ Failed to download and install update");
                 }
             }
-            msg.appendSibling(new ChatComponentText("\n" + bar));
+            msg.appendText("\n" + bar);
             ChatUtil.addChatMessage(msg);
         }
     }
