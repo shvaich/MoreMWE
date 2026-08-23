@@ -158,6 +158,8 @@ public class CompassHUD extends AbstractRenderer {
         else {
             thePlayerMaxHP = 0;
         }
+        final int rowHeight = getRowHeight();
+        final int realRowHeight = rowHeight - ROW_GAP;
         drawBackground(x, y, thisWidth, thisHeight);
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
@@ -175,23 +177,12 @@ public class CompassHUD extends AbstractRenderer {
             final int teamColor = player.teamColor;
             final String distanceStr = ((int) player.distance) + (MoreMWEConfig.showDistanceUnitInCompassHUD ? "m" : "");
             mc.fontRendererObj.drawStringWithShadow(distanceStr, distanceX, y, teamColor);
-            GlStateManager.color(
-                    ColorUtil.getRed(teamColor) / 255.0F,
-                    ColorUtil.getGreen(teamColor) / 255.0F,
-                    ColorUtil.getBlue(teamColor) / 255.0F,
-                    1.0F
-            );
-            mc.getTextureManager().bindTexture(ModResources.ARROW_UP);
-            GlStateManager.pushMatrix();
-            {
-                GlStateManager.translate(arrowX + 4, y + 1 + 2.5F, 0);
-                GlStateManager.rotate(player.relativeYaw, 0, 0, 1);
-                GuiUtil.drawFullTextureWithCustomSize(-4, -2, 8, 5);
-            }
-            GlStateManager.popMatrix();
-            GlStateManager.color(1, 1, 1, 1);
+
+            final int arrowY = y + (realRowHeight - 6) / 2;
+            drawDirectionArrow(arrowX, arrowY, player.relativeYaw, teamColor);
+
             final int yDistance = (int) player.distanceY;
-            final int yDistanceX = arrowX + 8 + COLUMN_GAP;
+            final int yDistanceX = arrowX + 5 + COLUMN_GAP;
             final int yDistanceColor = (!MoreMWEConfig.colorYDistanceInCompassHUD || yDistance == 0) ? VanillaColors.GRAY
                     : (yDistance < 0 ? VanillaColors.DARK_RED : VanillaColors.DARK_GREEN);
             mc.fontRendererObj.drawStringWithShadow(StringUtil.getIntWithSign(yDistance, false), yDistanceX, y, yDistanceColor);
@@ -202,7 +193,7 @@ public class CompassHUD extends AbstractRenderer {
                 }
                 mc.fontRendererObj.drawStringWithShadow(text, healthX, y, ModResources.WHITE);
             }
-            y += getRowHeight();
+            y += rowHeight;
         }
         //GlStateManager.disableAlpha();
         GlStateManager.disableBlend();
@@ -241,7 +232,7 @@ public class CompassHUD extends AbstractRenderer {
         if (longestHPStringWidth != 0 && MoreMWEConfig.showHPIconInCompassHUD) {
             this.longestHPStringWidth += mc.fontRendererObj.getStringWidth(" ❤");
         }
-        return skinWidth + maxDistanceStringsWidth - 1 + COLUMN_GAP + 8 + COLUMN_GAP + longestHPStringWidth + (longestHPStringWidth == 0 ? 0 : COLUMN_GAP);
+        return skinWidth + maxDistanceStringsWidth - 1 + COLUMN_GAP + 5 + COLUMN_GAP + longestHPStringWidth + (longestHPStringWidth == 0 ? 0 : COLUMN_GAP);
     }
 
     private int getRowHeight() {
@@ -392,6 +383,47 @@ public class CompassHUD extends AbstractRenderer {
             }
         }
         return '\0';
+    }
+
+    private static void drawDirectionArrow(int x, int y, float rotation, int color) {
+        GlStateManager.pushMatrix();
+        {
+            GL11.glEnable(GL11.GL_LINE_SMOOTH);
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+
+            GlStateManager.enableBlend();
+            GlStateManager.disableTexture2D();
+
+            GlStateManager.color(
+                    ColorUtil.getRed(color) / 255.0F,
+                    ColorUtil.getGreen(color) / 255.0F,
+                    ColorUtil.getBlue(color) / 255.0F,
+                    1.0F
+            );
+
+            final float halfWidth = 2.5F; // ; 5 / 2.0F
+            final float halfHeight = 3.0F; // ; 6 / 2.0F
+
+            GL11.glLineWidth(2.0F);
+            //GlStateManager.translate(x + 4.0F, y + 4.0F, 0.0F);
+            GlStateManager.translate(x + halfWidth, y + halfHeight, 0.0F);
+            GlStateManager.rotate(rotation, 0.0F, 0.0F, 1.0F);
+            GL11.glBegin(GL11.GL_LINE_STRIP);
+            //GL11.glVertex2f(-2.5F, 2.5F);
+            //GL11.glVertex2f(0.0F, -3.5F);
+            //GL11.glVertex2f(2.5F, 2.5F);
+            GL11.glVertex2f(-halfWidth, halfHeight);
+            GL11.glVertex2f(0.0F, -halfHeight);
+            GL11.glVertex2f(halfWidth, halfHeight);
+            GL11.glEnd();
+
+            GL11.glDisable(GL11.GL_LINE_SMOOTH);
+            GL11.glLineWidth(1.0F);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.disableBlend();
+            GlStateManager.enableTexture2D();
+        }
+        GlStateManager.popMatrix();
     }
 
 
