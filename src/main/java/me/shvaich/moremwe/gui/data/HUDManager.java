@@ -52,9 +52,9 @@ public class HUDManager {
         return null;
     }
 
-    public static void renderAllDummy(int screenWidth, int screenHeight) {
+    public static void renderAllDummy(AbstractRenderer editedRenderer, int screenWidth, int screenHeight) {
         for (final AbstractRenderer renderer : registeredRenderers) {
-            if (renderer.shouldRenderDummy()) {
+            if (renderer != editedRenderer && renderer.shouldRenderDummy()) {
                 final int width = renderer.getDummyWidth();
                 final int height = renderer.getDummyHeight();
                 final MyRendererPosition rendererPosition = renderer.getPosition();

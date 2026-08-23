@@ -68,10 +68,7 @@ public class MyRendererEditGuiScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         renderCrosshair();
-        final boolean prevEnabled = rendererPosition.isEnabled();
-        rendererPosition.setEnabled(false);
-        HUDManager.renderAllDummy(this.width, this.height);
-        rendererPosition.setEnabled(prevEnabled);
+        HUDManager.renderAllDummy(renderer, this.width, this.height);
         drawDefaultBackground();
         final int dummyWidth = renderer.getDummyWidth();
         final int dummyHeight = renderer.getDummyHeight();
@@ -152,6 +149,18 @@ public class MyRendererEditGuiScreen extends GuiScreen {
     private void renderCrosshair() {
         mc.getTextureManager().bindTexture(Gui.icons);
         drawTexturedModalRect(this.width / 2 - 7, this.height / 2 - 7, 0, 0, 16, 16);
+    }
+
+    /**
+     * Usage Example:
+     * <blockquote><pre>
+     *     if (Minecraft.getMinecraft().currentScreen instanceof MyRendererEditGuiScreen)
+     *          ((MyRendererEditGuiScreen) Minecraft.getMinecraft().currentScreen).getEditedRenderer();
+     * </pre></blockquote>
+     * @return The currently edited renderer
+     */
+    public AbstractRenderer getEditedRenderer() {
+        return renderer;
     }
 
     private static class CustomButton {
