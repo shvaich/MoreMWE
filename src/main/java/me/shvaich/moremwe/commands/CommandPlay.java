@@ -1,14 +1,20 @@
 package me.shvaich.moremwe.commands;
 
 import fr.alexdoru.mwe.api.MWEApi;
+import me.shvaich.moremwe.MoreMWE;
+import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.utils.ChatUtil;
+import me.shvaich.moremwe.utils.TimerUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.*;
 
+
 public class CommandPlay extends MyAbstractCommand {
+
+    private final TimerUtil warpProtectionTimer = new TimerUtil(10_000L);
 
     private static final Map<String, Mode> modeAliasMap = new HashMap<>();
 
@@ -83,47 +89,7 @@ public class CommandPlay extends MyAbstractCommand {
         if (args.length > 0) {
             final String subcommand = StringUtil.toLowerCase(args[0]);
             if (isHelpSubcommand(subcommand)) {
-                if (args.length > 1) {
-                    final int cap = args.length - 1;
-                    final Set<Game> addedGames = new HashSet<>(cap);
-                    final Set<String> invalidNames = new LinkedHashSet<>(cap);
-                    boolean printedGameHelpBlock = false;
-                    for (int i = 1; i < args.length; i++) {
-                        final String gameArg = args[i];
-                        if (gameArg.isEmpty()) continue;
-                        Game matchedGame = null;
-                        for (final Game game : GAMES) {
-                            if (game.matches(gameArg)) {
-                                matchedGame = game;
-                                break;
-                            }
-                        }
-                        if (matchedGame == null) {
-                            invalidNames.add(gameArg);
-                        }
-                        else if (addedGames.add(matchedGame)) {
-                            if (printedGameHelpBlock) MWEApi.Chat.addChatMessage("");
-                            else MWEApi.Chat.addChatMessage(getHelpBarColor() + ChatUtil.bar());
-                            printGameHelpBlock(matchedGame);
-                            printedGameHelpBlock = true;
-                        }
-                    }
-                    if (!invalidNames.isEmpty()) {
-                        MWEApi.Chat.addChatMessage((printedGameHelpBlock ? "\n" : ChatUtil.getModTag()) + getSkippedMessage(invalidNames, "unknown games"));
-                        if (!printedGameHelpBlock) return;
-                    }
-                    if (printedGameHelpBlock) {
-                        MWEApi.Chat.addChatMessage(getHelpBarColor() + ChatUtil.bar());
-                        return;
-                    }
-                }
-                final String bar = getHelpBarColor() + ChatUtil.bar();
-                MWEApi.Chat.addChatMessage(bar + "\n" + ChatUtil.centerLine(EnumChatFormatting.GRAY + EnumChatFormatting.BOLD.toString() + "Hypixel Play Commands"));
-                for (final Game game : GAMES) {
-                    MWEApi.Chat.addChatMessage("");
-                    printGameHelpBlock(game);
-                }
-                MWEApi.Chat.addChatMessage(bar);
+                printGamesHelp(args);
                 return;
             }
             if (args.length == 1) {
@@ -135,6 +101,19 @@ public class CommandPlay extends MyAbstractCommand {
             }
         }
         sendCommand(args);
+    }
+
+    @Override
+    protected void sendCommand(String[] args) {
+        if (MoreMWEConfig.playWarpProtection && !MWEApi.Squad.getSquadMap().isEmpty()) {
+            if (warpProtectionTimer.update()) {
+                final String bar = EnumChatFormatting.YELLOW + ChatUtil.bar();
+                ChatUtil.addChatMessage(bar + "\n" + EnumChatFormatting.YELLOW + "You have players in your Squad, run the command again to warp\n" + bar);
+                return;
+            }
+            warpProtectionTimer.reset();
+        }
+        super.sendCommand(args);
     }
 
     @Override
@@ -164,15 +143,59 @@ public class CommandPlay extends MyAbstractCommand {
         return Collections.emptyList();
     }
 
+    private static void printGamesHelp(String[] args) {
+        if (args.length > 1) {
+            final int cap = args.length - 1;
+            final Set<String> checkedNames = new HashSet<>(cap);
+            final Set<Game> addedGames = new HashSet<>(cap);
+            final Set<String> invalidNames = new LinkedHashSet<>(cap);
+            boolean printedGameHelpBlock = false;
+            for (int i = 1; i < args.length; i++) {
+                final String gameArg = args[i];
+                if (gameArg.isEmpty() || !checkedNames.add(gameArg)) continue;
+                Game matchedGame = null;
+                for (final Game game : GAMES) {
+                    if (game.matches(gameArg)) {
+                        matchedGame = game;
+                        break;
+                    }
+                }
+                if (matchedGame == null) {
+                    invalidNames.add(gameArg);
+                }
+                else if (addedGames.add(matchedGame)) {
+                    if (printedGameHelpBlock) MWEApi.Chat.addChatMessage("");
+                    else MWEApi.Chat.addChatMessage(getHelpBarColor() + ChatUtil.bar());
+                    printGameHelpBlock(matchedGame);
+                    printedGameHelpBlock = true;
+                }
+            }
+            if (!invalidNames.isEmpty()) {
+                MWEApi.Chat.addChatMessage((printedGameHelpBlock ? "\n" : ChatUtil.getModTag()) + getSkippedMessage(invalidNames, "unknown games"));
+                if (!printedGameHelpBlock) return;
+            }
+            if (printedGameHelpBlock) {
+                MWEApi.Chat.addChatMessage(getHelpBarColor() + ChatUtil.bar());
+                return;
+            }
+        }
+        final String bar = getHelpBarColor() + ChatUtil.bar();
+        MWEApi.Chat.addChatMessage(bar + "\n" + ChatUtil.centerLine(EnumChatFormatting.GRAY + EnumChatFormatting.BOLD.toString() + "Hypixel Play Commands"));
+        for (final Game game : GAMES) {
+            MWEApi.Chat.addChatMessage("");
+            printGameHelpBlock(game);
+        }
+        MWEApi.Chat.addChatMessage(bar);
+    }
+
     private static void printGameHelpBlock(Game game) {
         final String[][] helpLines = new String[game.modes.length][];
         int i = 0;
         for (final Mode mode : game.modes) {
-            helpLines[i] = new String[]{ "/play " + mode.key, mode.name };
+            helpLines[i++] = new String[]{ "/play " + mode.key, mode.name };
         }
         printCommandHelpBlock(game.name, helpLines);
     }
-
 
     private static class Game {
         public final String key;
@@ -190,7 +213,7 @@ public class CommandPlay extends MyAbstractCommand {
         }
 
         public Game(String key, String name, String alias, Mode... modes) {
-            this(key, name, new String[]{ alias }, modes);
+            this(key, name, new String[]{alias}, modes);
         }
 
         public Game(String key, String name, Mode... modes) {

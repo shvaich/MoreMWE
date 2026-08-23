@@ -361,6 +361,14 @@ public class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
+            name = "Play Command Warp Protection",
+            category = "Hypixel",
+            comment = "temp"
+    )
+    public static boolean playWarpProtection = false;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
             name = "Check for Update",
             category = GENERAL_CATEGORY,
             subcategory = "Update",
