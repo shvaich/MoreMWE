@@ -4,7 +4,7 @@ import fr.alexdoru.mwe.api.asm.InjectionCallback;
 import me.shvaich.moremwe.asm.transformers.MyTransformer;
 import org.objectweb.asm.tree.*;
 
-public class BarrierParticleTransformer_DisableRender implements MyTransformer {
+public class BarrierParticleTransformer_DisableRender extends MyTransformer {
 
     @Override
     public String[] getTargetClassName() {

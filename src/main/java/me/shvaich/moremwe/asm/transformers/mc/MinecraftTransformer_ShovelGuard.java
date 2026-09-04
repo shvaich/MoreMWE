@@ -5,7 +5,7 @@ import fr.alexdoru.mwe.api.asm.InjectionCallback;
 import me.shvaich.moremwe.asm.transformers.MyTransformer;
 import org.objectweb.asm.tree.*;
 
-public class MinecraftTransformer_ShovelGuard implements MyTransformer {
+public class MinecraftTransformer_ShovelGuard extends MyTransformer {
     @Override
     public String[] getTargetClassName() {
         return new String[]{"net.minecraft.client.Minecraft"};

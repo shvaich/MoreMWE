@@ -4,7 +4,7 @@ import fr.alexdoru.mwe.api.asm.InjectionCallback;
 import me.shvaich.moremwe.asm.transformers.MyTransformer;
 import org.objectweb.asm.tree.*;
 
-public class BlockStateMapperTransformer_RemoveBarrier implements MyTransformer {
+public class BlockStateMapperTransformer_RemoveBarrier extends MyTransformer {
     @Override
     public String[] getTargetClassName() {
         return new String[]{"net.minecraft.client.renderer.block.statemap.BlockStateMapper"};

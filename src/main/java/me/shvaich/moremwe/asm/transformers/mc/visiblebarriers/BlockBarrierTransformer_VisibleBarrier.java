@@ -4,7 +4,7 @@ import fr.alexdoru.mwe.api.asm.InjectionCallback;
 import me.shvaich.moremwe.asm.transformers.MyTransformer;
 import org.objectweb.asm.tree.*;
 
-public class BlockBarrierTransformer_VisibleBarrier implements MyTransformer {
+public class BlockBarrierTransformer_VisibleBarrier extends MyTransformer {
 
     @Override
     public String[] getTargetClassName() {
