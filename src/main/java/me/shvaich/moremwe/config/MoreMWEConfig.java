@@ -50,9 +50,10 @@ public class MoreMWEConfig extends AbstractConfig {
             name = "Max Tracking Distance",
             category = "Compass",
             subcategory = "Tracking",
-            min = 10,
+            min = 0,
             max = 150,
             comment = "Maximum distance at which players will appear on the HUD"
+                    + "\nSetting this to 0 will show players at any distance"
     )
     public static int maxCompassTrackingDistance = 100;
 

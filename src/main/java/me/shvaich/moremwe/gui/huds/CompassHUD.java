@@ -278,8 +278,10 @@ public class CompassHUD extends AbstractRenderer {
                 continue;
             }
 
-            final double distanceSq = thePlayer.getDistanceSqToEntity(player);
-            if (distanceSq > maxCompassTrackingDistanceSq) continue;
+            if (maxCompassTrackingDistanceSq != 0) {
+                final double distanceSq = thePlayer.getDistanceSqToEntity(player);
+                if (distanceSq > maxCompassTrackingDistanceSq) continue;
+            }
 
             final PlayerTrackingData pData = new PlayerTrackingData(player, thePlayer, netHandler, isInMwGame, selfTeamChar);
             if (trackedPlayersCount != maxCompassTrackedPlayers) {
