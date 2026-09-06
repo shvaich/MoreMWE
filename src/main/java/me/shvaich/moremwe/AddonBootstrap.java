@@ -4,6 +4,7 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -18,9 +19,12 @@ public class AddonBootstrap implements IFMLLoadingPlugin {
 
         registerTransformers(
                 "mc.MinecraftTransformer_ShovelGuard",
+
                 "mc.visiblebarriers.BarrierParticleTransformer_DisableRender",
                 "mc.visiblebarriers.BlockBarrierTransformer_VisibleBarrier",
-                "mc.visiblebarriers.BlockStateMapperTransformer_RemoveBarrier"
+                "mc.visiblebarriers.BlockStateMapperTransformer_RemoveBarrier",
+
+                "mc.chat.GuiChatTransformer_MWCommands"
         );
     }
 
@@ -50,11 +54,12 @@ public class AddonBootstrap implements IFMLLoadingPlugin {
     private static void registerTransformers(String... transformerPaths) {
         Object o = Launch.blackboard.computeIfAbsent("mwe.transformers", (k) -> new ArrayList<String>());
         if (o instanceof List) {
-            final List<String> classPaths = new ArrayList<>(transformerPaths.length);
-            for (final String path : transformerPaths) {
-                classPaths.add("me.shvaich.moremwe.asm.transformers." + path);
+            final int len = transformerPaths.length;
+            final String[] classPaths = new String[len];
+            for (int i = 0; i < len; i++) {
+                classPaths[i] = "me.shvaich.moremwe.asm.transformers." + transformerPaths[i];
             }
-            ((List) o).addAll(classPaths);
+            ((List) o).addAll(Arrays.asList(classPaths));
         }
     }
 }
