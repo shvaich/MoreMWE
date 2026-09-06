@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public abstract class MyTransformer implements IClassNodeTransformer {
 
@@ -104,5 +105,47 @@ public abstract class MyTransformer implements IClassNodeTransformer {
         list.add(new InsnNode(value ? ICONST_1 : ICONST_0));
         list.add(new InsnNode(IRETURN));
         return list;
+    }
+
+    protected static MethodInsnNode findMcMethodInsnNode(MethodNode methodNode, int opcode, String owner, String name, String desc) {
+        final ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
+        while (iterator.hasNext()) {
+            final AbstractInsnNode insnNode = iterator.next();
+            if (checkMcMethodInsn(
+                    insnNode,
+                    opcode,
+                    owner,
+                    name,
+                    desc
+            )) {
+                return (MethodInsnNode) insnNode;
+            }
+        }
+        return null;
+    }
+
+    protected static MethodInsnNode findMcMethodInsnNode(MethodNode methodNode, int opcode, String owner, String mcpName, String srgName, String desc) {
+        return findMcMethodInsnNode(methodNode, opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+    }
+
+    protected static FieldInsnNode findMcFieldInsnNode(MethodNode methodNode, int opcode, String owner, String name, String desc) {
+        final ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
+        while (iterator.hasNext()) {
+            final AbstractInsnNode insnNode = iterator.next();
+            if (checkMcFieldInsn(
+                    insnNode,
+                    opcode,
+                    owner,
+                    name,
+                    desc
+            )) {
+                return (FieldInsnNode) insnNode;
+            }
+        }
+        return null;
+    }
+
+    protected static FieldInsnNode findMcFieldInsnNode(MethodNode methodNode, int opcode, String owner, String mcpName, String srgName, String desc) {
+        return findMcFieldInsnNode(methodNode, opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
     }
 }
