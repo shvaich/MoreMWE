@@ -45,9 +45,8 @@ public class KeybindingListener {
         }
 
         if (showCompassHUDKey.isPressed() && MoreMWEConfig.compassKeybindMode == 0) {
-            final boolean newValue = !MoreMWEConfig.compassHUDPosition.isEnabled();
-            MoreMWEConfig.compassHUDPosition.setEnabled(newValue);
-            ChatUtil.addChatMessage(ChatUtil.getModTag() + "Compass HUD: " + ChatUtil.getBooleanMsg(newValue));
+            MoreMWEConfig.compassHUDPosition.setEnabled(!MoreMWEConfig.compassHUDPosition.isEnabled());
+            ChatUtil.addPropertyMessage("Compass HUD", MoreMWEConfig.compassHUDPosition.isEnabled());
             return;
         }
 
@@ -67,7 +66,7 @@ public class KeybindingListener {
         }
         else return;
 
-        ChatUtil.addChatMessage(ChatUtil.getModTag() + guard + ": " + ChatUtil.getBooleanMsg(value));
+        ChatUtil.addPropertyMessage(guard, value);
         MoreMWEConfig.instance().saveOnlyOneProperty(fieldName);
     }
 

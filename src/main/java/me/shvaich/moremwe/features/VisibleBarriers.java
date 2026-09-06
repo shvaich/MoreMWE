@@ -16,6 +16,6 @@ public final class VisibleBarriers {
     }
 
     public static void sendStatus() {
-        ChatUtil.addChatMessage(ChatUtil.getModTag() + "Visible Barriers: " + ChatUtil.getBooleanMsg(isActive));
+        ChatUtil.addPropertyMessage("Visible Barriers", isActive);
     }
 }

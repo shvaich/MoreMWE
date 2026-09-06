@@ -40,7 +40,7 @@ public class CommandMoreMWE extends MyAbstractCommand {
                         case "t":
                         case "toggle": {
                             MoreMWEConfig.sendEnergyMessageWhenFullyCharged = !MoreMWEConfig.sendEnergyMessageWhenFullyCharged;
-                            ChatUtil.addChatMessage(ChatUtil.getModTag() + "Automatically Announce Full Energy: " + ChatUtil.getBooleanMsg(MoreMWEConfig.sendEnergyMessageWhenFullyCharged));
+                            ChatUtil.addPropertyMessage("Automatically Announce Full Energy", MoreMWEConfig.sendEnergyMessageWhenFullyCharged);
                             MoreMWEConfig.instance().saveOnlyOneProperty("sendEnergyMessageWhenFullyCharged");
                             return;
                         }

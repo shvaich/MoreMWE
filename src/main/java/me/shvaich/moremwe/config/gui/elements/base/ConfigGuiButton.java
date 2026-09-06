@@ -154,9 +154,13 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
     }
 
     protected final String getMcButtonText(boolean bool) {
-        if (hasDependency() && screen.showElementsAsInactiveIfDependencyDisabled())
-            return ChatUtil.getBooleanMsg(bool, !hasDisabledDependency());
-        return ChatUtil.getBooleanMsg(bool);
+        final String booleanMsg = ChatUtil.getBooleanMsg(bool);
+        if (hasDependency() && screen.showElementsAsInactiveIfDependencyDisabled()) {
+            if (hasDisabledDependency()) {
+                return EnumChatFormatting.GRAY + booleanMsg.substring(2);
+            }
+        }
+        return booleanMsg;
     }
 
     protected final String getMcButtonText(String str) {

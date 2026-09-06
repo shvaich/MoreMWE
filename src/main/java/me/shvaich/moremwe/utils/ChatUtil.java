@@ -1,5 +1,6 @@
 package me.shvaich.moremwe.utils;
 
+import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.MoreMWE;
 import net.minecraft.client.Minecraft;
 import net.minecraft.event.ClickEvent;
@@ -10,7 +11,10 @@ import net.minecraft.util.IChatComponent;
 
 import static net.minecraft.util.EnumChatFormatting.*;
 
-public class ChatUtil {
+public final class ChatUtil {
+
+    private ChatUtil() {}
+
     public static String getModTag() {
         return DARK_GRAY + "[" + YELLOW + MoreMWE.NAME + DARK_GRAY + "] " + RESET;
     }
@@ -19,26 +23,13 @@ public class ChatUtil {
         return bool ? GREEN + "Enabled" : RED + "Disabled";
     }
 
-    public static String getBooleanMsg(boolean bool, boolean isActive) {
-        final String msg = getBooleanMsg(bool);
-        if (isActive) return msg;
-        final char[] chars = msg.toCharArray();
-        chars[1] = '7';
-        return new String(chars);
-    }
-
     public static void addChatMessage(String msg) {
         addChatMessage(new ChatComponentText(msg));
     }
 
+    /** Delegates to {@link MWEApi.Chat#addChatMessage(IChatComponent)} */
     public static void addChatMessage(IChatComponent msg) {
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (mc != null && mc.thePlayer != null) {
-            mc.thePlayer.addChatMessage(msg);
-        }
-        else {
-            MoreMWE.LOGGER.info("Failed to add chat message: {}", msg.getUnformattedText());
-        }
+        MWEApi.Chat.addChatMessage(msg);
     }
 
     public static void addErrorMessage(String msg) {
@@ -47,6 +38,14 @@ public class ChatUtil {
 
     public static void addErrorMessage(String msg, boolean withModTag) {
         addChatMessage((withModTag ? getModTag() : "") + RED + msg);
+    }
+
+    public static void addDebugMessage(String msg) {
+        addChatMessage(AQUA + "[Debug]: " + RESET + msg);
+    }
+
+    public static void addPropertyMessage(String name, boolean value) {
+        addChatMessage(getModTag() + name + DARK_GRAY + ": " + getBooleanMsg(value));
     }
 
     public static String bar() {
@@ -91,4 +90,25 @@ public class ChatUtil {
                         .setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(hoverMsg)))
                 );
     }
+
+
+//    /** A static version of {@link net.minecraft.client.gui.GuiScreen#sendChatMessage(String, boolean)} with a little bit more control */
+//    public static void sendChatMessage(String msg, boolean addToChat, boolean tryAsClientCommand) {
+//        if (msg == null) return;
+//        final Minecraft mc = Minecraft.getMinecraft();
+//        if (mc == null || mc.thePlayer == null) {
+//            addErrorMessage("Failed to send chat message : " + msg);
+//            return;
+//        }
+//        if (addToChat) {
+//            mc.ingameGUI.getChatGUI().addToSentMessages(msg);
+//        }
+//        if (tryAsClientCommand && ClientCommandHandler.instance.executeCommand(mc.thePlayer, msg) != 0) return;
+//
+//        mc.thePlayer.sendChatMessage(msg);
+//    }
+//
+//    public static void sendChatMessage(String msg) {
+//        sendChatMessage(msg, false, false);
+//    }
 }

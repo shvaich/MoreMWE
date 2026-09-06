@@ -29,7 +29,7 @@ public class CommandVisibleBarriers extends MyAbstractCommand {
                 case "off": {
                     final boolean isCommandOn = "on".equalsIgnoreCase(args[0]);
                     if (VisibleBarriers.isActive() == isCommandOn) {
-                        ChatUtil.addChatMessage(ChatUtil.getModTag() + EnumChatFormatting.YELLOW + "Visible Barriers is already " + ChatUtil.getBooleanMsg(isCommandOn));
+                        ChatUtil.addChatMessage(ChatUtil.getModTag() + EnumChatFormatting.GRAY + "Visible Barriers is already " + ChatUtil.getBooleanMsg(isCommandOn));
                     }
                     else {
                         VisibleBarriers.toggle();
