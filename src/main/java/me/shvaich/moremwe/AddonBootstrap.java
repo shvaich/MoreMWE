@@ -18,7 +18,7 @@ public class AddonBootstrap implements IFMLLoadingPlugin {
         // MWEApi.Asm.registerTransformer("me.shvaich.moremwe.asm.transformers.mc.MinecraftTransformer_ShovelGuard");
 
         registerTransformers(
-                "mc.MinecraftTransformer_ShovelGuard",
+                "mc.MinecraftTransformer_RightClickGuards",
 
                 "mc.visiblebarriers.BarrierParticleTransformer_DisableRender",
                 "mc.visiblebarriers.BlockBarrierTransformer_VisibleBarrier",

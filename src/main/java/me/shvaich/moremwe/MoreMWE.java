@@ -5,7 +5,6 @@ import me.shvaich.moremwe.commands.*;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.KeybindingListener;
 import me.shvaich.moremwe.events.ModAnnouncement;
-import me.shvaich.moremwe.events.RightClickListener;
 import me.shvaich.moremwe.features.MyModUpdater;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.gui.data.HUDManager;
@@ -59,7 +58,6 @@ public class MoreMWE {
         registerEvents(
                 new ModAnnouncement(),
                 new KeybindingListener(),
-                new RightClickListener(),
                 new PlayerEnergyDisplay(),
                 new ShovelGuardHUD()
         );
