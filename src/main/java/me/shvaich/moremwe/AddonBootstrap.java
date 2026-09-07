@@ -22,9 +22,7 @@ public class AddonBootstrap implements IFMLLoadingPlugin {
 
                 "mc.visiblebarriers.BarrierParticleTransformer_DisableRender",
                 "mc.visiblebarriers.BlockBarrierTransformer_VisibleBarrier",
-                "mc.visiblebarriers.BlockStateMapperTransformer_RemoveBarrier",
-
-                "mc.chat.GuiChatTransformer_MWCommands"
+                "mc.visiblebarriers.BlockStateMapperTransformer_RemoveBarrier"
         );
     }
 
