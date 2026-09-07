@@ -46,7 +46,7 @@ public class GuiChatHook_MWCommands {
         boolean isCommandAutocomplete = false;
         if (args.length == 1) {
             isCommandAutocomplete = true;
-            options = getListOfStringsMatchingLastWord(args, "help", "whereami");
+            options = getListOfStringsMatchingLastWord(args, "help");
         }
         else if (args.length == 2 && isHelpCommand(args[0])) {
             options = getListOfStringsMatchingLastWord(args, "force");
