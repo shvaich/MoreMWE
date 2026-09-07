@@ -61,4 +61,21 @@ public class StringUtil {
         if (isColorCode(ch)) return true;
         return (ch >= 'k' && ch <= 'o') || (ch >= 'K' && ch <= 'O') || ch == 'r' || ch == 'R';
     }
+
+    /** Exact copy of {@link fr.alexdoru.mwe.utils.StringUtil#removeFormattingCodes(String)} */
+    public static String removeFormattingCodes(String str) {
+        if (str == null || str.length() < 2) return str;
+        final char[] chars = str.toCharArray();
+        final int len = chars.length;
+        int count = 0;
+        for (int i = 0; i < len; i++) {
+            final char c = chars[i];
+            if (c == '§' && (i+1) < len && isFormatCode(chars[i+1])) {
+                i++;
+                continue;
+            }
+            chars[count++] = c;
+        }
+        return new String(chars, 0, count);
+    }
 }
