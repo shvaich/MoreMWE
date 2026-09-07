@@ -25,9 +25,10 @@ public class AbstractConfig {
 
     protected static final String GENERAL_CATEGORY = "General";
 
+    // this should be static
     @ConfigProperty(
         type = PropertyType.SELECTOR,
-        category = "General",
+        category = GENERAL_CATEGORY,
         subcategory = "User Interface",
         name = "Behaviour when Dependency is Disabled",
         options = { "Normal", "Hidden", "Inactive" },
@@ -233,6 +234,20 @@ public class AbstractConfig {
 
             config.setCategoryPropertyOrder(entry.getKey(), propertiesNames);
         }
+    }
+
+    protected void removePropertyFromConfigFile(String category, String name) {
+        if (config.hasCategory(category)) {
+            config.getCategory(category).remove(name);
+        }
+        else {
+            MoreMWE.LOGGER.warn("Cannot remove property from config file ; category {} doesn't exist in config", category);
+        }
+    }
+
+    /** Call this after your last {@link #removePropertyFromConfigFile(String, String)} call */
+    protected final void saveChangesToConfigFile() {
+        config.save();
     }
 
     protected void addListener(String name, Consumer<Object> fn) {
