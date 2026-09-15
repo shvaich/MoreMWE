@@ -64,12 +64,16 @@ public class GuiUtil {
         return mouseX >= left && mouseX < right && mouseY >= top && mouseY < bottom;
     }
 
-    public static void playButtonPressSound() {
-        Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
+    public static void playButtonPressSound(Minecraft mc) {
+        mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 1.0F));
     }
 
-    public static void openScreen(GuiScreen screen) {
+    public static void openScreen(final GuiScreen screen) {
         new DelayedTask(() -> Minecraft.getMinecraft().displayGuiScreen(screen));
+    }
+
+    public static int getColorWithHover(int color, boolean isHovered) {
+        return isHovered ? ColorUtil.brighter(color, 0.12F) : color;
     }
 
     /** Only works correctly for n in range [-999, 999] */

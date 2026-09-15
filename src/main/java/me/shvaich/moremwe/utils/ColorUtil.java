@@ -42,6 +42,21 @@ public class ColorUtil {
         return channel == 3 ? 24 : (16 - (channel << 3)); // 8 * (2-channel)
     }
 
+    public static int brighter(int color, float amount) {
+        amount = Math.max(0.0F, Math.min(1.0F, amount));
+
+        int alpha = getAlpha(color);
+        int red = getRed(color);
+        int green = getGreen(color);
+        int blue  = getBlue(color);
+
+        red += (int) ((255 - red) * amount);
+        green += (int) ((255 - green) * amount);
+        blue  += (int) ((255 - blue) * amount);
+
+        return alpha << 24 | red << 16 | green << 8 | blue;
+    }
+
     public static EnumChatFormatting getHPColor(float maxHP, float hp) {
         if (hp > maxHP) return EnumChatFormatting.DARK_GREEN;
         final float one_fourth = maxHP / 4f;
