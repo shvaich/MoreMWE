@@ -59,8 +59,7 @@ public class BlockBarrierTransformer_VisibleBarrier extends MyTransformer {
         ));
 
         method.instructions.add(new InsnNode(ARETURN));
-
-        classNode.methods.removeIf(m -> method.name.equals(m.name) && method.desc.equals(m.desc));
+        classNode.methods.removeIf(m -> checkMcMethod(classNode, m, method.name, method.desc));
         classNode.methods.add(method);
         status.addInjection();
     }
@@ -102,7 +101,7 @@ public class BlockBarrierTransformer_VisibleBarrier extends MyTransformer {
         method.instructions.add(sameBlock);
         method.instructions.add(getBooleanReturnInsn(false));
 
-        classNode.methods.removeIf(m -> method.name.equals(m.name) && method.desc.equals(m.desc));
+        classNode.methods.removeIf(m -> checkMcMethod(classNode, m, method.name, method.desc));
         classNode.methods.add(method);
         status.addInjection();
     }
