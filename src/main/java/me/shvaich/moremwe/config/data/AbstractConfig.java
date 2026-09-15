@@ -26,16 +26,6 @@ public class AbstractConfig {
 
     protected static final String GENERAL_CATEGORY = "General";
 
-//    @ConfigProperty(
-//        type = PropertyType.SELECTOR,
-//        category = GENERAL_CATEGORY,
-//        subcategory = "User Interface",
-//        name = "Behaviour when Dependency is Disabled",
-//        options = { "Normal", "Hidden", "Inactive" },
-//        comment = "Controls how a property is displayed when a property it depends on is disabled"
-//    )
-//    private static int inactiveFieldsDisplayType = 0;
-
     private static final boolean DEFAULT_HIDE_PROPERTY_IF_HAS_DISABLED_DEPENDENCY = false;
 
     @ConfigProperty(
