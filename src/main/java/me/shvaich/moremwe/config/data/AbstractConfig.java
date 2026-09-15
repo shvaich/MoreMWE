@@ -4,6 +4,7 @@ import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.utils.ChatUtil;
+import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.Configuration;
@@ -25,16 +26,26 @@ public class AbstractConfig {
 
     protected static final String GENERAL_CATEGORY = "General";
 
-    // this should be static
+//    @ConfigProperty(
+//        type = PropertyType.SELECTOR,
+//        category = GENERAL_CATEGORY,
+//        subcategory = "User Interface",
+//        name = "Behaviour when Dependency is Disabled",
+//        options = { "Normal", "Hidden", "Inactive" },
+//        comment = "Controls how a property is displayed when a property it depends on is disabled"
+//    )
+//    private static int inactiveFieldsDisplayType = 0;
+
+    private static final boolean DEFAULT_HIDE_PROPERTY_IF_HAS_DISABLED_DEPENDENCY = false;
+
     @ConfigProperty(
-        type = PropertyType.SELECTOR,
-        category = GENERAL_CATEGORY,
-        subcategory = "User Interface",
-        name = "Behaviour when Dependency is Disabled",
-        options = { "Normal", "Hidden", "Inactive" },
-        comment = "Controls how a property is displayed when a property it depends on is disabled"
+            type = PropertyType.SWITCH,
+            category = GENERAL_CATEGORY,
+            subcategory = "User Interface",
+            name = "Hide Property when Dependency is Disabled",
+            comment = "Hides a property when a property it depends on is disabled"
     )
-    private static int inactiveFieldsDisplayType = 0;
+    private static boolean hidePropertyIfHasDisabledDependency = DEFAULT_HIDE_PROPERTY_IF_HAS_DISABLED_DEPENDENCY;
 
     private final Configuration config;
     private final LinkedHashMap<String, LinkedHashMap<String, List<String>>> configStructure = new LinkedHashMap<>();
@@ -49,7 +60,7 @@ public class AbstractConfig {
         this.config = new Configuration(file);
         config.load();
         final Map<String, Set<String>> configFieldsNamesMap = new HashMap<>();
-        final ConfigFieldContainer inactiveFieldsDisplayTypeField;
+        final ConfigFieldContainer hidePropertyIfHasDisabledDependencyField;
         try {
             for (final Field field : this.getClass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(ConfigProperty.class)) {
@@ -63,20 +74,25 @@ public class AbstractConfig {
             }
 
             if (addInternalProperties) {
-                Field field = AbstractConfig.class.getDeclaredField("inactiveFieldsDisplayType");
+                Field field = AbstractConfig.class.getDeclaredField("hidePropertyIfHasDisabledDependency");
                 field.setAccessible(true);
-                inactiveFieldsDisplayTypeField = new ConfigFieldContainer(field, config, configFieldsNamesMap);
-                configFields.add(inactiveFieldsDisplayTypeField);
+                hidePropertyIfHasDisabledDependencyField = new ConfigFieldContainer(field, config, configFieldsNamesMap);
+                configFields.add(hidePropertyIfHasDisabledDependencyField);
             }
-            else { inactiveFieldsDisplayTypeField = null; }
+            else { hidePropertyIfHasDisabledDependencyField = null; }
         }
         catch (Exception e) {
             throw new RuntimeException("Failed to create config", e);
         }
         try {
             readConfigFieldsInDeclarationOrder(configFieldsNamesMap);
-            if (inactiveFieldsDisplayTypeField != null)
-                addFieldToStructure(inactiveFieldsDisplayTypeField.getCategory(), inactiveFieldsDisplayTypeField.getSubcategory(), inactiveFieldsDisplayTypeField.getName());
+            if (hidePropertyIfHasDisabledDependencyField != null) {
+                addFieldToStructure(
+                        hidePropertyIfHasDisabledDependencyField.getCategory(),
+                        hidePropertyIfHasDisabledDependencyField.getSubcategory(),
+                        hidePropertyIfHasDisabledDependencyField.getName()
+                );
+            }
         }
         catch (Exception e) {
             configStructure.clear();
@@ -84,18 +100,20 @@ public class AbstractConfig {
             MoreMWE.LOGGER.error("Failed to sort in declaration order", e);
         }
         setConfigPropertiesOrder();
+
+        removePropertyFromConfigFile(GENERAL_CATEGORY, "Behaviour when Dependency is Disabled");
         if (config.hasChanged()) config.save();
 
-        if (inactiveFieldsDisplayTypeField != null) {
-            addListener(inactiveFieldsDisplayTypeField, (Object previousValue) -> {
+        if (hidePropertyIfHasDisabledDependencyField != null) {
+            addListener(hidePropertyIfHasDisabledDependencyField, (Object previousValue) -> {
                 final GuiScreen screen = Minecraft.getMinecraft().currentScreen;
                 if (screen instanceof MyConfigGuiScreen)
-                    ((MyConfigGuiScreen) screen).onDependencyDisplayTypeChange(inactiveFieldsDisplayType);
+                    ((MyConfigGuiScreen) screen).onDependencyDisplayTypeChange(hidePropertyIfHasDisabledDependency);
             });
 
-            hidePropertyIf(inactiveFieldsDisplayTypeField, () -> {
+            hidePropertyIf(hidePropertyIfHasDisabledDependencyField, () -> {
                 for (final ConfigFieldContainer field : configFields) {
-                    if (field != inactiveFieldsDisplayTypeField && !field.isHidden())
+                    if (field != hidePropertyIfHasDisabledDependencyField && !field.isHidden())
                         return false;
                 }
                 return true;
@@ -133,7 +151,7 @@ public class AbstractConfig {
                     configCategories,
                     configFields,
                     configStructure,
-                    addedInternalProperties ? inactiveFieldsDisplayType : 0
+                    addedInternalProperties ? hidePropertyIfHasDisabledDependency : DEFAULT_HIDE_PROPERTY_IF_HAS_DISABLED_DEPENDENCY
             );
         }
         catch (Exception e) {
@@ -237,6 +255,7 @@ public class AbstractConfig {
     }
 
     protected void removePropertyFromConfigFile(String category, String name) {
+        category = StringUtil.toLowerCase(category);
         if (config.hasCategory(category)) {
             config.getCategory(category).remove(name);
         }
