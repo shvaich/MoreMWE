@@ -28,9 +28,7 @@ public class StringUtil {
         if (firstChar < 'a' || firstChar > 'z')
             return str;
 
-        final char[] chars = str.toCharArray();
-        chars[0] = (char) (firstChar - ('a' - 'A'));
-        return new String(chars);
+        return ((char) (firstChar - ('a' - 'A'))) + str.substring(1);
     }
 
     public static String repeat(char ch, int n) {
