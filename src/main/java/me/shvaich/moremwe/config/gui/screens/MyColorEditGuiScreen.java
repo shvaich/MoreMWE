@@ -4,14 +4,17 @@ import me.shvaich.moremwe.config.gui.elements.ConfigColorButton;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.ColorUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider {
@@ -26,6 +29,7 @@ public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider
     private final int originalColor;
 
     private final List<GuiSlider> colorSliders = new ArrayList<>();
+    private final List<McColorButton> mcColorButtons = new ArrayList<>(16);
     private int selectedSliderIndex = -1;
 
     private int allButtonsHeight;
@@ -34,6 +38,11 @@ public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider
         this.parentScreen = parentScreen;
         this.colorButton = colorButton;
         this.originalColor = colorButton.getColor();
+        for (final EnumChatFormatting c : EnumChatFormatting.values()) {
+            if (c.isColor()) {
+                mcColorButtons.add(new McColorButton(parentScreen.mc, c));
+            }
+        }
     }
 
     @Override
@@ -58,39 +67,82 @@ public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider
         this.buttonList.add(new GuiButton(6, slidersX, drawY, BUTTON_WIDTH, BUTTON_HEIGHT, "Reset to default"));
         drawY += BUTTON_HEIGHT + TOP_BOTTOM_MARGIN;
         this.buttonList.add(new GuiButton(7, centerX - BUTTON_WIDTH / 2, drawY, BUTTON_WIDTH, BUTTON_HEIGHT, "Done"));
-        super.initGui();
         this.selectedSliderIndex = -1;
+        super.initGui();
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        final int firstSliderY = colorSliders.get(0).yPosition;
+        final int contentTop = colorSliders.get(0).yPosition;
         final int lineLength = allButtonsHeight - BUTTON_HEIGHT - TOP_BOTTOM_MARGIN;
         final int colorBoxLeft = this.width / 2 + 10;
-        final int colorBoxTop = firstSliderY;
         final int colorBoxRight = colorBoxLeft + lineLength;
-        final int colorBoxBottom = colorBoxTop + lineLength;
-        if (GuiUtil.beginClearRect(mc, colorBoxLeft, colorBoxTop, colorBoxRight, colorBoxBottom)) {
+        final int colorBoxBottom = contentTop + lineLength;
+        if (GuiUtil.beginClearRect(mc, colorBoxLeft, contentTop, colorBoxRight, colorBoxBottom)) {
             drawDefaultBackground();
             GuiUtil.endClearRect();
         }
-        drawCenteredString(fontRendererObj, colorButton.getCategory() + " - " + colorButton.getName(), this.width / 2, firstSliderY - TOP_BOTTOM_MARGIN - fontRendererObj.FONT_HEIGHT / 2, ModResources.WHITE);
+        drawCenteredString(fontRendererObj, colorButton.getCategory() + " - " + colorButton.getName(), this.width / 2, contentTop - TOP_BOTTOM_MARGIN - fontRendererObj.FONT_HEIGHT / 2, ModResources.WHITE);
         super.drawScreen(mouseX, mouseY, partialTicks);
         if (this.selectedSliderIndex != -1) {
             final GuiSlider slider = colorSliders.get(this.selectedSliderIndex);
             GuiUtil.drawRectBorder(slider.xPosition-1, slider.yPosition-1, slider.xPosition+slider.width+1, slider.yPosition+slider.height+1, 1, 0xFF3C6EFF);
         }
-        GuiUtil.drawRectWithBorder(colorBoxLeft, colorBoxTop, colorBoxRight, colorBoxBottom, colorButton.getColor(), ModResources.BLACK);
+
+        final int LEN = mcColorButtons.size();
+        final int COLS = 2;
+        final int ROWS = LEN / COLS;
+        final int SIZE = 16;
+        final int GAP = 4;
+        final int FULL_SIZE = SIZE + GAP;
+
+        final int pwidth = GAP + (COLS * FULL_SIZE);
+        final int pheight = GAP + (ROWS * FULL_SIZE);
+        final int ptop = contentTop;
+        final int pleft = colorSliders.get(0).xPosition - pwidth - 4;
+
+        GuiUtil.drawRectWithBorder(pleft, ptop, pleft + pwidth, ptop + pheight, ModResources.ELEMENT_BACKGROUND, ModResources.ELEMENT_BORDER);
+
+        int startX = pleft + GAP;
+        int startY = ptop + GAP;
+        int hoveredIndex = -1;
+        for (int i = 0; i < LEN; i++) {
+            final McColorButton button = mcColorButtons.get(i);
+            int row = i % ROWS;
+            int col = i / ROWS;
+            button.xPosition = startX + col * FULL_SIZE;
+            button.yPosition = startY + row * FULL_SIZE;
+            button.width = SIZE;
+            button.height = SIZE;
+            button.drawButton(mc, mouseX, mouseY);
+            if (button.isMouseOver()) {
+                hoveredIndex = i;
+            }
+        }
+
+        GuiUtil.drawRectWithBorder(colorBoxLeft, contentTop, colorBoxRight, colorBoxBottom, colorButton.getColor(), ModResources.BLACK);
+
+        if (hoveredIndex != -1) {
+            final String name = mcColorButtons.get(hoveredIndex).displayString;
+            drawHoveringText(Collections.singletonList(name), mouseX, mouseY);
+        }
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         this.selectedSliderIndex = -1;
+        for (final McColorButton mcColorButton : mcColorButtons) {
+            if (mcColorButton.mousePressed(mc, mouseX, mouseY)) {
+                mcColorButton.playPressSound(mc.getSoundHandler());
+                updateToColor(mcColorButton.color);
+                return;
+            }
+        }
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
+    protected void actionPerformed(GuiButton button) {
         if (button.id >= 1 && button.id <= 4)
             this.selectedSliderIndex = button.id-1;
         else {
@@ -148,6 +200,22 @@ public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider
         for (final GuiSlider slider : colorSliders) {
             slider.setValue(ColorUtil.getColorChannelValue(newColor, slider.id-1));
             slider.updateSlider();
+        }
+    }
+
+    private static final class McColorButton extends GuiButton {
+        public final int color;
+        public McColorButton(Minecraft mc, EnumChatFormatting enumColor) {
+            super(-1, 0, 0, 0, 0, enumColor + enumColor.name().replace('_', ' '));
+            this.color = ColorUtil.toOpaque(mc.fontRendererObj.getColorCode(enumColor.toString().charAt(1)));
+        }
+
+        @Override
+        public void drawButton(Minecraft mc, int mouseX, int mouseY) {
+            final int right = xPosition + width;
+            final int bottom = yPosition + height;
+            this.hovered = GuiUtil.isMouseInRect(mouseX, mouseY, xPosition, yPosition, right, bottom);
+            GuiUtil.drawRectWithBorder(xPosition, yPosition, right, bottom, color, hovered ? ModResources.WHITE : ModResources.BLACK);
         }
     }
 }
