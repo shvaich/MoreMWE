@@ -39,7 +39,7 @@ public class ConfigCategoryHeader extends ConfigGuiElement {
     }
 
     @Override
-    public void draw(int x, int y, int mouseX, int mouseY) {
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
         final Minecraft mc = Minecraft.getMinecraft();
         final int centerX = x + elementRectWidth / 2;
         GlStateManager.pushMatrix();
@@ -83,6 +83,6 @@ public class ConfigCategoryHeader extends ConfigGuiElement {
 
     @Override
     public int getBottomMargin() {
-        return 8;
+        return 10;
     }
 }

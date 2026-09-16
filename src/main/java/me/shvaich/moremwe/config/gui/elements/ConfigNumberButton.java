@@ -11,26 +11,23 @@ import net.minecraft.util.MathHelper;
 public class ConfigNumberButton extends ConfigGuiButton {
 
     private static final int ICON_WIDTH = 9, ICON_HEIGHT = 5;
-    private static final int DISABLED_BORDER_COLOR = 0xFF656565;
 
     private final int minValue, maxValue;
     private int value;
     private int buttonX, upButtonY, downButtonY;
-    private int normalBorderColor;
 
     public ConfigNumberButton(MyConfigGuiScreen screen, ConfigFieldContainer fieldData) throws IllegalAccessException {
         super(screen, fieldData);
         this.minValue = fieldData.getAnnotation().min();
         this.maxValue = fieldData.getAnnotation().max();
         this.value = (int) fieldData.getValue();
-        updateDisplayFromDependency();
         this.rightSideContentWidth = BUTTON_RIGHT_MARGIN + GuiUtil.getNumberWidth(value) + 4 + ICON_WIDTH + 4;
         this.rightSideContentHeight = (ICON_HEIGHT + 4) * 2;
     }
 
     @Override
-    public void draw(int x, int y, int mouseX, int mouseY) {
-        super.draw(x, y, mouseX, mouseY);
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
+        super.draw(x, y, mouseX, mouseY, canMouseBeOverElement);
         int drawX = contentLeft;
         drawX = 4 + mc.fontRendererObj.drawStringWithShadow(String.valueOf(value), drawX, y + getCenterYOffset(mc.fontRendererObj.FONT_HEIGHT), ModResources.WHITE);
         this.buttonX = drawX + 1;
@@ -39,30 +36,29 @@ public class ConfigNumberButton extends ConfigGuiButton {
         final int rectRight = drawX + ICON_WIDTH + 4;
         final int rectHeight = ICON_HEIGHT + 4;
         final int iconX = buttonX + 1;
-        GuiUtil.drawRectBorder(drawX, buttonTop, rectRight, buttonTop + rectHeight, 1, value != maxValue ? normalBorderColor : DISABLED_BORDER_COLOR);
+        final int NORMAL_BORDER_COLOR = ModResources.WHITE;
+        final int DISABLED_BORDER_COLOR = 0xFF656565;
+        GuiUtil.drawRectBorder(drawX, buttonTop, rectRight, buttonTop + rectHeight, 1, value != maxValue ? NORMAL_BORDER_COLOR : DISABLED_BORDER_COLOR);
         GlStateManager.color(1, 1, 1, 1);
         mc.getTextureManager().bindTexture(ModResources.ARROW_UP);
         GuiUtil.drawFullTextureWithCustomSize(iconX, upButtonY + 1, ICON_WIDTH, ICON_HEIGHT);
         buttonTop += rectHeight;
         this.downButtonY = buttonTop + 1;
-        GuiUtil.drawRectBorder(drawX, buttonTop, rectRight, buttonTop + rectHeight, 1, value != minValue ? normalBorderColor : DISABLED_BORDER_COLOR);
+        GuiUtil.drawRectBorder(drawX, buttonTop, rectRight, buttonTop + rectHeight, 1, value != minValue ? NORMAL_BORDER_COLOR : DISABLED_BORDER_COLOR);
         GlStateManager.color(1, 1, 1, 1);
         mc.getTextureManager().bindTexture(ModResources.ARROW_DOWN);
         GuiUtil.drawFullTextureWithCustomSize(iconX, downButtonY + 1, ICON_WIDTH, ICON_HEIGHT);
     }
 
-    @Override
-    public void updateDisplayFromDependency() {
-        this.normalBorderColor = showAsInactive() ? 0xFF8A0000 : ModResources.WHITE;
-    }
-
-    @Override
-    protected boolean showDependencyIndicatorFromMouse(int mouseX, int mouseY) {
-        return false;
+//    @Override
+//    public List<String> getHoveringTextLines(int mouseX, int mouseY) {
 //        final int left = buttonX - 1;
 //        final int top = upButtonY - 1;
-//        return GuiUtil.isMouseInRect(mouseX, mouseY, left, top, left + ICON_WIDTH + 4, top + getRightSideContentHeight());
-    }
+//        if (GuiUtil.isMouseInRect(mouseX, mouseY, left, top, left + ICON_WIDTH + 4, top + rightSideContentHeight)) {
+//            return Collections.singletonList("Example!");
+//        }
+//        return super.getHoveringTextLines(mouseX, mouseY);
+//    }
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IllegalAccessException {
@@ -73,7 +69,7 @@ public class ConfigNumberButton extends ConfigGuiButton {
             if (clickedOnUpButton || GuiUtil.isMouseInRect(mouseX, mouseY, buttonX, downButtonY, right, downButtonY + clickAreaHeight)) {
                 this.value = MathHelper.clamp_int(value + (clickedOnUpButton ? 1 : -1), minValue, maxValue);
                 fieldData.setValue(value);
-                GuiUtil.playButtonPressSound();
+                GuiUtil.playButtonPressSound(screen.mc);
                 return true;
             }
         }

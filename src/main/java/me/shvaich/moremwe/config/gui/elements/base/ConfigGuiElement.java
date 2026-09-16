@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class ConfigGuiElement {
     protected int elementRectWidth;
 
-    public abstract void draw(int x, int y, int mouseX, int mouseY);
+    public abstract void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement);
 
     public void onResize(int elementRectWidth) { this.elementRectWidth = elementRectWidth; }
 
@@ -22,6 +22,8 @@ public abstract class ConfigGuiElement {
 
     public boolean matchSearch(String search) { return false; }
 
+    public boolean isHidden() { return false; }
+
     public List<String> getHoveringTextLines(int mouseX, int mouseY) {
         return null;
     }
@@ -30,7 +32,7 @@ public abstract class ConfigGuiElement {
 
     public int getBottomMargin() { return 2; }
 
-    protected final List<String> getCommentLines(Minecraft mc, String comment, int wrapWidth) {
+    protected static List<String> getCommentLines(Minecraft mc, String comment, int wrapWidth) {
         final List<String> commentLines = new ArrayList<>();
         if (wrapWidth > 0) {
             for (final String line : comment.split("\n")) {

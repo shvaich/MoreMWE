@@ -3,15 +3,11 @@ package me.shvaich.moremwe.config.gui.elements.base;
 import me.shvaich.moremwe.config.data.ConfigFieldContainer;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.ModResources;
-import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class ConfigGuiButton extends ConfigGuiElement {
@@ -51,11 +47,6 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
         this.hasComment = !getComment().isEmpty();
     }
 
-    /** Called when this needs to update its display from its dependency */
-    public abstract void updateDisplayFromDependency();
-
-    protected abstract boolean showDependencyIndicatorFromMouse(int mouseX, int mouseY);
-
     public String getName() { return fieldData.getName(); }
 
     protected String getComment() { return fieldData.getAnnotation().comment(); }
@@ -72,7 +63,7 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
     }
 
     @Override
-    public void draw(int x, int y, int mouseX, int mouseY) {
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
         final int right = x + elementRectWidth;
         this.boxHeight = getHeight();
         this.contentLeft = right - rightSideContentWidth;
@@ -99,21 +90,6 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
     }
 
     @Override
-    public List<String> getHoveringTextLines(int mouseX, int mouseY) {
-        if (hasDependency() && screen.showElementsAsInactiveIfDependencyDisabled() && showDependencyIndicatorFromMouse(mouseX, mouseY)) {
-            final ConfigFieldContainer disabledDependency = getDisabledDependency();
-            if (disabledDependency != null) {
-                String dependsOnIdentifier = EnumChatFormatting.WHITE + disabledDependency.getName() + EnumChatFormatting.GRAY;
-                if (screen.isInSearchMode() || !getCategory().equals(disabledDependency.getCategory()))
-                    dependsOnIdentifier = EnumChatFormatting.GOLD + disabledDependency.getCategory() + EnumChatFormatting.GRAY + "'s " + dependsOnIdentifier;
-
-                return Collections.singletonList(EnumChatFormatting.GRAY + "Ignored while " + dependsOnIdentifier + " is " + EnumChatFormatting.RED + "disabled");
-            }
-        }
-        return null;
-    }
-
-    @Override
     public String getCategory() { return fieldData.getCategory(); }
 
     @Override
@@ -126,78 +102,24 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
             StringUtil.toLowerCase(getName()).contains(search);
     }
 
-    protected final int getCenterYOffset(int height) { return (boxHeight - height) / 2; }
-
-    protected int getLeftPadding() { return PADDING; }
-
-    protected final GuiButton getMcGuiButton(String text) {
-        return getMcGuiButton(getMainButtonWidth(), 20, text);
-    }
-
-    protected final GuiButton getMcGuiButton(int width, int height, String text) {
-        return new GuiButton(-1, 0, 0, width, height, text) {
-            @Override
-            protected int getHoverState(boolean mouseOver) {
-                final int superHoverState = super.getHoverState(mouseOver);
-                if (superHoverState == 2 && !screen.canMouseVisuallyBeOverElement()) {
-                    this.packedFGColour = 0xE0E0E0;
-                    return 1;
-                }
-                this.packedFGColour = 0;
-                return superHoverState;
-            }
-        };
-    }
-
-    protected final int getMainButtonWidth() {
-        return mc.fontRendererObj.getStringWidth("Disabled") + 9;
-    }
-
-    protected final String getMcButtonText(boolean bool) {
-        final String booleanMsg = ChatUtil.getBooleanMsg(bool);
-        if (hasDependency() && screen.showElementsAsInactiveIfDependencyDisabled()) {
-            if (hasDisabledDependency()) {
-                return EnumChatFormatting.GRAY + booleanMsg.substring(2);
-            }
-        }
-        return booleanMsg;
-    }
-
-    protected final String getMcButtonText(String str) {
-        if (showAsInactive()) {
-            return EnumChatFormatting.GRAY + str;
-        }
-        return str;
-    }
-
-    public boolean hasDependency() { return fieldData.getDependsOn() != null; }
-
-    public boolean doesDependOn(ConfigFieldContainer dependency) {
-        ConfigFieldContainer dependsOn = fieldData.getDependsOn();
-        while (dependsOn != null) {
-            if (dependsOn == dependency) return true;
-            dependsOn = dependsOn.getDependsOn();
-        }
-        return false;
-    }
-
-    public boolean hasDisabledDependency() {
-        return getDisabledDependency() != null;
-    }
-
-    private ConfigFieldContainer getDisabledDependency() {
+    @Override
+    public boolean isHidden() {
         ConfigFieldContainer dependency = fieldData.getDependsOn();
         try {
             while (dependency != null) {
-                if (!dependency.getBoolean()) return dependency;
+                if (!dependency.getBoolean()) return true;
                 dependency = dependency.getDependsOn();
             }
         }
         catch (Exception e) { throw new RuntimeException("Failed to get dependency boolean", e); }
-        return null;
+        return false;
     }
 
-    protected boolean showAsInactive() {
-        return screen.showElementsAsInactiveIfDependencyDisabled() && hasDisabledDependency();
+    protected final int getCenterYOffset(int height) { return (boxHeight - height) / 2; }
+
+    protected int getLeftPadding() { return PADDING; }
+
+    protected final int getMainButtonWidth() {
+        return mc.fontRendererObj.getStringWidth("Disabled") + 9;
     }
 }

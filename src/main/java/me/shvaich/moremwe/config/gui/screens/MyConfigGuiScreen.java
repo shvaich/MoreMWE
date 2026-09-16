@@ -5,22 +5,20 @@ import me.shvaich.moremwe.config.data.AbstractConfig;
 import me.shvaich.moremwe.config.data.ConfigCategoryContainer;
 import me.shvaich.moremwe.config.data.ConfigFieldContainer;
 import me.shvaich.moremwe.config.gui.elements.*;
-import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiButton;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
+import me.shvaich.moremwe.config.gui.elements.base.IOverlayHost;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.DelayedTask;
 import me.shvaich.moremwe.utils.GuiUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Predicate;
 
 public class MyConfigGuiScreen extends GuiScreen {
     private static final int MAX_WIDTH = 640;
@@ -40,25 +38,24 @@ public class MyConfigGuiScreen extends GuiScreen {
     private final Searchbar searchbar;
     private DelayedTask searchbarTask;
 
-    private int inactiveFieldsDisplayType;
+    private boolean hidePropertyIfHasDisabledDependency;
     private String selectedCategory;
 
-    private int BORDER_LEFT, BORDER_TOP, BORDER_RIGHT, BORDER_BOTTOM;
-    private int INNER_LEFT, INNER_TOP, INNER_RIGHT, INNER_BOTTOM;
+    private int BORDER_LEFT, BORDER_TOP, BORDER_RIGHT;
+    private int INNER_LEFT, INNER_RIGHT, INNER_BOTTOM;
     private int MENU_LEFT, MENU_TOP, MENU_RIGHT, MENU_BOTTOM;
     private int CONFIG_LEFT, CONFIG_TOP, CONFIG_RIGHT, CONFIG_BOTTOM;
 
-    public double SCREEN_WIDTH_SCALE, SCREEN_HEIGHT_SCALE;
-
     private Scrollbar configScrollbar;
     private Scrollbar menuScrollbar;
+    private IOverlayHost openOverlay;
     private ConfigSliderButton activeSlider;
-    private ConfigSelectorButton currentlyExpandedSelector;
-    private boolean canMouseVisuallyBeOverElement;
 
-    public MyConfigGuiScreen(AbstractConfig configHandler, List<ConfigCategoryContainer> configCategories, List<ConfigFieldContainer> configFields, LinkedHashMap<String, LinkedHashMap<String, List<String>>> configStructure, int inactiveFieldsDisplayTypeIn) throws IllegalAccessException {
+    public double SCREEN_WIDTH_SCALE, SCREEN_HEIGHT_SCALE;
+
+    public MyConfigGuiScreen(AbstractConfig configHandler, List<ConfigCategoryContainer> configCategories, List<ConfigFieldContainer> configFields, LinkedHashMap<String, LinkedHashMap<String, List<String>>> configStructure, boolean hidePropertyIfHasDisabledDependencyIn) throws IllegalAccessException {
         this.configHandler = configHandler;
-        this.inactiveFieldsDisplayType = inactiveFieldsDisplayTypeIn;
+        this.hidePropertyIfHasDisabledDependency = hidePropertyIfHasDisabledDependencyIn;
         final Map<String, ConfigCategoryContainer> categoryContainersMap = new HashMap<>();
         for (final ConfigCategoryContainer configCategoryContainer : configCategories)
             categoryContainersMap.put(configCategoryContainer.getCategoryName(), configCategoryContainer);
@@ -107,7 +104,7 @@ public class MyConfigGuiScreen extends GuiScreen {
 
         if (configElements.isEmpty()) {
             this.searchbar = null;
-            renderedConfigElements.add(new ConfigSubcategoryHeader(null, "There are no settings!"));
+            renderedConfigElements.add(new ConfigSubcategoryHeader("", "There are no settings!"));
         }
         else {
             this.searchbar = new Searchbar();
@@ -123,15 +120,14 @@ public class MyConfigGuiScreen extends GuiScreen {
         BORDER_LEFT = (width - DRAW_WIDTH) / 2;
         BORDER_TOP = (height - DRAW_HEIGHT) / 2;
         BORDER_RIGHT = BORDER_LEFT + DRAW_WIDTH;
-        BORDER_BOTTOM = BORDER_TOP + DRAW_HEIGHT;
+        final int BORDER_BOTTOM = BORDER_TOP + DRAW_HEIGHT;
 
         INNER_LEFT = BORDER_LEFT + BORDER_SIZE;
-        INNER_TOP = BORDER_TOP + BORDER_SIZE;
         INNER_RIGHT = BORDER_RIGHT - BORDER_SIZE;
         INNER_BOTTOM = BORDER_BOTTOM - BORDER_SIZE;
 
         MENU_LEFT = INNER_LEFT;
-        MENU_TOP = INNER_TOP + HEADER_HEIGHT + BORDER_SIZE;
+        MENU_TOP = BORDER_TOP + HEADER_HEIGHT;
         MENU_RIGHT = MENU_LEFT + Math.min(DRAW_WIDTH / 5, 120);
         //MENU_BOTTOM = INNER_BOTTOM;
         int categoryMenuEntriesHeight = 0;
@@ -169,18 +165,19 @@ public class MyConfigGuiScreen extends GuiScreen {
         for (final ConfigGuiElement element : renderedConfigElements)
             renderedElementsHeight += getEntireElementHeight(element);
 
+        // sets CONFIG_BOTTOM
         updateConfigScrollbar(renderedElementsHeight, this.configScrollbar);
 
         if (searchbar != null)
-            searchbar.onResize(mc, INNER_TOP + (HEADER_HEIGHT - searchbar.getHeight()) / 2, CONFIG_RIGHT - CONFIG_HORIZONTAL_PADDING);
+            searchbar.onResize(mc, BORDER_TOP + (HEADER_HEIGHT - searchbar.getHeight()) / 2, CONFIG_RIGHT - CONFIG_HORIZONTAL_PADDING);
 
 
         final ScaledResolution res = new ScaledResolution(mc);
         this.SCREEN_WIDTH_SCALE = mc.displayWidth / res.getScaledWidth_double();
         this.SCREEN_HEIGHT_SCALE = mc.displayHeight / res.getScaledHeight_double();
 
+        closeOpenOverlay();
         clearActiveSlider();
-        closeExpandedSelector();
         super.initGui();
     }
 
@@ -193,16 +190,24 @@ public class MyConfigGuiScreen extends GuiScreen {
         if (hasMenuScrollbar) this.menuScrollbar.smoothScroll();
         if (hasConfigScrollbar) this.configScrollbar.smoothScroll();
 
-        drawRect(0, 0, width, height, ModResources.SCREEN_BACKGROUND);
-        GuiUtil.drawRectWithBorder(BORDER_LEFT, BORDER_TOP, BORDER_RIGHT, BORDER_BOTTOM, BORDER_SIZE, ModResources.CONFIG_BACKGROUND, ModResources.CONFIG_BORDER);
-        GuiUtil.drawHorizontalLine(INNER_LEFT, INNER_RIGHT, CONFIG_TOP-BORDER_SIZE, BORDER_SIZE, ModResources.CONFIG_BORDER);
-        GuiUtil.drawVerticalLine(MENU_RIGHT, INNER_TOP, INNER_BOTTOM, BORDER_SIZE, ModResources.CONFIG_BORDER);
-        GuiUtil.drawVerticalLine(CONFIG_RIGHT, INNER_TOP, INNER_BOTTOM, BORDER_SIZE, ModResources.CONFIG_BORDER);
-        final int menuDrawX = MENU_LEFT + MENU_HORIZONTAL_PADDING;
-        fontRendererObj.drawString(MoreMWE.NAME + " - " + MoreMWE.VERSION, menuDrawX, INNER_TOP + ((HEADER_HEIGHT - fontRendererObj.FONT_HEIGHT) / 2) + 1, ModResources.WHITE);
+        final int headerBottom = BORDER_TOP + HEADER_HEIGHT;
+        drawDefaultBackground();
 
-        this.canMouseVisuallyBeOverElement = (GuiUtil.isMouseInRect(mouseX, mouseY, CONFIG_LEFT, CONFIG_TOP, CONFIG_RIGHT, CONFIG_BOTTOM) &&
-                (currentlyExpandedSelector == null || !currentlyExpandedSelector.isMouseOverDropdownRect(mouseX, mouseY)));
+        drawRect(INNER_LEFT, BORDER_TOP, INNER_RIGHT, headerBottom, ModResources.CONFIG_HEADER_BACKGROUND);
+        GuiUtil.drawVerticalLine(BORDER_LEFT, BORDER_TOP, headerBottom, BORDER_SIZE, ModResources.CONFIG_HEADER_BORDER);
+        GuiUtil.drawVerticalLine(MENU_RIGHT, BORDER_TOP, headerBottom, BORDER_SIZE, ModResources.CONFIG_HEADER_BORDER);
+        GuiUtil.drawVerticalLine(INNER_RIGHT, BORDER_TOP, headerBottom, BORDER_SIZE, ModResources.CONFIG_HEADER_BORDER);
+
+        drawRect(INNER_LEFT, headerBottom, INNER_RIGHT, INNER_BOTTOM, ModResources.CONFIG_BACKGROUND);
+        GuiUtil.drawVerticalLine(BORDER_LEFT, headerBottom, INNER_BOTTOM, BORDER_SIZE, ModResources.CONFIG_BORDER);
+        GuiUtil.drawVerticalLine(MENU_RIGHT, headerBottom, INNER_BOTTOM, BORDER_SIZE, ModResources.CONFIG_BORDER);
+        GuiUtil.drawVerticalLine(INNER_RIGHT, headerBottom, INNER_BOTTOM, BORDER_SIZE, ModResources.CONFIG_BORDER);
+        GuiUtil.drawHorizontalLine(BORDER_LEFT, BORDER_RIGHT, INNER_BOTTOM, BORDER_SIZE, ModResources.CONFIG_BORDER);
+
+        final int menuDrawX = MENU_LEFT + MENU_HORIZONTAL_PADDING;
+        fontRendererObj.drawString(MoreMWE.NAME + " - " + MoreMWE.VERSION, menuDrawX, BORDER_TOP + ((HEADER_HEIGHT - fontRendererObj.FONT_HEIGHT) / 2) + 1, ModResources.WHITE);
+
+        final boolean isMouseOverOverlay = openOverlay != null && openOverlay.isMouseOverOverlay(mouseX, mouseY);
 
         if (searchbar != null) searchbar.draw(mouseX, mouseY);
 
@@ -214,12 +219,13 @@ public class MyConfigGuiScreen extends GuiScreen {
                 (int) ((MENU_RIGHT - MENU_LEFT) * SCREEN_WIDTH_SCALE),
                 (int) ((MENU_BOTTOM - MENU_TOP) * SCREEN_HEIGHT_SCALE));
 
+        final boolean canMouseBeOverCategoryEntry = !isMouseOverOverlay && GuiUtil.isMouseInRect(mouseX, mouseY, MENU_LEFT, MENU_TOP, MENU_RIGHT, MENU_BOTTOM);
         int menuDrawY = MENU_TOP + MENU_VERTICAL_PADDING - (hasMenuScrollbar ? menuScrollbar.getScroll() : 0);
 //        if (!categoryMenuEntries.isEmpty())
 //            menuDrawY -= categoryMenuEntries.get(0).getTopMargin();
         for (final ConfigCategoryMenuEntry categoryMenuEntry : categoryMenuEntries) {
             if (menuDrawY <= MENU_BOTTOM && (menuDrawY + categoryMenuEntry.getHeight()) >= MENU_TOP)
-                categoryMenuEntry.draw(menuDrawX, menuDrawY, mouseX, mouseY);
+                categoryMenuEntry.draw(menuDrawX, menuDrawY, mouseX, mouseY, canMouseBeOverCategoryEntry);
             menuDrawY += categoryMenuEntry.getHeight() + categoryMenuEntry.getBottomMargin();
         }
 
@@ -229,17 +235,22 @@ public class MyConfigGuiScreen extends GuiScreen {
                 (int) ((CONFIG_RIGHT - CONFIG_LEFT) * SCREEN_WIDTH_SCALE),
                 (int) ((CONFIG_BOTTOM - CONFIG_TOP) * SCREEN_HEIGHT_SCALE));
 
+        final boolean canMouseVisuallyBeOverElement = !isMouseOverOverlay && GuiUtil.isMouseInRect(mouseX, mouseY, CONFIG_LEFT, CONFIG_TOP, CONFIG_RIGHT, CONFIG_BOTTOM);
         List<String> hoveringTextLines = null;
         final int drawX = CONFIG_LEFT + CONFIG_HORIZONTAL_PADDING;
         int drawY = CONFIG_TOP + CONFIG_VERTICAL_PADDING - (hasConfigScrollbar ? configScrollbar.getScroll() : 0);
-        if (!renderedConfigElements.isEmpty())
-            drawY -= renderedConfigElements.get(0).getTopMargin();
 
+        int ignoreTopMarginCount = 1;
+        if (renderedConfigElements.size() > 1 && renderedConfigElements.get(0) instanceof ConfigCategoryHeader) {
+            ignoreTopMarginCount++;
+        }
         for (final ConfigGuiElement element : renderedConfigElements) {
-            final int tY = drawY + element.getTopMargin();
+            int tY = drawY;
+            if (ignoreTopMarginCount > 0) ignoreTopMarginCount--;
+            else tY += element.getTopMargin();
             final int elementHeight = element.getHeight();
             if (tY <= CONFIG_BOTTOM && (tY + elementHeight) >= CONFIG_TOP) {
-                element.draw(drawX, tY, mouseX, mouseY);
+                element.draw(drawX, tY, mouseX, mouseY, canMouseVisuallyBeOverElement);
                 if (canMouseVisuallyBeOverElement && (hoveringTextLines == null || hoveringTextLines.isEmpty()))
                     hoveringTextLines = element.getHoveringTextLines(mouseX, mouseY);
             }
@@ -253,29 +264,34 @@ public class MyConfigGuiScreen extends GuiScreen {
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
-        if (currentlyExpandedSelector != null) currentlyExpandedSelector.drawDropdown(mouseX, mouseY);
+        if (openOverlay != null) {
+            openOverlay.drawOverlay(mouseX, mouseY);
+            if (hoveringTextLines == null || hoveringTextLines.isEmpty()) {
+                hoveringTextLines = openOverlay.getOverlayHoveringTextLines();
+            }
+        }
 
         if (hoveringTextLines != null) drawHoveringText(hoveringTextLines, mouseX, mouseY);
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        ConfigSelectorButton selectorToClose = null;
+        IOverlayHost overlayToClose = null;
         boolean needToUnfocusSearchbar = searchbar != null && searchbar.isFocused();
         if (activeSlider != null) activeSlider.release(); // not best approach but still the best way to avoid bugs
         scan: {  // sorry
-            if (currentlyExpandedSelector != null) {
+            if (openOverlay != null) {
                 try {
-                    if (currentlyExpandedSelector.mouseClickedOnDropdown(mouseX, mouseY, mouseButton)) {
-                        if (!currentlyExpandedSelector.isExpanded()) this.currentlyExpandedSelector = null;
+                    if (openOverlay.mouseClickedOverlay(mouseX, mouseY, mouseButton)) {
+                        if (!openOverlay.isOverlayOpen()) this.openOverlay = null;
                         break scan;
                     }
                 }
                 catch (Exception e) { throw new RuntimeException("click on dropdown caused error!!!", e); }
-                if (currentlyExpandedSelector.isExpanded()) {
-                    selectorToClose = currentlyExpandedSelector;
+                if (openOverlay.isOverlayOpen()) {
+                    overlayToClose = openOverlay;
                 }
-                this.currentlyExpandedSelector = null;
+                this.openOverlay = null;
             }
 
             if (GuiUtil.isMouseInRect(mouseX, mouseY, MENU_LEFT, MENU_TOP, MENU_RIGHT, MENU_BOTTOM)) {
@@ -286,20 +302,22 @@ public class MyConfigGuiScreen extends GuiScreen {
             else if (GuiUtil.isMouseInRect(mouseX, mouseY, CONFIG_LEFT, CONFIG_TOP, CONFIG_RIGHT, CONFIG_BOTTOM)) {
                 try {
                     int drawY = CONFIG_TOP + CONFIG_VERTICAL_PADDING - (configScrollbar != null ? configScrollbar.getScroll() : 0);
-                    if (!renderedConfigElements.isEmpty())
-                        drawY -= renderedConfigElements.get(0).getTopMargin();
+                    int ignoreTopMarginCount = 1;
+                    if (renderedConfigElements.size() > 1 && renderedConfigElements.get(0) instanceof ConfigCategoryHeader) {
+                        ignoreTopMarginCount++;
+                    }
                     for (final ConfigGuiElement configGuiElement : renderedConfigElements) {
-                        final int tY = drawY + configGuiElement.getTopMargin();
+                        int tY = drawY;
+                        if (ignoreTopMarginCount > 0) ignoreTopMarginCount--;
+                        else tY += configGuiElement.getTopMargin();
                         final int elementHeight = configGuiElement.getHeight();
                         if ((tY <= CONFIG_BOTTOM && (tY + elementHeight) >= CONFIG_TOP)
-                                && configGuiElement.mouseClicked(mouseX, mouseY, mouseButton)) {
-                            if (configGuiElement instanceof ConfigSelectorButton) {
-                                final ConfigSelectorButton selector = (ConfigSelectorButton) configGuiElement;
-                                //this.currentlyExpandedSelector = selector.isExpanded() ? selector : null;
-                                if (selector.isExpanded())
-                                    this.currentlyExpandedSelector = selector;
-                                else if (selector == selectorToClose)
-                                    selectorToClose = null;
+                                && configGuiElement.mouseClicked(mouseX, mouseY, mouseButton)
+                        ) {
+                            if (configGuiElement instanceof IOverlayHost) {
+                                final IOverlayHost overlayHost = (IOverlayHost) configGuiElement;
+                                if (overlayHost.isOverlayOpen()) { this.openOverlay = overlayHost; }
+                                //else if (overlayHost == overlayToClose) { overlayToClose = null; }
                             }
                             else if (configGuiElement instanceof ConfigSliderButton) {
                                 this.activeSlider = (ConfigSliderButton) configGuiElement;
@@ -331,24 +349,34 @@ public class MyConfigGuiScreen extends GuiScreen {
             searchbar.unfocus();
         }
 
-        if (selectorToClose != null && selectorToClose != currentlyExpandedSelector) {
-            selectorToClose.close();
+        if (overlayToClose != null && overlayToClose != openOverlay) {
+            overlayToClose.closeOverlay();
         }
     }
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
+        if (openOverlay != null) {
+            final boolean handledByOverlay = openOverlay.mouseReleasedOverlay(mouseX, mouseY, state);
+            if (!openOverlay.isOverlayOpen()) this.openOverlay = null;
+            if (handledByOverlay) return;
+        }
         if (activeSlider != null && activeSlider.mouseReleased(mouseX, mouseY, state)) {
             return; // maybe not?
         }
         if (menuScrollbar != null) menuScrollbar.mouseReleased(mouseX, mouseY, state);
         if (configScrollbar != null) configScrollbar.mouseReleased(mouseX, mouseY, state);
-        if (currentlyExpandedSelector != null) currentlyExpandedSelector.mouseReleased(mouseX, mouseY, state);
+        //if (currentlyExpandedSelector != null) currentlyExpandedSelector.mouseReleased(mouseX, mouseY, state);
         super.mouseReleased(mouseX, mouseY, state);
     }
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
+        if (openOverlay != null) {
+            final boolean handledByOverlay = openOverlay.overlayKeyTyped(typedChar, keyCode);
+            if (!openOverlay.isOverlayOpen()) this.openOverlay = null;
+            if (handledByOverlay) return;
+        }
         // prioritize search's left and right key inputs
         if (searchbar != null) {
             final String previousSearch = searchbar.getText();
@@ -365,7 +393,7 @@ public class MyConfigGuiScreen extends GuiScreen {
         }
         if (activeSlider != null && (keyCode == Keyboard.KEY_LEFT || keyCode == Keyboard.KEY_RIGHT)) {
             activeSlider.updateSliderFromIncrement(keyCode == Keyboard.KEY_LEFT ? -1 : 1);
-            GuiUtil.playButtonPressSound();
+            GuiUtil.playButtonPressSound(mc);
             return;
         }
         super.keyTyped(typedChar, keyCode);
@@ -374,6 +402,11 @@ public class MyConfigGuiScreen extends GuiScreen {
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
+        if (openOverlay != null) {
+            final boolean handledByOverlay = openOverlay.handleOverlayMouseInput();
+            if (!openOverlay.isOverlayOpen()) this.openOverlay = null;
+            if (handledByOverlay) return;
+        }
         final int i = Mouse.getEventDWheel();
         if (i == 0) return;
         if (menuScrollbar != null) {
@@ -384,12 +417,10 @@ public class MyConfigGuiScreen extends GuiScreen {
                 return;
             }
         }
-        if (currentlyExpandedSelector != null && currentlyExpandedSelector.updateScrollbarFromMouseScroll(i))
-            return;
         if (configScrollbar != null) {
             configScrollbar.updateFromMouseScroll(i);
+            closeOpenOverlay();
             clearActiveSlider();
-            closeExpandedSelector();
         }
     }
 
@@ -399,6 +430,7 @@ public class MyConfigGuiScreen extends GuiScreen {
             searchbarTask.stop();
             this.searchbarTask = null;
         }
+        //closeOpenOverlay(); // might be needed later on
         clearActiveSlider(); // saves slider value (potentially unsaved if screen closed without mouseRelease)
         this.configHandler.save();
         super.onGuiClosed();
@@ -409,20 +441,11 @@ public class MyConfigGuiScreen extends GuiScreen {
         return false;
     }
 
-    public void onDependencyDisplayTypeChange(int newType) {
-        if (this.inactiveFieldsDisplayType == newType) return;
-        final boolean previouslyShowedElementsAsInactiveIfDependencyDisabled = showElementsAsInactiveIfDependencyDisabled();
-        this.inactiveFieldsDisplayType = newType;
-        if (previouslyShowedElementsAsInactiveIfDependencyDisabled || showElementsAsInactiveIfDependencyDisabled()) {
-            for (final ConfigGuiElement element : configElements) {
-                if (element instanceof ConfigGuiButton && ((ConfigGuiButton) element).hasDependency()) {
-                    ((ConfigGuiButton) element).updateDisplayFromDependency();
-                }
-            }
-        }
-
-        if (hideElementsIfDependencyDisabled()) {
-            resizeRenderedElements(everyElementThatShouldBeRendered, ConfigGuiButton::hasDisabledDependency);
+    public void onDependencyDisplayTypeChange(boolean newType) {
+        if (this.hidePropertyIfHasDisabledDependency == newType) return;
+        this.hidePropertyIfHasDisabledDependency = newType;
+        if (hidePropertyIfHasDisabledDependency) {
+            resizeRenderedElements(everyElementThatShouldBeRendered);
         }
         else if (renderedConfigElements.size() != everyElementThatShouldBeRendered.size()) {
             renderedConfigElements.clear();
@@ -436,51 +459,40 @@ public class MyConfigGuiScreen extends GuiScreen {
     }
 
     public void updateDependantsDisplay(ConfigFieldContainer dependency) {
-        if (showElementsAsInactiveIfDependencyDisabled()) {
-            for (final ConfigGuiElement element : configElements) {
-                if (element instanceof ConfigGuiButton) {
-                    if (((ConfigGuiButton) element).doesDependOn(dependency)) {
-                        ((ConfigGuiButton) element).updateDisplayFromDependency();
-                    }
-                }
+        if (!hidePropertyIfHasDisabledDependency) return;
+        try {
+            if (!dependency.getBoolean()) {
+                resizeRenderedElements(renderedConfigElements);
+                return;
             }
+            if (renderedConfigElements.size() == everyElementThatShouldBeRendered.size()) return;
+            resizeRenderedElements(everyElementThatShouldBeRendered);
         }
-        else if (hideElementsIfDependencyDisabled()) {
-            try {
-                if (!dependency.getBoolean()) {
-                    resizeRenderedElements(renderedConfigElements, button -> button.doesDependOn(dependency));
-                    return;
-                }
-                if (renderedConfigElements.size() == everyElementThatShouldBeRendered.size()) return;
-                resizeRenderedElements(everyElementThatShouldBeRendered, ConfigGuiButton::hasDisabledDependency);
-                //resizeRenderedElements(elementsInSelectedCategory, button ->
-                //    button.hasDependency() && !button.doesDependOn(dependency) && !button.getDependencyBoolean());
-            }
-            catch (Exception e) { throw new RuntimeException("Failed to get dependency boolean!!!", e); }
-        }
+        catch (Exception e) { throw new RuntimeException("Failed to get dependency boolean!!!", e); }
     }
 
     public void setSelectedCategory(String selectedCategory) {
         if (selectedCategory == null || selectedCategory.equals(this.selectedCategory)) return;
         this.selectedCategory = selectedCategory;
-        this.activeSlider = null;
+        closeOpenOverlay(); // doesn't hurt
+        clearActiveSlider(); // better safe than sorry
         int renderedElementsHeight = 0;
         this.everyElementThatShouldBeRendered.clear();
         for (final ConfigGuiElement configGuiElement : configElements) {
             if (configGuiElement.getCategory().equals(selectedCategory)) {
                 this.everyElementThatShouldBeRendered.add(configGuiElement);
-                renderedElementsHeight += configGuiElement.getTopMargin() + configGuiElement.getHeight() + configGuiElement.getBottomMargin();
+                renderedElementsHeight += getEntireElementHeight(configGuiElement);
             }
         }
 
-        if (!hideElementsIfDependencyDisabled()) {
+        if (hidePropertyIfHasDisabledDependency) {
+            this.configScrollbar = null;
+            resizeRenderedElements(everyElementThatShouldBeRendered);
+        }
+        else {
             this.renderedConfigElements.clear();
             this.renderedConfigElements.addAll(this.everyElementThatShouldBeRendered);
             updateConfigScrollbar(renderedElementsHeight, null);
-        }
-        else {
-            this.configScrollbar = null;
-            resizeRenderedElements(everyElementThatShouldBeRendered, ConfigGuiButton::hasDisabledDependency);
         }
     }
 
@@ -490,18 +502,18 @@ public class MyConfigGuiScreen extends GuiScreen {
         int renderedElementsHeight = 0;
         final int configElementsRectWidth = getConfigElementsRectWidth();
         this.selectedCategory = null;
+        closeOpenOverlay();
         clearActiveSlider();
-        closeExpandedSelector();
         everyElementThatShouldBeRendered.clear();
         for (final ConfigGuiElement element : configElements) {
             if (element.matchSearch(search)) {
-                final String subcategoryName = EnumChatFormatting.GOLD + element.getCategory() + EnumChatFormatting.RESET + " - " + StringUtil.defaultIfEmpty(element.getSubcategory(), "General");
-                if (!lastSubcategoryName.equals(subcategoryName)) {
-                    final ConfigSubcategoryHeader subcategoryHeader = new ConfigSubcategoryHeader(null, subcategoryName);
+                final String parentsKey = element.getCategory() + ',' + element.getSubcategory();
+                if (!lastSubcategoryName.equals(parentsKey)) {
+                    final ConfigGuiElement subcategoryHeader = new ConfigSubcategoryHeader.WithCategory(element.getCategory(), StringUtil.defaultIfEmpty(element.getSubcategory(), "General"));
                     subcategoryHeader.onResize(configElementsRectWidth);
                     renderedElementsHeight += getEntireElementHeight(subcategoryHeader);
                     everyElementThatShouldBeRendered.add(subcategoryHeader);
-                    lastSubcategoryName = subcategoryName;
+                    lastSubcategoryName = parentsKey;
                 }
                 renderedElementsHeight += getEntireElementHeight(element);
                 everyElementThatShouldBeRendered.add(element);
@@ -509,14 +521,14 @@ public class MyConfigGuiScreen extends GuiScreen {
         }
 
         if (everyElementThatShouldBeRendered.isEmpty()) {
-            final ConfigSubcategoryHeader header = new ConfigSubcategoryHeader(null, "Nothing was found!");
+            final ConfigGuiElement header = new ConfigSubcategoryHeader(null, "Nothing was found!");
             header.onResize(configElementsRectWidth);
             renderedElementsHeight = getEntireElementHeight(header);
             everyElementThatShouldBeRendered.add(header);
         }
-        else if (hideElementsIfDependencyDisabled()) {
+        else if (hidePropertyIfHasDisabledDependency) {
             this.configScrollbar = null;
-            resizeRenderedElements(everyElementThatShouldBeRendered, ConfigGuiButton::hasDisabledDependency);
+            resizeRenderedElements(everyElementThatShouldBeRendered);
             return;
         }
         renderedConfigElements.clear();
@@ -526,7 +538,10 @@ public class MyConfigGuiScreen extends GuiScreen {
 
     private void updateConfigScrollbar(int renderedElementsHeight, Scrollbar previousConfigScrollbar) {
         if (!renderedConfigElements.isEmpty()) {
-            final int emptyElementsMargin = renderedConfigElements.get(0).getTopMargin() + renderedConfigElements.get(renderedConfigElements.size()-1).getBottomMargin();
+            int emptyElementsMargin = renderedConfigElements.get(0).getTopMargin() + renderedConfigElements.get(renderedConfigElements.size()-1).getBottomMargin();
+            if (renderedConfigElements.size() > 1 && renderedConfigElements.get(0) instanceof ConfigCategoryHeader) {
+                emptyElementsMargin += renderedConfigElements.get(1).getTopMargin();
+            }
             renderedElementsHeight += CONFIG_VERTICAL_PADDING * 2 - emptyElementsMargin;
         }
         this.configScrollbar = Scrollbar.create(renderedElementsHeight, CONFIG_TOP, INNER_BOTTOM, previousConfigScrollbar);
@@ -538,15 +553,13 @@ public class MyConfigGuiScreen extends GuiScreen {
         return element.getTopMargin() + element.getHeight() + element.getBottomMargin();
     }
 
-    private void resizeRenderedElements(List<ConfigGuiElement> resizeFrom, Predicate<ConfigGuiButton> hideButton) {
+    private void resizeRenderedElements(List<ConfigGuiElement> resizeFrom) {
         int renderedElementsHeight = 0;
         ConfigGuiElement subcategoryHeader = null;
         final List<ConfigGuiElement> filtered = new ArrayList<>(resizeFrom.size());
         for (final ConfigGuiElement element : resizeFrom) {
-            if (element instanceof ConfigGuiButton) {
-                if (hideButton.test((ConfigGuiButton) element)) continue;
-            }
-            else if (element instanceof ConfigSubcategoryHeader) {
+            if (element.isHidden()) continue;
+            if (element instanceof ConfigSubcategoryHeader) {
                 subcategoryHeader = element;
                 continue;
             }
@@ -571,20 +584,14 @@ public class MyConfigGuiScreen extends GuiScreen {
         }
     }
 
-    private void closeExpandedSelector() {
-        if (currentlyExpandedSelector != null) {
-            currentlyExpandedSelector.close();
-            this.currentlyExpandedSelector = null;
+    private void closeOpenOverlay() {
+        if (openOverlay != null) {
+            openOverlay.closeOverlay();
+            this.openOverlay = null;
         }
     }
 
     public String getSelectedCategory() { return selectedCategory; }
 
     public boolean isInSearchMode() { return searchbar != null && selectedCategory == null; }
-
-    public boolean canMouseVisuallyBeOverElement() { return canMouseVisuallyBeOverElement; }
-
-    private boolean hideElementsIfDependencyDisabled() { return this.inactiveFieldsDisplayType == 1; }
-
-    public boolean showElementsAsInactiveIfDependencyDisabled() { return this.inactiveFieldsDisplayType == 2; }
 }

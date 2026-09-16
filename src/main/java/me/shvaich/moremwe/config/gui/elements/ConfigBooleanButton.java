@@ -2,12 +2,13 @@ package me.shvaich.moremwe.config.gui.elements;
 
 import me.shvaich.moremwe.config.data.ConfigFieldContainer;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiButton;
+import me.shvaich.moremwe.config.gui.elements.components.MyGuiButton;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
+import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
-import net.minecraft.client.gui.GuiButton;
 
 public class ConfigBooleanButton extends ConfigGuiButton {
-    protected GuiButton button;
+    protected MyGuiButton button;
     protected boolean isOn;
 
     public ConfigBooleanButton(MyConfigGuiScreen screen, ConfigFieldContainer fieldData) throws IllegalAccessException {
@@ -22,17 +23,17 @@ public class ConfigBooleanButton extends ConfigGuiButton {
     protected void initialize() throws IllegalAccessException {
         super.initialize();
         this.isOn = getBoolean();
-        this.button = getMcGuiButton(getMcButtonText(isOn));
+        this.button = new MyGuiButton(getMainButtonWidth(), 20, ChatUtil.getBooleanMsg(isOn));
         this.rightSideContentWidth = button.width + BUTTON_RIGHT_MARGIN;
         this.rightSideContentHeight = button.height;
     }
 
     @Override
-    public void draw(int x, int y, int mouseX, int mouseY) {
-        super.draw(x, y, mouseX, mouseY);
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
+        super.draw(x, y, mouseX, mouseY, canMouseBeOverElement);
         button.xPosition = contentLeft;
         button.yPosition = y + getCenterYOffset(rightSideContentHeight);
-        button.drawButton(mc, mouseX, mouseY);
+        button.drawButton(mc, mouseX, mouseY, canMouseBeOverElement);
     }
 
     @Override
@@ -40,18 +41,12 @@ public class ConfigBooleanButton extends ConfigGuiButton {
         if (mouseButton == GuiUtil.MOUSE_LEFT && button.mousePressed(mc, mouseX, mouseY)) {
             toggleBoolean();
             this.isOn = getBoolean();
-            this.button.displayString = getMcButtonText(isOn);
+            this.button.displayString = ChatUtil.getBooleanMsg(isOn);
             if (fieldData.hasDependants())
                 screen.updateDependantsDisplay(fieldData);
-            button.playPressSound(mc.getSoundHandler());
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void updateDisplayFromDependency() {
-        button.displayString = getMcButtonText(isOn);
     }
 
     protected boolean getBoolean() throws IllegalAccessException {
@@ -60,10 +55,5 @@ public class ConfigBooleanButton extends ConfigGuiButton {
 
     protected void toggleBoolean() throws IllegalAccessException {
         fieldData.setValue(!getBoolean());
-    }
-
-    @Override
-    protected boolean showDependencyIndicatorFromMouse(int mouseX, int mouseY) {
-        return button.isMouseOver();
     }
 }

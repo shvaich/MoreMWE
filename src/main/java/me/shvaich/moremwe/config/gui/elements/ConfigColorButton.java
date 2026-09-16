@@ -2,18 +2,18 @@ package me.shvaich.moremwe.config.gui.elements;
 
 import me.shvaich.moremwe.config.data.ConfigFieldContainer;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiButton;
+import me.shvaich.moremwe.config.gui.elements.components.MyGuiButton;
 import me.shvaich.moremwe.config.gui.screens.MyColorEditGuiScreen;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.ColorUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
-import net.minecraft.client.gui.GuiButton;
 
 public class ConfigColorButton extends ConfigGuiButton {
 
     private final int COLOR_BOX_SIZE;
     private final int defaultColor;
-    private final GuiButton button;
+    private final MyGuiButton button;
     private int color;
 
     public final boolean allowsTransparency;
@@ -23,40 +23,29 @@ public class ConfigColorButton extends ConfigGuiButton {
         this.color = (int) fieldData.getValue();
         this.defaultColor = defaultColor;
         this.allowsTransparency = fieldData.getAnnotation().allowsTransparency() || !ColorUtil.isOpaque(this.defaultColor);
-        this.button = getMcGuiButton("Change");
+        this.button = new MyGuiButton(getMainButtonWidth(), 20, "Change");
         this.COLOR_BOX_SIZE = button.height;
         this.rightSideContentWidth = button.width + BUTTON_RIGHT_MARGIN + COLOR_BOX_SIZE + 1;
         this.rightSideContentHeight = button.height; // Math.max(button.height, COLOR_BOX_SIZE);
     }
 
     @Override
-    public void draw(int x, int y, int mouseX, int mouseY) {
-        super.draw(x, y, mouseX, mouseY);
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
+        super.draw(x, y, mouseX, mouseY, canMouseBeOverElement);
         final int drawY = y + getCenterYOffset(rightSideContentHeight);
         GuiUtil.drawRectWithBorder(contentLeft, drawY, contentLeft + COLOR_BOX_SIZE, drawY + COLOR_BOX_SIZE, ColorUtil.toOpaque(this.color), ModResources.BLACK);
         button.xPosition = contentLeft + COLOR_BOX_SIZE + 1;
         button.yPosition = drawY;
-        button.drawButton(mc, mouseX, mouseY);
-    }
-
-    @Override
-    public void updateDisplayFromDependency() {
-        this.button.displayString = getMcButtonText("Change");
+        button.drawButton(mc, mouseX, mouseY, canMouseBeOverElement);
     }
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IllegalAccessException {
         if (mouseButton == GuiUtil.MOUSE_LEFT && button.mousePressed(mc, mouseX, mouseY)) {
-            button.playPressSound(mc.getSoundHandler());
             GuiUtil.openScreen(new MyColorEditGuiScreen(screen, this));
             return true;
         }
         return false;
-    }
-
-    @Override
-    protected boolean showDependencyIndicatorFromMouse(int mouseX, int mouseY) {
-        return button.isMouseOver();
     }
 
     public void setColor(int color) { this.color = color; }

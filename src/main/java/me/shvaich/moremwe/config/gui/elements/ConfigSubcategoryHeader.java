@@ -1,5 +1,6 @@
 package me.shvaich.moremwe.config.gui.elements;
 
+import fr.alexdoru.configlib.api.ColorPalette;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.GuiUtil;
@@ -15,12 +16,16 @@ public class ConfigSubcategoryHeader extends ConfigGuiElement {
     }
 
     @Override
-    public void draw(int x, int y, int mouseX, int mouseY) {
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
         final Minecraft mc = Minecraft.getMinecraft();
+        drawSelf(mc, x, y, x);
+    }
+
+    protected void drawSelf(Minecraft mc, int x, int y, int lineStartX) {
         final int textWidth = mc.fontRendererObj.getStringWidth(subcategoryName);
         final int textX = x + (elementRectWidth - textWidth) / 2;
         final int lineY = y + mc.fontRendererObj.FONT_HEIGHT / 2;
-        GuiUtil.drawHorizontalLine(x, textX - 4, lineY, ModResources.ELEMENT_BORDER);
+        GuiUtil.drawHorizontalLine(lineStartX, textX - 4, lineY, ModResources.ELEMENT_BORDER);
         GuiUtil.drawHorizontalLine(textX + textWidth + 4, x + elementRectWidth, lineY, ModResources.ELEMENT_BORDER);
         mc.fontRendererObj.drawStringWithShadow(subcategoryName, textX, y, ModResources.GRAYISH);
     }
@@ -42,11 +47,28 @@ public class ConfigSubcategoryHeader extends ConfigGuiElement {
 
     @Override
     public String getSubcategory() {
-        return subcategoryName;
+        return ""; //subcategoryName;
     }
 
     @Override
     public int getTopMargin() {
-        return 6;
+        return 8;
+    }
+
+    @Override
+    public int getBottomMargin() {
+        return 4;
+    }
+
+    public static final class WithCategory extends ConfigSubcategoryHeader {
+        public WithCategory(String categoryName, String subcategoryName) {
+            super(categoryName, subcategoryName);
+        }
+
+        @Override
+        protected void drawSelf(Minecraft mc, int x, int y, int lineStartX) {
+            lineStartX = mc.fontRendererObj.drawStringWithShadow(getCategory(), x, y, ColorPalette.VanillaColors.GOLD);
+            super.drawSelf(mc, x, y, lineStartX + 3);
+        }
     }
 }

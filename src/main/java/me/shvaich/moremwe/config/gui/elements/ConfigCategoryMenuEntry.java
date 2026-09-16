@@ -21,17 +21,17 @@ public class ConfigCategoryMenuEntry {
         // this.elementRectWidth = elementRectWidth;
     }
 
-    public void draw(int x, int y, int mouseX, int mouseY) {
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
         this.posX = x;
         this.posY = y;
-        final int textColor = categoryName.equals(screen.getSelectedCategory()) ? ModResources.SELECTED_CATEGORY_COLOR : (isMouseOver(mouseX, mouseY) ? ModResources.WHITE : ModResources.GRAYISH);
+        final int textColor = categoryName.equals(screen.getSelectedCategory()) ? ModResources.SELECTED_CATEGORY_COLOR : ((canMouseBeOverElement && isMouseOver(mouseX, mouseY)) ? ModResources.WHITE : ModResources.GRAYISH);
         screen.mc.fontRendererObj.drawStringWithShadow(categoryName, x, y, textColor);
     }
 
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (mouseButton == GuiUtil.MOUSE_LEFT && isMouseOver(mouseX, mouseY)) {
             this.screen.setSelectedCategory(categoryName);
-            GuiUtil.playButtonPressSound();
+            GuiUtil.playButtonPressSound(screen.mc);
             return true;
         }
         return false;

@@ -20,7 +20,6 @@ public class ConfigSliderButton extends ConfigGuiButton {
     private int sliderX, sliderY;
     private int sliderButtonX, sliderButtonY, sliderButtonOffset;
     private int minusButtonX, plusButtonX, sideButtonY;
-    private int sliderTrackColor, sliderButtonColor;
 
     public ConfigSliderButton(MyConfigGuiScreen screen, ConfigFieldContainer fieldData) throws IllegalAccessException {
         super(screen, fieldData);
@@ -28,15 +27,14 @@ public class ConfigSliderButton extends ConfigGuiButton {
         this.maxValue = fieldData.getAnnotation().max();
         this.sliderValue = (int) fieldData.getValue();
         this.sliderButtonOffset = MathHelper.clamp_int(SLIDER_WIDTH * (sliderValue - minValue) / (maxValue - minValue), 0, SLIDER_WIDTH);
-        updateDisplayFromDependency();
 
         this.rightSideContentWidth = (SIDE_BUTTON_SIZE + SLIDER_BUTTON_SIZE / 2 + 1) * 2 + SLIDER_WIDTH + 6;
         this.rightSideContentHeight = SLIDER_BUTTON_SIZE + mc.fontRendererObj.FONT_HEIGHT + 6;
     }
 
     @Override
-    public void draw(int x, int y, int mouseX, int mouseY) {
-        super.draw(x, y, mouseX, mouseY);
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
+        super.draw(x, y, mouseX, mouseY, canMouseBeOverElement);
         final int halfSliderButtonSize = SLIDER_BUTTON_SIZE / 2;
         this.sliderX = contentLeft + SIDE_BUTTON_SIZE + 1 + halfSliderButtonSize;
         this.sliderY = y + getCenterYOffset(SLIDER_HEIGHT);
@@ -53,9 +51,9 @@ public class ConfigSliderButton extends ConfigGuiButton {
         GuiUtil.drawRectBorder(sliderX, sliderY, sliderX + SLIDER_WIDTH, sliderY + SLIDER_HEIGHT, 1, 0xFF3E3E3E);
         if (sliderButtonX > (sliderX + 1)) {
             final int top = sliderY + 1;
-            GuiUtil.drawRect(sliderX + 1, top, sliderButtonX, top + SLIDER_HEIGHT - 2, sliderTrackColor);
+            GuiUtil.drawRect(sliderX + 1, top, sliderButtonX, top + SLIDER_HEIGHT - 2, 0xFF1F86D6);
         }
-        GuiUtil.drawRectWithBorder(sliderButtonX, sliderButtonY, sliderButtonX + SLIDER_BUTTON_SIZE, sliderButtonY + SLIDER_BUTTON_SIZE, sliderButtonColor, ModResources.WHITE);
+        GuiUtil.drawRectWithBorder(sliderButtonX, sliderButtonY, sliderButtonX + SLIDER_BUTTON_SIZE, sliderButtonY + SLIDER_BUTTON_SIZE, 0xFF2FA8FF, ModResources.WHITE);
         GuiUtil.drawRectWithBorder(minusButtonX, sideButtonY, minusButtonX + SIDE_BUTTON_SIZE, sideButtonY + SIDE_BUTTON_SIZE, 0xFF707070, 0xFF606060);
         GuiUtil.drawRectWithBorder(plusButtonX, sideButtonY, plusButtonX + SIDE_BUTTON_SIZE, sideButtonY + SIDE_BUTTON_SIZE, 0xFF707070, 0xFF606060);
         final int signOffset = (SIDE_BUTTON_SIZE - GuiUtil.DIGIT_AND_SIGN_WIDTH + 1) / 2;
@@ -66,25 +64,16 @@ public class ConfigSliderButton extends ConfigGuiButton {
         mc.fontRendererObj.drawStringWithShadow(String.valueOf(sliderValue), sliderValueX, sliderValueY, ModResources.WHITE);
     }
 
-    @Override
-    public void updateDisplayFromDependency() {
-        if (showAsInactive()) {
-            this.sliderTrackColor = 0xFFA14B4B;
-            this.sliderButtonColor = 0xFFC45C5C;
-        }
-        else {
-            this.sliderTrackColor = 0xFF1F86D6;
-            this.sliderButtonColor = 0xFF2FA8FF;
-        }
-    }
-
-    @Override
-    protected boolean showDependencyIndicatorFromMouse(int mouseX, int mouseY) {
-        return !isDragging && (
-            GuiUtil.isMouseInRect(mouseX, mouseY, sliderX, sliderY, sliderX + SLIDER_WIDTH, sliderY + SLIDER_HEIGHT)
-            || GuiUtil.isMouseInRect(mouseX, mouseY, sliderButtonX, sliderButtonY, sliderButtonX + SLIDER_BUTTON_SIZE, sliderButtonY + SLIDER_BUTTON_SIZE)
-        );
-    }
+//    @Override
+//    public List<String> getHoveringTextLines(int mouseX, int mouseY) {
+//        if (!isDragging && (
+//                GuiUtil.isMouseInRect(mouseX, mouseY, sliderX, sliderY, sliderX + SLIDER_WIDTH, sliderY + SLIDER_HEIGHT)
+//                || GuiUtil.isMouseInRect(mouseX, mouseY, sliderButtonX, sliderButtonY, sliderButtonX + SLIDER_BUTTON_SIZE, sliderButtonY + SLIDER_BUTTON_SIZE)
+//        )) {
+//            return Collections.singletonList("Example!");
+//        }
+//        return super.getHoveringTextLines(mouseX, mouseY);
+//    }
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) throws IllegalAccessException {
@@ -95,13 +84,13 @@ public class ConfigSliderButton extends ConfigGuiButton {
                 updateSliderFromPosition(mouseX - sliderX);
                 fieldData.setValue(sliderValue);
                 this.isDragging = true;
-                GuiUtil.playButtonPressSound();
+                GuiUtil.playButtonPressSound(screen.mc);
                 return true;
             }
             final boolean clickedOnMinus = GuiUtil.isMouseInRect(mouseX, mouseY, minusButtonX, sideButtonY, minusButtonX + SIDE_BUTTON_SIZE, sideButtonY + SIDE_BUTTON_SIZE);
             if (clickedOnMinus || GuiUtil.isMouseInRect(mouseX, mouseY, plusButtonX, sideButtonY, plusButtonX + SIDE_BUTTON_SIZE, sideButtonY + SIDE_BUTTON_SIZE)) {
                 updateSliderFromIncrement(clickedOnMinus ? -1 : 1);
-                GuiUtil.playButtonPressSound();
+                GuiUtil.playButtonPressSound(screen.mc);
                 return true;
             }
         }

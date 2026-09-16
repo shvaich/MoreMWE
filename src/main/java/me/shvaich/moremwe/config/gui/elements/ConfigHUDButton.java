@@ -2,50 +2,49 @@ package me.shvaich.moremwe.config.gui.elements;
 
 import me.shvaich.moremwe.config.data.ConfigFieldContainer;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiButton;
+import me.shvaich.moremwe.config.gui.elements.components.MyGuiButton;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.config.gui.screens.MyRendererEditGuiScreen;
 import me.shvaich.moremwe.gui.data.AbstractRenderer;
 import me.shvaich.moremwe.gui.data.HUDManager;
+import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
+import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
-import net.minecraft.client.gui.GuiButton;
+
+import java.util.Collections;
+import java.util.List;
 
 public class ConfigHUDButton extends ConfigGuiButton {
 
     private final MyRendererPosition rendererPosition;
-    private final GuiButton enabledButton;
-    private final GuiButton editButton;
+    private final MyGuiButton enabledButton;
+    private final MyGuiButton editButton;
 
     public ConfigHUDButton(MyConfigGuiScreen screen, ConfigFieldContainer fieldData) throws IllegalAccessException {
         super(screen, fieldData);
         this.rendererPosition = (MyRendererPosition) fieldData.getValue();
-        this.enabledButton = getMcGuiButton(getMcButtonText(rendererPosition.isEnabled()));
-        this.editButton = getMcGuiButton(getMcButtonText("Position"));
-        this.rightSideContentWidth = Math.max(enabledButton.width, editButton.width) + BUTTON_RIGHT_MARGIN;
-        this.rightSideContentHeight = enabledButton.height + 1 + editButton.height;
+        this.enabledButton = new MyGuiButton(getMainButtonWidth(), 20, ChatUtil.getBooleanMsg(rendererPosition.isEnabled()));
+        this.editButton = new MyGuiButton(enabledButton.height).setTexture(ModResources.MOVE_ICON);
+        this.rightSideContentWidth = enabledButton.width + 1 + editButton.width + BUTTON_RIGHT_MARGIN;
+        this.rightSideContentHeight = Math.max(enabledButton.height, editButton.height);
     }
 
     @Override
-    public void updateDisplayFromDependency() {
-        enabledButton.displayString = getMcButtonText(rendererPosition.isEnabled());
-        editButton.displayString = getMcButtonText("Position");
+    public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
+        super.draw(x, y, mouseX, mouseY, canMouseBeOverElement);
+        editButton.xPosition = contentLeft;
+        editButton.yPosition = y + getCenterYOffset(rightSideContentHeight);
+        editButton.drawButton(mc, mouseX, mouseY, canMouseBeOverElement);
+
+        enabledButton.xPosition = editButton.xPosition + editButton.width + 1;
+        enabledButton.yPosition = editButton.yPosition;
+        enabledButton.drawButton(mc, mouseX, mouseY, canMouseBeOverElement);
     }
 
     @Override
-    protected boolean showDependencyIndicatorFromMouse(int mouseX, int mouseY) {
-        return enabledButton.isMouseOver() || editButton.isMouseOver();
-    }
-
-    @Override
-    public void draw(int x, int y, int mouseX, int mouseY) {
-        super.draw(x, y, mouseX, mouseY);
-        enabledButton.xPosition = contentLeft;
-        enabledButton.yPosition = y + getCenterYOffset(rightSideContentHeight);
-        enabledButton.drawButton(mc, mouseX, mouseY);
-
-        editButton.xPosition = enabledButton.xPosition;
-        editButton.yPosition = enabledButton.yPosition + enabledButton.height + 1;
-        editButton.drawButton(mc, mouseX, mouseY);
+    public List<String> getHoveringTextLines(int mouseX, int mouseY) {
+        return editButton.isHovered() ? Collections.singletonList("Edit HUD") : super.getHoveringTextLines(mouseX, mouseY);
     }
 
     @Override
@@ -55,14 +54,12 @@ public class ConfigHUDButton extends ConfigGuiButton {
                 final boolean previousValue = rendererPosition.isEnabled();
                 rendererPosition.setEnabled(!previousValue);
                 fieldData.invokeAction(previousValue);
-                enabledButton.displayString = getMcButtonText(rendererPosition.isEnabled());
+                enabledButton.displayString = ChatUtil.getBooleanMsg(rendererPosition.isEnabled());
                 if (fieldData.hasDependants())
                     screen.updateDependantsDisplay(fieldData);
-                enabledButton.playPressSound(mc.getSoundHandler());
                 return true;
             }
             if (editButton.mousePressed(mc, mouseX, mouseY)) {
-                editButton.playPressSound(mc.getSoundHandler());
                 final AbstractRenderer renderer = HUDManager.getRendererFromPosition(rendererPosition);
                 if (renderer != null) {
                     GuiUtil.openScreen(new MyRendererEditGuiScreen(screen, renderer));

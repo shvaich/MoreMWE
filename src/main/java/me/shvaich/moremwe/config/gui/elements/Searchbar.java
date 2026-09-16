@@ -45,12 +45,14 @@ public class Searchbar {
     }
 
     public void draw(int mouseX, int mouseY) {
+        final int BACKGROUND_COLOR = 0xFF323232;
+        final boolean isMouseHoveringButton = isMouseInButton(mouseX, mouseY);
+        final int WITH_HOVER_BACKGROUND_COLOR = GuiUtil.getColorWithHover(BACKGROUND_COLOR, isMouseHoveringButton);
         final int height = getHeight();
         final int bottom = top + height;
-        final boolean isMouseHoveringButton = isMouseInButton(mouseX, mouseY);
         final int searchImageSideLength = fontRenderer.FONT_HEIGHT - 3;  // 6;
         if (isExpanded) {
-            GuiUtil.drawRect(expandedAreaX, top, right, bottom, 0xFF2D2D2D);
+            GuiUtil.drawRect(expandedAreaX, top, right, bottom, BACKGROUND_COLOR);
             drawImage(ModResources.SEARCH_ICON, expandedAreaX, searchImageSideLength, 1);
 
             final int textTop = this.top + (getHeight() - fontRenderer.FONT_HEIGHT) / 2 + 1;
@@ -63,7 +65,7 @@ public class Searchbar {
 
             final int cancelImageSideLength = fontRenderer.FONT_HEIGHT-5;  //4;
             float colorScale = 1;
-            if (isMouseHoveringButton) GuiUtil.drawRect(buttonX, top, right, bottom, 0xFF383838);
+            if (isMouseHoveringButton) GuiUtil.drawRect(buttonX, top, right, bottom, WITH_HOVER_BACKGROUND_COLOR);
             else colorScale = 0.7f;
             drawImage(ModResources.CANCEL_ICON, buttonX, cancelImageSideLength, colorScale);
 
@@ -102,7 +104,7 @@ public class Searchbar {
         }
         else {
             final float colorScale = isMouseHoveringButton ? 1 : 0.7f;
-            GuiUtil.drawRect(buttonX, top, right, bottom, isMouseHoveringButton ? 0xFF383838 : 0xFF2D2D2D);
+            GuiUtil.drawRect(buttonX, top, right, bottom, WITH_HOVER_BACKGROUND_COLOR);
             drawImage(ModResources.SEARCH_ICON, buttonX, searchImageSideLength, colorScale);
         }
         if (!isMouseHoveringButton) GlStateManager.color(1, 1, 1, 1);
