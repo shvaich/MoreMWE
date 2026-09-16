@@ -89,6 +89,58 @@ public class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
+            name = "Mega Walls Only",
+            category = "Compass",
+            subcategory = "Mega Walls",
+            comment = "If enabled, the HUD will only be displayed in Mega Walls matches"
+    )
+    public static boolean isCompassForMegaWallsOnly = true;
+
+    @ConfigProperty(
+            type = PropertyType.SELECTOR,
+            name = "Active During",
+            category = "Compass",
+            subcategory = "Mega Walls",
+            options = {
+                    "During Match",
+                    "After Walls Fall",
+                    "After First Wither Dies",
+                    "During Deathmatch"
+            },
+            comment = "Controls when the HUD is displayed during a Mega Walls match"
+    )
+    public static int compassMegaWallsRenderCondition = 1;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Prefer Different Teams",
+            category = "Compass",
+            subcategory = "Mega Walls",
+            comment = "Prioritizes selecting players from different teams over closest distance"
+    )
+    public static boolean prioritizeUniqueTeams = true;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Custom Teammate Color",
+            category = "Compass",
+            subcategory = "Mega Walls",
+            comment = "Uses a custom color instead of the default teammate color"
+    )
+    public static boolean renderCustomTeammateColor = false;
+
+    @ConfigProperty(
+            type = PropertyType.COLOR,
+            name = "Teammate Color",
+            category = "Compass",
+            subcategory = "Mega Walls",
+            comment = "Color used for displaying teammates in the HUD",
+            allowsTransparency = false
+    )
+    public static int customTeammateColor = ColorPalette.VanillaColors.LIGHT_PURPLE;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
             name = "Show Distance Unit",
             category = "Compass",
             subcategory = "Display",
@@ -152,58 +204,6 @@ public class MoreMWEConfig extends AbstractConfig {
             subcategory = "Display"
     )
     public static int compassHUDBackgroundColor = new Color(8, 8, 8, 0xC0).getRGB();
-
-    @ConfigProperty(
-            type = PropertyType.SWITCH,
-            name = "Mega Walls Only",
-            category = "Compass",
-            subcategory = "Mega Walls",
-            comment = "If enabled, the HUD will only be displayed in Mega Walls matches"
-    )
-    public static boolean isCompassForMegaWallsOnly = true;
-
-    @ConfigProperty(
-            type = PropertyType.SELECTOR,
-            name = "Active During",
-            category = "Compass",
-            subcategory = "Mega Walls",
-            options = {
-                    "During Match",
-                    "After Walls Fall",
-                    "After First Wither Dies",
-                    "During Deathmatch"
-            },
-            comment = "Controls when the HUD is displayed during a Mega Walls match"
-    )
-    public static int compassMegaWallsRenderCondition = 1;
-
-    @ConfigProperty(
-            type = PropertyType.SWITCH,
-            name = "Prefer Different Teams",
-            category = "Compass",
-            subcategory = "Mega Walls",
-            comment = "Prioritizes selecting players from different teams over closest distance"
-    )
-    public static boolean prioritizeUniqueTeams = true;
-
-    @ConfigProperty(
-            type = PropertyType.SWITCH,
-            name = "Custom Teammate Color",
-            category = "Compass",
-            subcategory = "Mega Walls",
-            comment = "Uses a custom color instead of the default teammate color"
-    )
-    public static boolean renderCustomTeammateColor = false;
-
-    @ConfigProperty(
-            type = PropertyType.COLOR,
-            name = "Teammate Color",
-            category = "Compass",
-            subcategory = "Mega Walls",
-            comment = "Color used for displaying teammates in the HUD",
-            allowsTransparency = false
-    )
-    public static int customTeammateColor = ColorPalette.VanillaColors.LIGHT_PURPLE;
 
 
     @ConfigProperty(
@@ -364,7 +364,7 @@ public class MoreMWEConfig extends AbstractConfig {
             type = PropertyType.SWITCH,
             name = "Play Command Warp Protection",
             category = "Hypixel",
-            comment = "temp"
+            comment = "Adds confirmation when running the \"/play\" command if you have players in your squad"
     )
     public static boolean playWarpProtection = false;
 
