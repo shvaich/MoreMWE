@@ -204,7 +204,9 @@ public class ConfigFieldContainer {
 
     public ConfigProperty getAnnotation() { return annotation; }
 
-    public boolean isHidden() { return !FORCE_SHOW_HIDDEN && (annotation.isHidden() || (hideCondition != null && hideCondition.getAsBoolean())); }
+    public boolean isHidden() {
+        return annotation.isHidden() || (!FORCE_SHOW_HIDDEN && (hideCondition != null && hideCondition.getAsBoolean()));
+    }
 
     public PropertyType getType() { return annotation.type(); }
     public String getCategory() { return annotation.category(); }
