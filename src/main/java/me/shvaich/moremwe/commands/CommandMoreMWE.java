@@ -1,6 +1,5 @@
 package me.shvaich.moremwe.commands;
 
-import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
@@ -8,6 +7,7 @@ import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,20 +66,24 @@ public class CommandMoreMWE extends MyAbstractCommand {
 
     @Override
     protected void printCommandHelp(String slashCommand) {
-        final String bar = getHelpBarColor() + ChatUtil.bar();
-        MWEApi.Chat.addChatMessage(bar);
+        final String bar = EnumChatFormatting.DARK_GRAY + ChatUtil.bar();
+        ChatUtil.addChatMessage(bar);
         printCommandHelpBlock(MoreMWE.NAME + " Help", new String[][]{
                 { slashCommand, "Opens the configuration GUI" },
                 { slashCommand + " energy", "Sends a chat message with your current energy" },
                 { slashCommand + " energy toggle", "Toggles automatic full energy announcement" }
         });
-        MWEApi.Chat.addChatMessage("");
+        ChatUtil.addChatMessage("");
+        printCommandHelpBlock(MoreMWE.NAME + "'s Commands", new String[][]{
+                { "/visiblebarriers", "See /visiblebarriers help", "/visiblebarriers help" }
+        });
+        ChatUtil.addChatMessage("");
         printCommandHelpBlock("Hypixel Command Helpers", new String[][]{
                 { "/play", "See /play help", "/play help" },
                 { "/friend", "See /friend moremwe_help", "/friend moremwe_help" },
                 { "/party", "See /party moremwe_help", "/party moremwe_help" }
         });
-        MWEApi.Chat.addChatMessage(bar);
+        ChatUtil.addChatMessage(bar);
     }
 
     private static boolean isEnergySubcommand(String str) {

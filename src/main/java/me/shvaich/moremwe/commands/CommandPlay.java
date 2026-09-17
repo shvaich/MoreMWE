@@ -1,7 +1,6 @@
 package me.shvaich.moremwe.commands;
 
 import fr.alexdoru.mwe.api.MWEApi;
-import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.TimerUtil;
@@ -164,28 +163,28 @@ public class CommandPlay extends MyAbstractCommand {
                     invalidNames.add(gameArg);
                 }
                 else if (addedGames.add(matchedGame)) {
-                    if (printedGameHelpBlock) MWEApi.Chat.addChatMessage("");
-                    else MWEApi.Chat.addChatMessage(getHelpBarColor() + ChatUtil.bar());
+                    if (printedGameHelpBlock) ChatUtil.addChatMessage("");
+                    else ChatUtil.addChatMessage(getHelpBarColor() + ChatUtil.bar());
                     printGameHelpBlock(matchedGame);
                     printedGameHelpBlock = true;
                 }
             }
             if (!invalidNames.isEmpty()) {
-                MWEApi.Chat.addChatMessage((printedGameHelpBlock ? "\n" : ChatUtil.getModTag()) + getSkippedMessage(invalidNames, "unknown games"));
+                ChatUtil.addChatMessage((printedGameHelpBlock ? "\n" : ChatUtil.getModTag()) + getSkippedMessage(invalidNames, "unknown games"));
                 if (!printedGameHelpBlock) return;
             }
             if (printedGameHelpBlock) {
-                MWEApi.Chat.addChatMessage(getHelpBarColor() + ChatUtil.bar());
+                ChatUtil.addChatMessage(getHelpBarColor() + ChatUtil.bar());
                 return;
             }
         }
         final String bar = getHelpBarColor() + ChatUtil.bar();
-        MWEApi.Chat.addChatMessage(bar + "\n" + ChatUtil.centerLine(EnumChatFormatting.GRAY + EnumChatFormatting.BOLD.toString() + "Hypixel Play Commands"));
+        ChatUtil.addChatMessage(bar + "\n" + ChatUtil.centerLine(EnumChatFormatting.GRAY + EnumChatFormatting.BOLD.toString() + "Hypixel Play Commands"));
         for (final Game game : GAMES) {
-            MWEApi.Chat.addChatMessage("");
+            ChatUtil.addChatMessage("");
             printGameHelpBlock(game);
         }
-        MWEApi.Chat.addChatMessage(bar);
+        ChatUtil.addChatMessage(bar);
     }
 
     private static void printGameHelpBlock(Game game) {

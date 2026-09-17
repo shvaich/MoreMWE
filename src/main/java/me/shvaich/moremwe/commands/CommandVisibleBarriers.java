@@ -63,7 +63,7 @@ public class CommandVisibleBarriers extends MyAbstractCommand {
     @Override
     protected void printCommandHelp(String slashCommand) {
         slashCommand += " ";
-        printCommandHelpBlock(EnumChatFormatting.GREEN, "Visible Barriers", new String[][]{
+        printCommandHelpBlock(EnumChatFormatting.GREEN, "Visible Barriers Help", new String[][]{
                 { slashCommand + "on", "Enables visible barriers" },
                 { slashCommand + "off", "Disables visible barriers" },
                 { slashCommand + "toggle", "Toggles visible barriers" },
