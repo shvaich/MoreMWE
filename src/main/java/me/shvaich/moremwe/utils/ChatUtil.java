@@ -23,6 +23,7 @@ public final class ChatUtil {
         return bool ? GREEN + "Enabled" : RED + "Disabled";
     }
 
+    /** Delegates to {@link ChatUtil#addChatMessage(IChatComponent)} */
     public static void addChatMessage(String msg) {
         addChatMessage(new ChatComponentText(msg));
     }
