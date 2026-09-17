@@ -14,13 +14,20 @@ import org.lwjgl.input.Keyboard;
 
 public class KeybindingListener {
 
-    private static final KeyBinding showCompassHUDKey = create("Compass HUD Control");
-    private static final KeyBinding blockGuardKeyBinding = create("Toggle " + MoreMWEConfig.BLOCK_GUARD);
-    private static final KeyBinding shovelGuardKeyBinding = create("Toggle " + MoreMWEConfig.SHOVEL_GUARD);
-    private static final KeyBinding sendPlayerEnergyMessageKey = create("Send Energy Status");
-    private static final KeyBinding visibleBarriersKey = create("Toggle Visible Barriers");
+    private static KeybindingListener instance;
+
+    private final KeyBinding showCompassHUDKey = create("Compass HUD Control");
+    private final KeyBinding blockGuardKeyBinding = create("Toggle " + MoreMWEConfig.BLOCK_GUARD);
+    private final KeyBinding shovelGuardKeyBinding = create("Toggle " + MoreMWEConfig.SHOVEL_GUARD);
+    private final KeyBinding sendPlayerEnergyMessageKey = create("Send Energy Status");
+    private final KeyBinding visibleBarriersKey = create("Toggle Visible Barriers");
 
     public KeybindingListener() {
+        if (instance != null) {
+            MoreMWE.LOGGER.warn("Attempted to create another KeybindingListener instance. NOT ALLOWED!");
+            return;
+        }
+        instance = this;
         ClientRegistry.registerKeyBinding(showCompassHUDKey);
         ClientRegistry.registerKeyBinding(blockGuardKeyBinding);
         ClientRegistry.registerKeyBinding(shovelGuardKeyBinding);
@@ -72,18 +79,14 @@ public class KeybindingListener {
 
     public static boolean hideCompassHUDFromKey() {
         if (MoreMWEConfig.compassKeybindMode != 1) return false;
-        return showCompassHUDKey.getKeyCode() != Keyboard.KEY_NONE && !showCompassHUDKey.isKeyDown();
+        return instance.showCompassHUDKey.getKeyCode() != Keyboard.KEY_NONE && !instance.showCompassHUDKey.isKeyDown();
     }
 
-    private static KeyBinding create(String desc, int defaultKeyCode, String category) {
-        return new KeyBinding(desc, defaultKeyCode, category);
-    }
-
-    private static KeyBinding create(String desc, int defaultKeyCode) {
-        return create(desc, defaultKeyCode, MoreMWE.NAME);
+    private static KeyBinding create(String desc, String name) {
+        return new KeyBinding(desc, Keyboard.KEY_NONE, name);
     }
 
     private static KeyBinding create(String desc) {
-        return create(desc, Keyboard.KEY_NONE, MoreMWE.NAME);
+        return create(desc, MoreMWE.NAME);
     }
 }
