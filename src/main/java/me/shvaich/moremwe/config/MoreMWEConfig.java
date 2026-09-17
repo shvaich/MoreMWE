@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MoreMWEConfig extends AbstractConfig {
+public final class MoreMWEConfig extends AbstractConfig {
 
     public static final String BLOCK_GUARD = "BlockGuard";
 
