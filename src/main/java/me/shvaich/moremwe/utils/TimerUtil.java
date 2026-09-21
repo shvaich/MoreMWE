@@ -33,7 +33,7 @@ public class TimerUtil {
     /** Can be used safely after {@link #update}, otherwise check not null */
     public String getTimeLeftText() {
         final long timePassed = System.currentTimeMillis() - lastUpdate;
-        return timePassed > period ? null : getTimeText(period - timePassed, true);
+        return timePassed > period ? null : getTimeText(period - timePassed);
     }
 
     public static String getTimeText(long time, boolean recursive, int maxUnits, String separator) {
@@ -65,7 +65,7 @@ public class TimerUtil {
         return text.toString();
     }
 
-    public static String getTimeText(long time, boolean recursive) {
-        return getTimeText(time, recursive, Integer.MAX_VALUE, " ");
+    public static String getTimeText(long time) {
+        return getTimeText(time, true, Integer.MAX_VALUE, " ");
     }
 }
