@@ -205,6 +205,17 @@ public final class MoreMWEConfig extends AbstractConfig {
     )
     public static int compassHUDBackgroundColor = new Color(8, 8, 8, 0xC0).getRGB();
 
+    @ConfigProperty(
+            type = PropertyType.NUMBER,
+            name = "Directional Arrow Gap",
+            category = "Compass",
+            subcategory = "Display",
+            comment = "The width of the gap before and after the directional arrow display",
+            min = CompassHUD.COLUMN_GAP,
+            max = 16
+    )
+    public static int compassHUDArrowMargin = 10;
+
 
     @ConfigProperty(
             type = PropertyType.SWITCH,

@@ -32,10 +32,9 @@ import java.util.UUID;
 
 public class CompassHUD extends AbstractRenderer {
 
-    public static int ARROW_GAP_SIZE = 10;
     public static final int REAL_MAX_COMPASS_TRACKED = 8;
-    private static final int ROW_GAP = 2; // 4
-    private static final int COLUMN_GAP = 6;
+    public static final int COLUMN_GAP = 6;
+    private static final int ROW_GAP = 2;
 
     private final Minecraft mc = Minecraft.getMinecraft();
     private final PlayerTrackingData[] dummyPlayers;
@@ -94,7 +93,7 @@ public class CompassHUD extends AbstractRenderer {
     @Override
     public int getHeight() {
         if (trackedPlayersCount == 0) return mc.fontRendererObj.FONT_HEIGHT - 1;
-        return getRowHeight() * trackedPlayersCount - ROW_GAP - 1;
+        return getRowHeight() * trackedPlayersCount - ROW_GAP;
     }
 
     @Override
@@ -123,14 +122,14 @@ public class CompassHUD extends AbstractRenderer {
         if (renderedDummiesCount < MoreMWEConfig.maxCompassTrackedPlayers)
             height += ROW_GAP + mc.fontRendererObj.FONT_HEIGHT;
 
-        return height - 1;
+        return height;
     }
 
     private void renderCompassHUD(PlayerTrackingData[] pArr, int length, int thisWidth, int thisHeight) {
         final int x = rendererPosition.getDrawX();
         int y = rendererPosition.getDrawY();
         int distanceX = x + skinWidth;
-        int arrowX = distanceX + longestDistanceStringWidth + ARROW_GAP_SIZE;
+        int arrowX = distanceX + longestDistanceStringWidth + MoreMWEConfig.compassHUDArrowMargin;
         int healthX = -1;
         final float thePlayerMaxHP;
         if (MoreMWEConfig.showHPInCompassHUD) {
@@ -151,7 +150,7 @@ public class CompassHUD extends AbstractRenderer {
 
                 case 2: {
                     healthX = distanceX + longestDistanceStringWidth + COLUMN_GAP;
-                    arrowX = healthX + longestHPStringWidth + ARROW_GAP_SIZE;
+                    arrowX = healthX + longestHPStringWidth + MoreMWEConfig.compassHUDArrowMargin;
                     break;
                 }
             }
@@ -182,7 +181,7 @@ public class CompassHUD extends AbstractRenderer {
             final int arrowY = y + (realRowHeight - 6) / 2;
             GuiUtil.drawDirectionArrow(arrowX, arrowY, player.relativeYaw, teamColor);
 
-            final int yDistanceX = arrowX + 5 + ARROW_GAP_SIZE;
+            final int yDistanceX = arrowX + 5 + MoreMWEConfig.compassHUDArrowMargin;
             final int yDistance = (int) player.distanceY;
             final int yDistanceColor = (!MoreMWEConfig.colorYDistanceInCompassHUD || yDistance == 0) ? VanillaColors.GRAY
                     : (yDistance < 0 ? VanillaColors.DARK_RED : VanillaColors.DARK_GREEN);
@@ -233,7 +232,7 @@ public class CompassHUD extends AbstractRenderer {
         if (longestHPStringWidth != 0 && MoreMWEConfig.showHPIconInCompassHUD) {
             this.longestHPStringWidth += mc.fontRendererObj.getStringWidth(" ❤");
         }
-        return skinWidth + maxDistanceStringsWidth - 1 + ARROW_GAP_SIZE + 5 + ARROW_GAP_SIZE + longestHPStringWidth + (longestHPStringWidth == 0 ? 0 : COLUMN_GAP);
+        return skinWidth + maxDistanceStringsWidth + MoreMWEConfig.compassHUDArrowMargin + 5 + MoreMWEConfig.compassHUDArrowMargin + longestHPStringWidth + (longestHPStringWidth == 0 ? 0 : COLUMN_GAP);
     }
 
     private int getRowHeight() {
