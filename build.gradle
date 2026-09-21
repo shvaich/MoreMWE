@@ -30,11 +30,11 @@ minecraft {
 }
 
 runClient {
-    // disables the updater and shows hidden configs
-    // when working in dev environment
+    outputs.upToDateWhen { false }
     jvmArgs += [
             "-Dmwe.disableUpdater=true",
             "-Dconfig.lib.showHidden=true"
+            , "-Dmwe.asm.classdump=true"
     ]
 }
 
