@@ -92,6 +92,7 @@ public class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHos
                 }
                 this.isExpanded = true;
             }
+            GuiUtil.playButtonPressSound(mc);
             return true;
         }
         return false;
@@ -173,6 +174,7 @@ public class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHos
                 else if (scrollbar == null || !scrollbar.mouseClicked(mouseX, mouseY, mouseButton)) {
                     closeOverlay();
                 }
+                GuiUtil.playButtonPressSound(mc);
                 return true;
             }
         }
