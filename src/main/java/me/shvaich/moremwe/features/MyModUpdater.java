@@ -23,12 +23,14 @@ public final class MyModUpdater extends ModUpdater {
     @Override
     protected void printChatNotification() {
         if (this.updateInfo != null) {
+            final String linkMsg = YELLOW + "Click here to view the changelog & download page";
             final String bar = GRAY + ChatUtil.bar();
             final IChatComponent msg = new ChatComponentText(bar + "\n" + ChatUtil.centerLine(DARK_RED.toString() + BOLD + MoreMWE.NAME + GOLD + " v" + updateInfo.version + GREEN + " is available!"))
-                    .appendSibling(ChatUtil.getURLMessage(ChatUtil.centerLine(YELLOW + "Click here to view the changelog & download page"), "https://github.com/shvaich/MoreMWE/releases"));
+                    .appendText("\n" + ChatUtil.getSpaceToCenter(linkMsg))
+                    .appendSibling(ChatUtil.getURLMessage(linkMsg, "https://github.com/shvaich/MoreMWE/releases"));
 
             if (this.automaticUpdate) {
-                msg.appendText("");
+                msg.appendText("\n\n");
                 if (this.isFeatherClient) {
                     msg.appendText(RED + "✘ The automatic updater is disabled on Feather");
                 }
