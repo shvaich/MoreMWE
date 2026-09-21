@@ -360,6 +360,7 @@ public final class MoreMWEConfig extends AbstractConfig {
     )
     public static int energyMessageMegaWallsCondition = 1;
 
+
     @ConfigProperty(
             type = PropertyType.SWITCH,
             name = "Play Command Warp Protection",
@@ -367,6 +368,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             comment = "Adds confirmation when running the \"/play\" command if you have players in your squad"
     )
     public static boolean playWarpProtection = false;
+
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
@@ -405,6 +407,7 @@ public final class MoreMWEConfig extends AbstractConfig {
                 "compassKeybindMode",
                 "showCompassWhenSpectator",
                 "showDistanceUnitInCompassHUD",
+                "colorYDistanceInCompassHUD",
                 "showHPInCompassHUD",
                 "showCompassHUDBackground",
                 "isCompassForMegaWallsOnly",
