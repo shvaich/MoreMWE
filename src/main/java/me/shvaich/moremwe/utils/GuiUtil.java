@@ -126,4 +126,46 @@ public class GuiUtil {
     public static void endClearRect() {
         GL11.glDisable(GL11.GL_STENCIL_TEST);
     }
+
+
+    public static void drawDirectionArrow(int x, int y, float rotation, int color) {
+        GlStateManager.pushMatrix();
+        {
+            GL11.glEnable(GL11.GL_LINE_SMOOTH);
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+
+            GlStateManager.enableBlend();
+            GlStateManager.disableTexture2D();
+
+            GlStateManager.color(
+                    ColorUtil.getRed(color) / 255.0F,
+                    ColorUtil.getGreen(color) / 255.0F,
+                    ColorUtil.getBlue(color) / 255.0F,
+                    1.0F
+            );
+
+            final float halfWidth = 2.5F; // ; 5 / 2.0F
+            final float halfHeight = 3.0F; // ; 6 / 2.0F
+
+            GL11.glLineWidth(2.0F);
+            //GlStateManager.translate(x + 4.0F, y + 4.0F, 0.0F);
+            GlStateManager.translate(x + halfWidth, y + halfHeight, 0.0F);
+            GlStateManager.rotate(rotation, 0.0F, 0.0F, 1.0F);
+            GL11.glBegin(GL11.GL_LINE_STRIP);
+            //GL11.glVertex2f(-2.5F, 2.5F);
+            //GL11.glVertex2f(0.0F, -3.5F);
+            //GL11.glVertex2f(2.5F, 2.5F);
+            GL11.glVertex2f(-halfWidth, halfHeight);
+            GL11.glVertex2f(0.0F, -halfHeight);
+            GL11.glVertex2f(halfWidth, halfHeight);
+            GL11.glEnd();
+
+            GL11.glDisable(GL11.GL_LINE_SMOOTH);
+            GL11.glLineWidth(1.0F);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.disableBlend();
+            GlStateManager.enableTexture2D();
+        }
+        GlStateManager.popMatrix();
+    }
 }

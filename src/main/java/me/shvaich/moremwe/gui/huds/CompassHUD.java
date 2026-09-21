@@ -32,6 +32,7 @@ import java.util.UUID;
 
 public class CompassHUD extends AbstractRenderer {
 
+    public static int ARROW_GAP_SIZE = 10;
     public static final int REAL_MAX_COMPASS_TRACKED = 8;
     private static final int ROW_GAP = 2; // 4
     private static final int COLUMN_GAP = 6;
@@ -49,8 +50,8 @@ public class CompassHUD extends AbstractRenderer {
         this.dummyPlayers = new PlayerTrackingData[]{
                 new PlayerTrackingData(new ResourceLocation("textures/entity/steve.png"), VanillaColors.GREEN, 0, 0, 40),
                 new PlayerTrackingData(new ResourceLocation("textures/entity/alex.png"), VanillaColors.BLUE, 1, 1, 20),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie/zombie.png"), VanillaColors.RED, -1, 1, 10),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie_pigman.png"), VanillaColors.YELLOW, 5, 10, 5)
+                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie/zombie.png"), VanillaColors.RED, -1, 5, 10),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie_pigman.png"), VanillaColors.YELLOW, 5, 1, 5)
         };
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -129,7 +130,7 @@ public class CompassHUD extends AbstractRenderer {
         final int x = rendererPosition.getDrawX();
         int y = rendererPosition.getDrawY();
         int distanceX = x + skinWidth;
-        int arrowX = distanceX + longestDistanceStringWidth + COLUMN_GAP;
+        int arrowX = distanceX + longestDistanceStringWidth + ARROW_GAP_SIZE;
         int healthX = -1;
         final float thePlayerMaxHP;
         if (MoreMWEConfig.showHPInCompassHUD) {
@@ -149,8 +150,8 @@ public class CompassHUD extends AbstractRenderer {
                 }
 
                 case 2: {
-                    healthX = arrowX;
-                    arrowX += longestHPStringWidth + COLUMN_GAP;
+                    healthX = distanceX + longestDistanceStringWidth + COLUMN_GAP;
+                    arrowX = healthX + longestHPStringWidth + ARROW_GAP_SIZE;
                     break;
                 }
             }
@@ -179,10 +180,10 @@ public class CompassHUD extends AbstractRenderer {
             mc.fontRendererObj.drawStringWithShadow(distanceStr, distanceX, y, teamColor);
 
             final int arrowY = y + (realRowHeight - 6) / 2;
-            drawDirectionArrow(arrowX, arrowY, player.relativeYaw, teamColor);
+            GuiUtil.drawDirectionArrow(arrowX, arrowY, player.relativeYaw, teamColor);
 
+            final int yDistanceX = arrowX + 5 + ARROW_GAP_SIZE;
             final int yDistance = (int) player.distanceY;
-            final int yDistanceX = arrowX + 5 + COLUMN_GAP;
             final int yDistanceColor = (!MoreMWEConfig.colorYDistanceInCompassHUD || yDistance == 0) ? VanillaColors.GRAY
                     : (yDistance < 0 ? VanillaColors.DARK_RED : VanillaColors.DARK_GREEN);
             mc.fontRendererObj.drawStringWithShadow(StringUtil.getIntWithSign(yDistance, false), yDistanceX, y, yDistanceColor);
@@ -218,7 +219,7 @@ public class CompassHUD extends AbstractRenderer {
             final int yDistanceStrWidth = GuiUtil.getNumberWidth((int) p.distanceY, true, false);
             final int distanceStringsWidth = distanceStrWidth + yDistanceStrWidth;
             if (distanceStringsWidth > maxDistanceStringsWidth) maxDistanceStringsWidth = distanceStringsWidth;
-            if (p.skin != null && skinWidth == 0) this.skinWidth = 8 + COLUMN_GAP;
+            if (p.skin != null && skinWidth == 0) this.skinWidth = 8 + 2;
             if (MoreMWEConfig.showHPInCompassHUD) {
                 final int hpStringWidth = GuiUtil.getNumberWidth(getDisplayHP(p.health));
                 if (hpStringWidth > longestHPStringWidth) this.longestHPStringWidth = hpStringWidth;
@@ -232,11 +233,11 @@ public class CompassHUD extends AbstractRenderer {
         if (longestHPStringWidth != 0 && MoreMWEConfig.showHPIconInCompassHUD) {
             this.longestHPStringWidth += mc.fontRendererObj.getStringWidth(" ❤");
         }
-        return skinWidth + maxDistanceStringsWidth - 1 + COLUMN_GAP + 5 + COLUMN_GAP + longestHPStringWidth + (longestHPStringWidth == 0 ? 0 : COLUMN_GAP);
+        return skinWidth + maxDistanceStringsWidth - 1 + ARROW_GAP_SIZE + 5 + ARROW_GAP_SIZE + longestHPStringWidth + (longestHPStringWidth == 0 ? 0 : COLUMN_GAP);
     }
 
     private int getRowHeight() {
-        return Math.max(mc.fontRendererObj.FONT_HEIGHT, 8) + ROW_GAP;
+        return 8 + ROW_GAP;
     }
 
     private int getDummiesToRenderCount() {
@@ -385,47 +386,6 @@ public class CompassHUD extends AbstractRenderer {
             }
         }
         return '\0';
-    }
-
-    private static void drawDirectionArrow(int x, int y, float rotation, int color) {
-        GlStateManager.pushMatrix();
-        {
-            GL11.glEnable(GL11.GL_LINE_SMOOTH);
-            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
-
-            GlStateManager.enableBlend();
-            GlStateManager.disableTexture2D();
-
-            GlStateManager.color(
-                    ColorUtil.getRed(color) / 255.0F,
-                    ColorUtil.getGreen(color) / 255.0F,
-                    ColorUtil.getBlue(color) / 255.0F,
-                    1.0F
-            );
-
-            final float halfWidth = 2.5F; // ; 5 / 2.0F
-            final float halfHeight = 3.0F; // ; 6 / 2.0F
-
-            GL11.glLineWidth(2.0F);
-            //GlStateManager.translate(x + 4.0F, y + 4.0F, 0.0F);
-            GlStateManager.translate(x + halfWidth, y + halfHeight, 0.0F);
-            GlStateManager.rotate(rotation, 0.0F, 0.0F, 1.0F);
-            GL11.glBegin(GL11.GL_LINE_STRIP);
-            //GL11.glVertex2f(-2.5F, 2.5F);
-            //GL11.glVertex2f(0.0F, -3.5F);
-            //GL11.glVertex2f(2.5F, 2.5F);
-            GL11.glVertex2f(-halfWidth, halfHeight);
-            GL11.glVertex2f(0.0F, -halfHeight);
-            GL11.glVertex2f(halfWidth, halfHeight);
-            GL11.glEnd();
-
-            GL11.glDisable(GL11.GL_LINE_SMOOTH);
-            GL11.glLineWidth(1.0F);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.disableBlend();
-            GlStateManager.enableTexture2D();
-        }
-        GlStateManager.popMatrix();
     }
 
 

@@ -1,7 +1,9 @@
 package me.shvaich.moremwe;
 
 
+import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.commands.*;
+import me.shvaich.moremwe.config.MWEHookConfig;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.KeybindingListener;
 import me.shvaich.moremwe.events.ModAnnouncement;
@@ -9,6 +11,7 @@ import me.shvaich.moremwe.features.MyModUpdater;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.gui.data.HUDManager;
 import me.shvaich.moremwe.gui.huds.ShovelGuardHUD;
+import me.shvaich.moremwe.gui.huds.SquadPositionInfo;
 import net.minecraft.command.ICommand;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
@@ -39,6 +42,7 @@ public class MoreMWE {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent e) {
         MoreMWEConfig.loadConfig(new File(e.getModConfigurationDirectory(), MOD_ID + ".cfg"));
+        MWEApi.Config.registerConfig(MWEHookConfig.class);
 
         if (MoreMWEConfig.checkForUpdate && !Boolean.getBoolean("mwe.disableUpdater")) {
             new MyModUpdater(e.getSourceFile()).start();
@@ -63,6 +67,7 @@ public class MoreMWE {
         );
 
         HUDManager.register();
+        MWEApi.Hud.registerSquadHUDExtraRenderer(new SquadPositionInfo());
     }
 
     private static void registerCommands(ICommand... commands) {
