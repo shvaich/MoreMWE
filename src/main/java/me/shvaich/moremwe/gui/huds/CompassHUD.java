@@ -210,15 +210,18 @@ public class CompassHUD extends AbstractRenderer {
         this.skinWidth = 0;
         this.longestDistanceStringWidth = 0;
         this.longestHPStringWidth = 0;
-        int maxDistanceStringsWidth = 0;
+        int longestYDistanceStringWidth = 0;
         for (int i = 0; i < length; i++) {
             final PlayerTrackingData p = pArr[i];
+
+            if (p.skin != null && skinWidth == 0) this.skinWidth = 8 + 2;
+
             final int distanceStrWidth = GuiUtil.getNumberWidth((int) p.distance);
             if (distanceStrWidth > longestDistanceStringWidth) this.longestDistanceStringWidth = distanceStrWidth;
+
             final int yDistanceStrWidth = GuiUtil.getNumberWidth((int) p.distanceY, true, false);
-            final int distanceStringsWidth = distanceStrWidth + yDistanceStrWidth;
-            if (distanceStringsWidth > maxDistanceStringsWidth) maxDistanceStringsWidth = distanceStringsWidth;
-            if (p.skin != null && skinWidth == 0) this.skinWidth = 8 + 2;
+            if (yDistanceStrWidth > longestYDistanceStringWidth) longestYDistanceStringWidth = yDistanceStrWidth;
+
             if (MoreMWEConfig.showHPInCompassHUD) {
                 final int hpStringWidth = GuiUtil.getNumberWidth(getDisplayHP(p.health));
                 if (hpStringWidth > longestHPStringWidth) this.longestHPStringWidth = hpStringWidth;
@@ -227,12 +230,11 @@ public class CompassHUD extends AbstractRenderer {
         if (longestDistanceStringWidth != 0 && MoreMWEConfig.showDistanceUnitInCompassHUD) {
             final int charWidth = mc.fontRendererObj.getCharWidth('m');
             this.longestDistanceStringWidth += charWidth;
-            maxDistanceStringsWidth += charWidth;
         }
         if (longestHPStringWidth != 0 && MoreMWEConfig.showHPIconInCompassHUD) {
             this.longestHPStringWidth += mc.fontRendererObj.getStringWidth(" ❤");
         }
-        return skinWidth + maxDistanceStringsWidth + MoreMWEConfig.compassHUDArrowMargin + 5 + MoreMWEConfig.compassHUDArrowMargin + longestHPStringWidth + (longestHPStringWidth == 0 ? 0 : COLUMN_GAP);
+        return skinWidth + longestDistanceStringWidth + longestYDistanceStringWidth + MoreMWEConfig.compassHUDArrowMargin + 5 + MoreMWEConfig.compassHUDArrowMargin + longestHPStringWidth + (longestHPStringWidth == 0 ? 0 : COLUMN_GAP);
     }
 
     private int getRowHeight() {
