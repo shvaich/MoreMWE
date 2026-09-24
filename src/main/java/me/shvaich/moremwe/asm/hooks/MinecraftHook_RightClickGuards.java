@@ -2,7 +2,6 @@ package me.shvaich.moremwe.asm.hooks;
 
 import fr.alexdoru.mwe.api.MWEApi;
 import fr.alexdoru.mwe.api.enums.MWClass;
-import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.features.GuardableBlock;
 import net.minecraft.block.Block;
