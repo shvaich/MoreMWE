@@ -5,8 +5,7 @@ import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.commands.*;
 import me.shvaich.moremwe.config.MWEHookConfig;
 import me.shvaich.moremwe.config.MoreMWEConfig;
-import me.shvaich.moremwe.events.KeybindingListener;
-import me.shvaich.moremwe.events.ModAnnouncement;
+import me.shvaich.moremwe.events.*;
 import me.shvaich.moremwe.features.MyModUpdater;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.gui.data.HUDManager;
@@ -63,10 +62,11 @@ public class MoreMWE {
                 new ModAnnouncement(),
                 new KeybindingListener(),
                 new PlayerEnergyDisplay(),
-                new ShovelGuardHUD()
+                new HUDManager(),
+                new ShovelGuardHUD(),
+                ChatListener.INSTANCE
         );
 
-        HUDManager.register();
         MWEApi.Hud.registerSquadHUDExtraRenderer(new SquadPositionInfo());
     }
 
