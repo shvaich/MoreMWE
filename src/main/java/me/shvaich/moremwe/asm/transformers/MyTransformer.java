@@ -50,7 +50,7 @@ public abstract class MyTransformer implements IClassNodeTransformer {
     }
 
     protected static boolean checkMcMethod(ClassNode classNode, MethodNode methodNode, String mcpName, String srgName, String desc) {
-        return checkMcMethod(classNode, methodNode, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+        return checkMcMethod(classNode, methodNode, getName(mcpName, srgName), desc);
     }
 
     protected static boolean checkMcFieldInsn(AbstractInsnNode insnNode, int opcode, String owner, String name, String desc) {
@@ -62,7 +62,7 @@ public abstract class MyTransformer implements IClassNodeTransformer {
     }
 
     protected static boolean checkMcFieldInsn(AbstractInsnNode insnNode, int opcode, String owner, String mcpName, String srgName, String desc) {
-        return checkMcFieldInsn(insnNode, opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+        return checkMcFieldInsn(insnNode, opcode, owner, getName(mcpName, srgName), desc);
     }
 
     protected static boolean checkMcMethodInsn(AbstractInsnNode insnNode, int opcode, String owner, String name, String desc) {
@@ -74,21 +74,21 @@ public abstract class MyTransformer implements IClassNodeTransformer {
     }
 
     protected static boolean checkMcMethodInsn(AbstractInsnNode insnNode, int opcode, String owner, String mcpName, String srgName, String desc) {
-        return checkMcMethodInsn(insnNode, opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+        return checkMcMethodInsn(insnNode, opcode, owner, getName(mcpName, srgName), desc);
     }
 
     protected static FieldInsnNode getMcFieldInsnNode(int opcode, String owner, String mcpName, String srgName, String desc) {
-        return new FieldInsnNode(opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+        return new FieldInsnNode(opcode, owner, getName(mcpName, srgName), desc);
     }
 
     protected static MethodInsnNode getMcMethodInsnNode(int opcode, String owner, String mcpName, String srgName, String desc, boolean isInterface) {
-        return new MethodInsnNode(opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc, isInterface);
+        return new MethodInsnNode(opcode, owner, getName(mcpName, srgName), desc, isInterface);
     }
 
     protected static MethodNode getMcOverrideMethod(int opcode, String mcpName, String srgName, String desc) {
         final MethodNode m = new MethodNode(
                 opcode,
-                MWEApi.Asm.isObfuscatedEnvironment() ? mcpName : srgName,
+                getName(mcpName, srgName),
                 desc,
                 null,
                 null
@@ -107,45 +107,45 @@ public abstract class MyTransformer implements IClassNodeTransformer {
         return list;
     }
 
+    private interface InstructionChecker {
+        boolean check(AbstractInsnNode insnNode, int opcode, String owner, String name, String desc);
+    }
+
     protected static MethodInsnNode findMcMethodInsnNode(MethodNode methodNode, int opcode, String owner, String name, String desc) {
-        final ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
-        while (iterator.hasNext()) {
-            final AbstractInsnNode insnNode = iterator.next();
-            if (checkMcMethodInsn(
-                    insnNode,
-                    opcode,
-                    owner,
-                    name,
-                    desc
-            )) {
-                return (MethodInsnNode) insnNode;
-            }
-        }
-        return null;
+        return findMcInsnNode(MyTransformer::checkMcMethodInsn, methodNode, opcode, owner, name, desc);
     }
 
     protected static MethodInsnNode findMcMethodInsnNode(MethodNode methodNode, int opcode, String owner, String mcpName, String srgName, String desc) {
-        return findMcMethodInsnNode(methodNode, opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+        return findMcMethodInsnNode(methodNode, opcode, owner, getName(mcpName, srgName), desc);
     }
 
     protected static FieldInsnNode findMcFieldInsnNode(MethodNode methodNode, int opcode, String owner, String name, String desc) {
+        return findMcInsnNode(MyTransformer::checkMcFieldInsn, methodNode, opcode, owner, name, desc);
+    }
+
+    protected static FieldInsnNode findMcFieldInsnNode(MethodNode methodNode, int opcode, String owner, String mcpName, String srgName, String desc) {
+        return findMcFieldInsnNode(methodNode, opcode, owner, getName(mcpName, srgName), desc);
+    }
+
+
+    private static <T extends AbstractInsnNode> T findMcInsnNode(InstructionChecker checker, MethodNode methodNode, int opcode, String owner, String name, String desc) {
         final ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
         while (iterator.hasNext()) {
             final AbstractInsnNode insnNode = iterator.next();
-            if (checkMcFieldInsn(
+            if (checker.check(
                     insnNode,
                     opcode,
                     owner,
                     name,
                     desc
             )) {
-                return (FieldInsnNode) insnNode;
+                return (T) insnNode;
             }
         }
         return null;
     }
 
-    protected static FieldInsnNode findMcFieldInsnNode(MethodNode methodNode, int opcode, String owner, String mcpName, String srgName, String desc) {
-        return findMcFieldInsnNode(methodNode, opcode, owner, MWEApi.Asm.isObfuscatedEnvironment() ? srgName : mcpName, desc);
+    private static String getName(String developmentName, String productionName) {
+        return MWEApi.Asm.isObfuscatedEnvironment() ? productionName : developmentName;
     }
 }
