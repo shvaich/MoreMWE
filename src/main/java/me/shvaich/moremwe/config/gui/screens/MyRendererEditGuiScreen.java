@@ -81,7 +81,7 @@ public class MyRendererEditGuiScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         renderCrosshair();
-        HUDManager.renderAllDummy(renderer, this.width, this.height);
+        HUDManager.getInstance().renderAllDummy(renderer, this.width, this.height);
         drawDefaultBackground();
         final int dummyWidth = renderer.getDummyWidth();
         final int dummyHeight = renderer.getDummyHeight();

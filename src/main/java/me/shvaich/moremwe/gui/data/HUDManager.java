@@ -5,25 +5,22 @@ import me.shvaich.moremwe.gui.huds.CompassHUD;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class HUDManager {
-    private static final AbstractRenderer[] registeredRenderers;
+    private final AbstractRenderer[] registeredRenderers;
 
+    private static HUDManager instance;
 
-    static {
+    public HUDManager() {
+        if (instance != null) throw new IllegalStateException();
+        instance = this;
         registeredRenderers = new AbstractRenderer[]{
                 new CompassHUD()
         };
     }
 
-    private HUDManager() {}
-
-    public static void register() {
-        if (registeredRenderers.length == 0) return;
-        MinecraftForge.EVENT_BUS.register(new HUDManager());
-    }
+    public static HUDManager getInstance() { return instance; }
 
     @SubscribeEvent
     public void onRenderGUI(RenderGameOverlayEvent.Post e) {
@@ -42,7 +39,7 @@ public class HUDManager {
         }
     }
 
-    public static AbstractRenderer getRendererFromPosition(MyRendererPosition rendererPosition) {
+    public AbstractRenderer getRendererFromPosition(MyRendererPosition rendererPosition) {
         if (rendererPosition != null) {
             for (final AbstractRenderer renderer : registeredRenderers) {
                 if (rendererPosition == renderer.getPosition())
@@ -52,7 +49,7 @@ public class HUDManager {
         return null;
     }
 
-    public static void renderAllDummy(AbstractRenderer editedRenderer, int screenWidth, int screenHeight) {
+    public void renderAllDummy(AbstractRenderer editedRenderer, int screenWidth, int screenHeight) {
         for (final AbstractRenderer renderer : registeredRenderers) {
             if (renderer != editedRenderer && renderer.shouldRenderDummy()) {
                 final int width = renderer.getDummyWidth();

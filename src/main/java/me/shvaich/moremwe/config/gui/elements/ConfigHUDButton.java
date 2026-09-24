@@ -60,7 +60,7 @@ public class ConfigHUDButton extends ConfigGuiButton {
                 return true;
             }
             if (editButton.mousePressed(mc, mouseX, mouseY)) {
-                final AbstractRenderer renderer = HUDManager.getRendererFromPosition(rendererPosition);
+                final AbstractRenderer renderer = HUDManager.getInstance().getRendererFromPosition(rendererPosition);
                 if (renderer != null) {
                     GuiUtil.openScreen(new MyRendererEditGuiScreen(screen, renderer));
                 }
