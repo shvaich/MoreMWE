@@ -2,21 +2,22 @@ package me.shvaich.moremwe.gui.data;
 
 import me.shvaich.moremwe.config.gui.screens.MyRendererEditGuiScreen;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
+import me.shvaich.moremwe.gui.huds.SpiderLeapHUD;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class HUDManager {
-    private final AbstractRenderer[] registeredRenderers;
-
     private static HUDManager instance;
+    private final AbstractRenderer[] registeredRenderers;
 
     public HUDManager() {
         if (instance != null) throw new IllegalStateException();
         instance = this;
         registeredRenderers = new AbstractRenderer[]{
-                new CompassHUD()
+                new CompassHUD(),
+                new SpiderLeapHUD()
         };
     }
 

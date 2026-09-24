@@ -26,6 +26,8 @@ public final class MoreMWEConfig extends AbstractConfig {
     )
     public static final String SHOVEL_GUARD = "ShovelGuard";
 
+    private static final int DEFAULT_HUD_BACKGROUND_COLOR = new Color(8, 8, 8, 0x60).getRGB();
+
     @ConfigProperty(
             type = PropertyType.HUD_POSITION,
             name = "Compass HUD",
@@ -195,7 +197,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             category = "Compass",
             subcategory = "Display"
     )
-    public static boolean showCompassHUDBackground = false;
+    public static boolean showCompassHUDBackground = true;
 
     @ConfigProperty(
             type = PropertyType.COLOR,
@@ -203,7 +205,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             category = "Compass",
             subcategory = "Display"
     )
-    public static int compassHUDBackgroundColor = new Color(8, 8, 8, 0xC0).getRGB();
+    public static int compassHUDBackgroundColor = DEFAULT_HUD_BACKGROUND_COLOR;
 
     @ConfigProperty(
             type = PropertyType.NUMBER,
@@ -370,6 +372,39 @@ public final class MoreMWEConfig extends AbstractConfig {
             }
     )
     public static int energyMessageMegaWallsCondition = 1;
+
+    @ConfigProperty(
+            type = PropertyType.HUD_POSITION,
+            name = "Spider Primary Leap HUD",
+            category = "Mega Walls",
+            subcategory = "Spider Leap HUD"
+    )
+    public static final MyRendererPosition spiderLeapHUDPosition = new MyRendererPosition(false, 0, 0);
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Only Show The HUD when Holding Leap Items",
+            category = "Mega Walls",
+            subcategory = "Spider Leap HUD",
+            comment = "Only show the HUD when holding either a Sword, Bow or Shovel"
+    )
+    public static boolean onlyShowSpiderHUDWhenHoldingItems = false;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Show Background in Spider Leap HUD",
+            category = "Mega Walls",
+            subcategory = "Spider Leap HUD"
+    )
+    public static boolean showSpiderLeapHUDBackground = true;
+
+    @ConfigProperty(
+            type = PropertyType.COLOR,
+            name = "Spider Leap HUD Background Color",
+            category = "Mega Walls",
+            subcategory = "Spider Leap HUD"
+    )
+    public static int spiderLeapHUDBackgroundColor = DEFAULT_HUD_BACKGROUND_COLOR;
 
 
     @ConfigProperty(
