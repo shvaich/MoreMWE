@@ -63,7 +63,7 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
     }
 
     private static String getDistanceText(int distance, int yDistance) {
-        final EnumChatFormatting yDistanceColor = (!MWEHookConfig.colorYDistanceInSquadHUDCompassInfo || yDistance == 0) ? EnumChatFormatting.GRAY :
+        final EnumChatFormatting yDistanceColor = (!MWEHookConfig.colorYDistanceInSquadHUDCompassInfo || yDistance == 0) ? MWEHookConfig.squadCompassInfoDefaultYDistanceColor :
                 (yDistance > 0 ? MWEHookConfig.squadCompassInfoPlayerAboveColor : MWEHookConfig.squadCompassInfoPlayerBelowColor);
         return "(" + EnumChatFormatting.LIGHT_PURPLE + distance + (MWEHookConfig.showDistanceUnitInSquadHUDCompassInfo ? "m" : "")
                 + "  " + yDistanceColor + yDistance + EnumChatFormatting.RESET + ")";

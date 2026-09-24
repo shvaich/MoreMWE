@@ -34,7 +34,7 @@ public class MWEHookConfig {
             name = "Active During",
             category = "Squad",
             subCategory = "MoreMWE - Compass Info",
-            comment = "Controls when to display during a Mega Walls match",
+            //comment = "Controls when to display during a Mega Walls match",
             dependsOn = "Show Compass Information In Squad HUD"
     )
     public static MWCondition squadHUDCompassInfoMegaWallsRenderCondition = MWCondition.DURING_DEATHMATCH;
@@ -49,10 +49,20 @@ public class MWEHookConfig {
     public static boolean showDistanceUnitInSquadHUDCompassInfo = true;
 
     @ConfigProperty(
+            name = "Default Y-Distance Color",
+            category = "Squad",
+            subCategory = "MoreMWE - Compass Info",
+            comment = "The default color for the y-distance value",
+            dependsOn = "Show Compass Information In Squad HUD"
+    )
+    public static EnumChatFormatting squadCompassInfoDefaultYDistanceColor = EnumChatFormatting.GRAY;
+
+    @ConfigProperty(
             name = "Color Y-Distance",
             category = "Squad",
             subCategory = "MoreMWE - Compass Info",
-            comment = "Use a different color for the y-distance value when a player is above/below you",
+            comment = "Use a different color for the y-distance value when a player is above/below you"
+                + "\nUses the default color when the y-distance is 0",
             dependsOn = "Show Compass Information In Squad HUD"
     )
     public static boolean colorYDistanceInSquadHUDCompassInfo = false;
