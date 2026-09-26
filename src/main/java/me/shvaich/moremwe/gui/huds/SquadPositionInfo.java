@@ -16,6 +16,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class SquadPositionInfo implements ISquadInfoRenderer {
 
+    private static final int ARROW_LEFT_MARGIN = 8;
+
     @Override
     public int getWidth(@NotNull NetworkPlayerInfo netInfo, @Nullable EntityPlayer entityPlayer) {
         if (entityPlayer == null) return 0;
@@ -23,7 +25,7 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
         if (mc.thePlayer == null || mc.thePlayer == entityPlayer || !isEnabled(mc)) return 0;
         final int distance = (int) entityPlayer.getDistanceToEntity(mc.thePlayer);
         final int yDistance = (int) (entityPlayer.posY - mc.thePlayer.posY);
-        return mc.fontRendererObj.getStringWidth(getDistanceText(distance, yDistance)) + 6 + 5;
+        return mc.fontRendererObj.getStringWidth(getDistanceText(distance, yDistance)) + ARROW_LEFT_MARGIN + 5 + 2;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
 
         int drawX = x;
         drawX = mc.fontRendererObj.drawStringWithShadow(getDistanceText(distance, (int) distY), drawX, y, ModResources.WHITE);
-        drawX += 6;
+        drawX += ARROW_LEFT_MARGIN;
         GuiUtil.drawDirectionArrow(drawX, y + 1, rotation, ColorPalette.VanillaColors.LIGHT_PURPLE);
     }
 
