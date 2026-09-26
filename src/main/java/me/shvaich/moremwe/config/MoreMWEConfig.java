@@ -375,11 +375,20 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.HUD_POSITION,
-            name = "Spider Primary Leap HUD",
+            name = "Spider Leap HUD",
             category = "Mega Walls",
             subcategory = "Spider Leap HUD"
     )
     public static final MyRendererPosition spiderLeapHUDPosition = new MyRendererPosition(false, 0, 0);
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Hide the HUD During Prep Phase",
+            category = "Mega Walls",
+            subcategory = "Spider Leap HUD",
+            comment = "Hides the HUD until the walls fall"
+    )
+    public static boolean hideSpiderLeapHUDDuringPrepPhase = true;
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
@@ -434,6 +443,7 @@ public final class MoreMWEConfig extends AbstractConfig {
     )
     public static boolean automaticUpdate = false;
 
+
     private static MoreMWEConfig instance;
 
     public static void loadConfig(File file) {
@@ -452,14 +462,15 @@ public final class MoreMWEConfig extends AbstractConfig {
                 "maxCompassTrackingDistance",
                 "compassKeybindMode",
                 "showCompassWhenSpectator",
+                "isCompassForMegaWallsOnly",
+                "compassMegaWallsRenderCondition",
+                "prioritizeUniqueTeams",
+                "renderCustomTeammateColor",
                 "showDistanceUnitInCompassHUD",
                 "colorYDistanceInCompassHUD",
                 "showHPInCompassHUD",
                 "showCompassHUDBackground",
-                "isCompassForMegaWallsOnly",
-                "compassMegaWallsRenderCondition",
-                "prioritizeUniqueTeams",
-                "renderCustomTeammateColor"
+                "compassHUDArrowMargin"
         ).forEach(dependantName -> addDependency(dependantName, "compassHUDPosition"));
 
         addDependency("ignoreOtherSpectators", "showCompassWhenSpectator");
@@ -489,6 +500,16 @@ public final class MoreMWEConfig extends AbstractConfig {
 
 
         addDependency("energyMessageMegaWallsCondition", "sendEnergyMessageWhenFullyCharged");
+
+
+        Arrays.asList(
+                "hideSpiderLeapHUDDuringPrepPhase",
+                "onlyShowSpiderHUDWhenHoldingItems",
+                "showSpiderLeapHUDBackground"
+        ).forEach(property -> addDependency(property, "spiderLeapHUDPosition"));
+
+        addDependency("spiderLeapHUDBackgroundColor", "showSpiderLeapHUDBackground");
+
 
         addDependency("automaticUpdate", "checkForUpdate");
     }

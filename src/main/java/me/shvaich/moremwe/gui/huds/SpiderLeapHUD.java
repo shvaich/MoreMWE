@@ -35,6 +35,7 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
                 && isArrowThePrimaryLeap != null
                 && MWEApi.Scoreboard.getScoreboardParser().isInMwGame()
                 && isSpider()
+                && (!MoreMWEConfig.hideSpiderLeapHUDDuringPrepPhase || !MWEApi.Scoreboard.getScoreboardParser().isPrepPhase())
                 && isEnabledFromHeldItem();
     }
 
@@ -73,12 +74,14 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
             final int pad = 2;
             GuiUtil.drawRect(x - pad, y - pad, x + thisWidth + pad, y + thisHeight + pad, MoreMWEConfig.spiderLeapHUDBackgroundColor);
         }
-        mc.fontRendererObj.drawStringWithShadow(EnumChatFormatting.GOLD + "Leap Mode: " + (isShifting ? EnumChatFormatting.AQUA : EnumChatFormatting.GREEN) + (showArrow ? "Arrow" : "Arced"), x, y, 0xFFFFFFFF);
+        mc.fontRendererObj.drawStringWithShadow(EnumChatFormatting.GOLD + "Leap Mode: "
+                + ((showArrow != isShifting) ? EnumChatFormatting.GREEN + "Arrow" : EnumChatFormatting.AQUA + "Arced")
+                + (isShifting ? (EnumChatFormatting.GRAY + " (Sneak)") : ""), x, y, 0xFFFFFFFF);
     }
 
     private int getDisplayWidth(Minecraft mc, boolean isShifting) {
         final boolean showArrow = (isArrowThePrimaryLeap == null || isArrowThePrimaryLeap) != isShifting;
-        return mc.fontRendererObj.getStringWidth("Leap Mode: " + (showArrow ? "Arrow" : "Arced"));
+        return mc.fontRendererObj.getStringWidth("Leap Mode: " + (showArrow ? "Arrow" : "Arced") + (isShifting ? " (Sneak)" : ""));
     }
 
     @Override
