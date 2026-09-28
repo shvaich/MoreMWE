@@ -20,6 +20,7 @@ import java.util.Collections;
 public class MyRendererEditGuiScreen extends GuiScreen {
     private static final int BUTTON_SIZE = 16;
 
+    private static boolean drawBackground = true;
     private static boolean drawCenterLines = true;
 
     private final GuiScreen parentScreen;
@@ -27,6 +28,7 @@ public class MyRendererEditGuiScreen extends GuiScreen {
     private final MyRendererPosition rendererPosition;
     private final MyGuiButton resetToDefaultButton;
     private final MyGuiButton undoChangesButton;
+    private final MyGuiButton drawBackgroundButton;
     private final MyGuiButton drawCenterLinesButton;
 
     private final double originalRelativeX, originalRelativeY;
@@ -45,7 +47,18 @@ public class MyRendererEditGuiScreen extends GuiScreen {
 
         this.resetToDefaultButton = new MyGuiButton(BUTTON_SIZE).setTexture(ModResources.RELOAD_ICON);
 
-        this.undoChangesButton = new MyGuiButton(BUTTON_SIZE).setTexture(ModResources.UNDO_ICON);;
+        this.undoChangesButton = new MyGuiButton(BUTTON_SIZE).setTexture(ModResources.UNDO_ICON);
+
+        this.drawBackgroundButton = new MyGuiButton(BUTTON_SIZE) {
+            @Override
+            public void drawButton(Minecraft mc, int mouseX, int mouseY, boolean canButtonBeHovered) {
+                super.drawButton(mc, mouseX, mouseY, canButtonBeHovered);
+                final int pad = 3;
+                final int backgroundColor = drawBackground ? 0xA0101010 : 0x20FFFFFF;
+                final int borderColor = drawBackground ? 0xFF141414 : 0xFF8A8A8A;
+                GuiUtil.drawRectWithBorder(xPosition + pad, yPosition + pad, xPosition + width - pad, yPosition + height - pad, backgroundColor, borderColor);
+            }
+        };
 
         this.drawCenterLinesButton = new MyGuiButton(BUTTON_SIZE) {
             @Override
@@ -82,12 +95,16 @@ public class MyRendererEditGuiScreen extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         renderCrosshair();
         HUDManager.getInstance().renderAllDummy(renderer, this.width, this.height);
-        drawDefaultBackground();
+        if (drawBackground) {
+            drawGradientRect(0, 0, this.width, this.height, 0xC0101010, 0xD0101010);
+        }
         final int dummyWidth = renderer.getDummyWidth();
         final int dummyHeight = renderer.getDummyHeight();
+        final int relativeScreenWidth = this.width - dummyWidth;
+        final int relativeScreenHeight = this.height - dummyHeight; // (height) + 1
         if (isDragging) {
-            final int posX = MathHelper.clamp_int(rendererPosition.getDrawX() + mouseX - prevMouseX, 0, this.width - dummyWidth);
-            final int posY = MathHelper.clamp_int(rendererPosition.getDrawY() + mouseY - prevMouseY, 0, this.height - dummyHeight); // (height) + 1
+            final int posX = MathHelper.clamp_int(rendererPosition.getDrawX() + mouseX - prevMouseX, 0, relativeScreenWidth);
+            final int posY = MathHelper.clamp_int(rendererPosition.getDrawY() + mouseY - prevMouseY, 0, relativeScreenHeight);
             rendererPosition.setDrawPosition(posX, posY);
         }
         renderer.renderDummy(this.width, this.height, dummyWidth, dummyHeight);
@@ -105,6 +122,11 @@ public class MyRendererEditGuiScreen extends GuiScreen {
             undoChangesButton.drawButton(mc, mouseX, mouseY);
             buttonY += undoChangesButton.height + 2;
 
+            drawBackgroundButton.xPosition = buttonX;
+            drawBackgroundButton.yPosition = buttonY;
+            drawBackgroundButton.drawButton(mc, mouseX, mouseY);
+            buttonY += drawBackgroundButton.height + 2;
+
             drawCenterLinesButton.xPosition = buttonX;
             drawCenterLinesButton.yPosition = buttonY;
             drawCenterLinesButton.drawButton(mc, mouseX, mouseY);
@@ -117,12 +139,15 @@ public class MyRendererEditGuiScreen extends GuiScreen {
             else if (undoChangesButton.isHovered()) {
                 hoveringText = "Undo Changes";
             }
+            else if (drawBackgroundButton.isHovered()) {
+                hoveringText = "Draw Screen Background: " + ChatUtil.getBooleanMsg(drawBackground);
+            }
             else if (drawCenterLinesButton.isHovered()) {
                 hoveringText = "Show crosshair guidelines: " + ChatUtil.getBooleanMsg(drawCenterLines);
             }
 
             if (hoveringText != null) {
-                drawHoveringText(Collections.singletonList(hoveringText), mouseX, mouseY + fontRendererObj.FONT_HEIGHT + 6);
+                drawHoveringText(Collections.singletonList(hoveringText), mouseX, mouseY + 14);
             }
         }
         this.prevMouseX = mouseX;
@@ -138,6 +163,10 @@ public class MyRendererEditGuiScreen extends GuiScreen {
                     if (clickedOnResetToDefault) rendererPosition.resetToDefaultPosition();
                     else rendererPosition.setRelativePosition(originalRelativeX, originalRelativeY);
                     rendererPosition.updateDrawPositionFromRelative(this.width - renderer.getDummyWidth(), this.height - renderer.getDummyHeight()); // (height) + 1
+                    return;
+                }
+                if (drawBackgroundButton.mousePressed(mc, mouseX, mouseY)) {
+                    drawBackground = !drawBackground;
                     return;
                 }
                 if (drawCenterLinesButton.mousePressed(mc, mouseX, mouseY)) {
