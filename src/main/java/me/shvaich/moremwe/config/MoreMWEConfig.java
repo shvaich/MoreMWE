@@ -1,6 +1,7 @@
 package me.shvaich.moremwe.config;
 
 import fr.alexdoru.configlib.api.ColorPalette;
+import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.data.*;
 import me.shvaich.moremwe.features.GuardableBlock;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
@@ -8,6 +9,7 @@ import me.shvaich.moremwe.config.gui.elements.custom.ConfigGuardableBlockButton;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
+import net.minecraftforge.common.config.Configuration;
 
 import java.awt.Color;
 import java.io.File;
@@ -326,29 +328,53 @@ public final class MoreMWEConfig extends AbstractConfig {
     public static boolean canOverrideShovelGuard = true;
 
     @ConfigProperty(
-            type = PropertyType.SWITCH,
-            name = "Show " + SHOVEL_GUARD + " HUD",
+            type = PropertyType.HUD_POSITION,
+            name = SHOVEL_GUARD + " HUD",
             category = SHOVEL_GUARD,
-            subcategory = "HUD"
+            subcategory = "Display"
     )
-    public static boolean renderShovelGuardHUD = false;
+    public static final MyRendererPosition shovelGuardHUDPosition = new MyRendererPosition(false, 0, 0);
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Show HUD Background",
+            category = SHOVEL_GUARD,
+            subcategory = "Display"
+    )
+    public static boolean showShovelGuardHUDBackground = true;
+
+    @ConfigProperty(
+            type = PropertyType.COLOR,
+            name = "HUD Background Color",
+            category = SHOVEL_GUARD,
+            subcategory = "Display"
+    )
+    public static int shovelGuardHUDBackgroundColor = DEFAULT_HUD_BACKGROUND_COLOR;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Show " + SHOVEL_GUARD + " Indicator",
+            category = SHOVEL_GUARD,
+            subcategory = "Display"
+    )
+    public static boolean showShovelGuardIndicator = false;
 
     @ConfigProperty(
             type = PropertyType.SELECTOR,
             category = SHOVEL_GUARD,
-            subcategory = "HUD",
-            name = SHOVEL_GUARD + " HUD Style",
+            subcategory = "Display",
+            name = SHOVEL_GUARD + " Indicator Style",
             options = { "Background", "Line-Over" }
     )
-    public static int shovelGuardHudStyle = 0;
+    public static int shovelGuardIndicatorStyle = 0;
 
     @ConfigProperty(
             type = PropertyType.COLOR,
             category = SHOVEL_GUARD,
-            subcategory = "HUD",
-            name = SHOVEL_GUARD + " HUD Color"
+            subcategory = "Display",
+            name = SHOVEL_GUARD + " Indicator Color"
     )
-    public static int shovelGuardHudColor = new Color(0xFF, 0, 0, 0x55).getRGB();
+    public static int shovelGuardIndicatorColor = new Color(0xFF, 0, 0, 0x55).getRGB();
 
 
     @ConfigProperty(
@@ -446,6 +472,8 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     private static MoreMWEConfig instance;
 
+    public static MoreMWEConfig instance() { return instance; }
+
     public static void loadConfig(File file) {
         if (instance != null)
             throw new IllegalStateException("Config already created");
@@ -453,10 +481,21 @@ public final class MoreMWEConfig extends AbstractConfig {
         instance = new MoreMWEConfig(file);
     }
 
-    public static MoreMWEConfig instance() { return instance; }
+    @Override
+    protected void onConfigUpdate(Configuration config, String savedVersion, String version) {
+        if (isVersionLowerThan(savedVersion, "1.1")) {
+            // Removing an old Property declared in AbstractConfig here
+            // because it only exists in my MoreMWE mod version 1.0
+            removeConfigProperty(GENERAL_CATEGORY, "Behaviour when Dependency is Disabled");
+
+            migratePropertyName(SHOVEL_GUARD, "Show " + SHOVEL_GUARD + " HUD", "Show " + SHOVEL_GUARD + " Indicator");
+            migratePropertyName(SHOVEL_GUARD, SHOVEL_GUARD + " HUD Style", SHOVEL_GUARD + " Indicator Style");
+            migratePropertyName(SHOVEL_GUARD, SHOVEL_GUARD + " HUD Color", SHOVEL_GUARD + " Indicator Color");
+        }
+    }
 
     private MoreMWEConfig(File file) {
-        super(file);
+        super(file, MoreMWE.VERSION);
         Arrays.asList(
                 "maxCompassTrackedPlayers",
                 "maxCompassTrackingDistance",
@@ -492,11 +531,14 @@ public final class MoreMWEConfig extends AbstractConfig {
         Arrays.asList(
                 "shovelEntityInteractionCondition",
                 "canOverrideShovelGuard",
-                "renderShovelGuardHUD"
+                "showShovelGuardIndicator"
         ).forEach(property -> addDependency(property, "isShovelGuarded"));
 
-        addDependency("shovelGuardHudStyle", "renderShovelGuardHUD");
-        addDependency("shovelGuardHudColor", "renderShovelGuardHUD");
+        addDependency("showShovelGuardHUDBackground", "shovelGuardHUDPosition");
+        addDependency("shovelGuardHUDBackgroundColor", "showShovelGuardHUDBackground");
+
+        addDependency("shovelGuardIndicatorStyle", "showShovelGuardIndicator");
+        addDependency("shovelGuardIndicatorColor", "showShovelGuardIndicator");
 
 
         addDependency("energyMessageMegaWallsCondition", "sendEnergyMessageWhenFullyCharged");

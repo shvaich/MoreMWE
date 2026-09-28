@@ -9,7 +9,7 @@ import me.shvaich.moremwe.events.*;
 import me.shvaich.moremwe.features.MyModUpdater;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.gui.data.HUDManager;
-import me.shvaich.moremwe.gui.huds.ShovelGuardHUD;
+import me.shvaich.moremwe.gui.huds.ShovelGuardIndicator;
 import me.shvaich.moremwe.gui.huds.SquadPositionInfo;
 import net.minecraft.command.ICommand;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -63,7 +63,7 @@ public class MoreMWE {
                 new KeybindingListener(),
                 new PlayerEnergyDisplay(),
                 new HUDManager(),
-                new ShovelGuardHUD(),
+                new ShovelGuardIndicator(),
                 ChatListener.INSTANCE
         );
 

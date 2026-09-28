@@ -2,6 +2,7 @@ package me.shvaich.moremwe.gui.data;
 
 import me.shvaich.moremwe.config.gui.screens.MyRendererEditGuiScreen;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
+import me.shvaich.moremwe.gui.huds.ShovelGuardHUD;
 import me.shvaich.moremwe.gui.huds.SpiderLeapHUD;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -17,7 +18,8 @@ public class HUDManager {
         instance = this;
         registeredRenderers = new AbstractRenderer[]{
                 new CompassHUD(),
-                new SpiderLeapHUD()
+                new SpiderLeapHUD(),
+                new ShovelGuardHUD()
         };
     }
 
