@@ -48,6 +48,15 @@ public class MWEHookConfig {
     )
     public static boolean showDistanceUnitInSquadHUDCompassInfo = true;
 
+//    @ConfigProperty(
+//            name = "Primary Color",
+//            category = "Squad",
+//            subCategory = "MoreMWE - Compass Info",
+//            comment = "The color of the distance value and the directional arrow",
+//            dependsOn = "Show Compass Information In Squad HUD"
+//    )
+//    public static EnumChatFormatting squadCompassInfoMainColor = EnumChatFormatting.LIGHT_PURPLE;
+
     @ConfigProperty(
             name = "Default Y-Distance Color",
             category = "Squad",
