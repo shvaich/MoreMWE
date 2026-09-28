@@ -199,10 +199,9 @@ public class CompassHUD extends AbstractRenderer {
         GlStateManager.disableBlend();
     }
 
-    private static void drawBackground(int left, int top, int thisWidth, int thisHeight) {
+    private void drawBackground(int left, int top, int thisWidth, int thisHeight) {
         if (MoreMWEConfig.showCompassHUDBackground) {
-            final int PADDING = 2;
-            GuiUtil.drawRect(left - PADDING, top - PADDING, left + thisWidth + PADDING, top + thisHeight + PADDING, MoreMWEConfig.compassHUDBackgroundColor);
+            drawBackground(left, top, thisWidth, thisHeight, MoreMWEConfig.compassHUDBackgroundColor);
         }
     }
 

@@ -6,7 +6,6 @@ import fr.alexdoru.mwe.api.events.MegaWallsGameEvent;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.ChatListener;
 import me.shvaich.moremwe.gui.data.AbstractRenderer;
-import me.shvaich.moremwe.utils.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.*;
@@ -36,7 +35,7 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
                 && MWEApi.Scoreboard.getScoreboardParser().isInMwGame()
                 && isSpider()
                 && (!MoreMWEConfig.hideSpiderLeapHUDDuringPrepPhase || !MWEApi.Scoreboard.getScoreboardParser().isPrepPhase())
-                && isEnabledFromHeldItem();
+                && (!MoreMWEConfig.onlyShowSpiderHUDWhenHoldingItems || isHoldingSpiderItem());
     }
 
     @Override
@@ -71,8 +70,7 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
         final int y = rendererPosition.getDrawY();
         final boolean showArrow = (isArrowThePrimaryLeap == null || isArrowThePrimaryLeap) != isShifting;
         if (MoreMWEConfig.showSpiderLeapHUDBackground) {
-            final int pad = 2;
-            GuiUtil.drawRect(x - pad, y - pad, x + thisWidth + pad, y + thisHeight + pad, MoreMWEConfig.spiderLeapHUDBackgroundColor);
+            drawBackground(x, y, thisWidth, thisHeight, MoreMWEConfig.spiderLeapHUDBackgroundColor);
         }
         mc.fontRendererObj.drawStringWithShadow(EnumChatFormatting.GOLD + "Leap Mode: "
                 + ((showArrow != isShifting) ? EnumChatFormatting.GREEN + "Arrow" : EnumChatFormatting.AQUA + "Arced")
@@ -116,11 +114,8 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
                 && MWEApi.Player.getPlayerInfo(mc.thePlayer).getMWClass() == MWClass.SPIDER;
     }
 
-    private static boolean isEnabledFromHeldItem() {
-        if (!MoreMWEConfig.onlyShowSpiderHUDWhenHoldingItems) return true;
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (mc.thePlayer == null) return false;
-        final ItemStack stack = mc.thePlayer.getHeldItem();
+    private static boolean isHoldingSpiderItem() {
+        final ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItem();
         if (stack == null) return false;
         final Item item = stack.getItem();
         return item instanceof ItemSword || item instanceof ItemBow || item instanceof ItemSpade;
