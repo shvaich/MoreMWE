@@ -1,5 +1,7 @@
 package me.shvaich.moremwe.gui.data;
 
+import me.shvaich.moremwe.utils.GuiUtil;
+
 public abstract class AbstractRenderer {
     protected final MyRendererPosition rendererPosition;
 
@@ -26,4 +28,10 @@ public abstract class AbstractRenderer {
     public int getDummyWidth() { return getWidth(); }
 
     public int getDummyHeight() { return getHeight(); }
+
+    protected void drawBackground(int x, int y, int thisWidth, int thisHeight, int backgroundColor, int padding) {
+        GuiUtil.drawRect(x - padding, y - padding, x + thisWidth + padding, y + thisHeight + padding, backgroundColor);
+    }
+
+    protected void drawBackground(int x, int y, int thisWidth, int thisHeight, int backgroundColor) { drawBackground(x, y, thisWidth, thisHeight, backgroundColor, 2); }
 }
