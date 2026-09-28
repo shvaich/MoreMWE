@@ -8,6 +8,8 @@ import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.versioning.ComparableVersion;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -28,6 +30,7 @@ public class AbstractConfig {
 
     private static final boolean DEFAULT_HIDE_PROPERTY_IF_HAS_DISABLED_DEPENDENCY = false;
 
+    // This should not be static and the way it is unhandled is wrong.
     @ConfigProperty(
             type = PropertyType.SWITCH,
             category = GENERAL_CATEGORY,
@@ -43,12 +46,32 @@ public class AbstractConfig {
     private final List<ConfigFieldContainer> configFields = new ArrayList<>();
     private final boolean addedInternalProperties;
 
-    protected AbstractConfig(File file) { this(file, true); }
+    protected AbstractConfig(final File file, final String configVersion) { this(file, configVersion, true); }
 
-    protected AbstractConfig(File file, boolean addInternalProperties) {
+    protected AbstractConfig(final File file, final String configVersion, final boolean addInternalProperties) {
+        Objects.requireNonNull(file);
+        Objects.requireNonNull(configVersion);
+        final boolean isExistingInstallation = file.exists(); // only needed for MoreMWE
+
         this.addedInternalProperties = addInternalProperties;
         this.config = new Configuration(file);
         config.load();
+
+        // This part is only needed for MoreMWE
+        // since I added this feature in MoreMWE v1.1
+        String defaultValue = configVersion;
+        if (isExistingInstallation && !configHasProperty("Config", "Version")) {
+            defaultValue = "1.0";
+        }
+
+        final Property modVersion = config.get("Config", "Version", defaultValue, "Don't Touch This!");
+        final String savedVersion = modVersion.getString();
+
+        if (!savedVersion.equals(configVersion)) {
+            modVersion.set(configVersion);
+            onConfigUpdate(config, savedVersion, configVersion);
+        }
+
         final Map<String, Set<String>> configFieldsNamesMap = new HashMap<>();
         final ConfigFieldContainer hidePropertyIfHasDisabledDependencyField;
         try {
@@ -63,6 +86,7 @@ public class AbstractConfig {
                 }
             }
 
+            // very bad (static in instance context)
             if (addInternalProperties) {
                 Field field = AbstractConfig.class.getDeclaredField("hidePropertyIfHasDisabledDependency");
                 field.setAccessible(true);
@@ -91,7 +115,6 @@ public class AbstractConfig {
         }
         setConfigPropertiesOrder();
 
-        removePropertyFromConfigFile(GENERAL_CATEGORY, "Behaviour when Dependency is Disabled");
         if (config.hasChanged()) config.save();
 
         if (hidePropertyIfHasDisabledDependencyField != null) {
@@ -244,20 +267,9 @@ public class AbstractConfig {
         }
     }
 
-    protected void removePropertyFromConfigFile(String category, String name) {
-        category = StringUtil.toLowerCase(category);
-        if (config.hasCategory(category)) {
-            config.getCategory(category).remove(name);
-        }
-        else {
-            MoreMWE.LOGGER.warn("Cannot remove property from config file ; category {} doesn't exist in config", category);
-        }
-    }
 
-    /** Call this after your last {@link #removePropertyFromConfigFile(String, String)} call */
-    protected final void saveChangesToConfigFile() {
-        config.save();
-    }
+    /** Override this to handle Config Updates */
+    protected void onConfigUpdate(Configuration config, String savedVersion, String version) {}
 
     protected void addListener(String name, Consumer<Object> fn) {
         addListener(getConfigFieldOrThrow(name), fn);
@@ -287,5 +299,37 @@ public class AbstractConfig {
             }
         }
         throw new IllegalArgumentException("Field (" + name + ") NOT FOUND!!!");
+    }
+
+    protected static boolean isVersionLowerThan(String testedVersion, String referenceVersion) {
+        return new ComparableVersion(testedVersion).compareTo(new ComparableVersion(referenceVersion)) < 0;
+    }
+
+    protected final boolean configHasProperty(String category, String name) {
+        return config.hasKey(StringUtil.toLowerCase(category), name);
+    }
+
+    /** @return the previous property associated with the category and name, or null if there was no mapping for the category and name. */
+    protected final Property removeConfigProperty(String category, String name) {
+        category = StringUtil.toLowerCase(category);
+        if (config.hasCategory(category)) {
+            return config.getCategory(category).remove(name);
+        }
+        else {
+            MoreMWE.LOGGER.debug("Cannot remove property from config file ; category {} doesn't exist in config", category);
+            return null;
+        }
+    }
+
+    protected final void migratePropertyName(String category, String oldName, String newName) {
+        category = StringUtil.toLowerCase(category);
+        if (config.hasKey(category, oldName)) {
+            final net.minecraftforge.common.config.ConfigCategory configCategory = config.getCategory(category);
+            final Property oldProperty = configCategory.remove(oldName);
+            if (oldProperty != null && !configCategory.containsKey(newName)) {
+                oldProperty.setName(newName);
+                configCategory.put(newName, oldProperty);
+            }
+        }
     }
 }
