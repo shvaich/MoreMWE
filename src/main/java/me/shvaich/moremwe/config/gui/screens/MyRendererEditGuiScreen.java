@@ -77,8 +77,8 @@ public class MyRendererEditGuiScreen extends GuiScreen {
 
     @Override
     public void initGui() {
-        final int rendererWidth = renderer.getDummyWidth();
-        final int rendererHeight = renderer.getDummyHeight();
+        final int rendererWidth = renderer.getDummyWidth(mc);
+        final int rendererHeight = renderer.getDummyHeight(mc);
         if (!isFirstResize) {
             rendererPosition.savePositionToRelative(prevScreenWidth - prevRendererWidth, prevScreenHeight - prevRendererHeight); // (height) + 1
         }
@@ -94,12 +94,12 @@ public class MyRendererEditGuiScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         renderCrosshair();
-        HUDManager.getInstance().renderAllDummy(renderer, this.width, this.height);
+        HUDManager.instance().renderAllDummy(mc, renderer, this.width, this.height);
         if (drawBackground) {
             drawGradientRect(0, 0, this.width, this.height, 0xC0101010, 0xD0101010);
         }
-        final int dummyWidth = renderer.getDummyWidth();
-        final int dummyHeight = renderer.getDummyHeight();
+        final int dummyWidth = renderer.getDummyWidth(mc);
+        final int dummyHeight = renderer.getDummyHeight(mc);
         final int relativeScreenWidth = this.width - dummyWidth;
         final int relativeScreenHeight = this.height - dummyHeight; // (height) + 1
         if (isDragging) {
@@ -107,7 +107,7 @@ public class MyRendererEditGuiScreen extends GuiScreen {
             final int posY = MathHelper.clamp_int(rendererPosition.getDrawY() + mouseY - prevMouseY, 0, relativeScreenHeight);
             rendererPosition.setDrawPosition(posX, posY);
         }
-        renderer.renderDummy(this.width, this.height, dummyWidth, dummyHeight);
+        renderer.renderDummy(mc, this.width, this.height, dummyWidth, dummyHeight);
         if (!isDragging) {
             final int buttonX = this.width - BUTTON_SIZE - 2;
             int buttonY = 2;
@@ -162,7 +162,7 @@ public class MyRendererEditGuiScreen extends GuiScreen {
                 if (clickedOnResetToDefault || undoChangesButton.mousePressed(mc, mouseX, mouseY)) {
                     if (clickedOnResetToDefault) rendererPosition.resetToDefaultPosition();
                     else rendererPosition.setRelativePosition(originalRelativeX, originalRelativeY);
-                    rendererPosition.updateDrawPositionFromRelative(this.width - renderer.getDummyWidth(), this.height - renderer.getDummyHeight()); // (height) + 1
+                    rendererPosition.updateDrawPositionFromRelative(this.width - renderer.getDummyWidth(mc), this.height - renderer.getDummyHeight(mc)); // (height) + 1
                     return;
                 }
                 if (drawBackgroundButton.mousePressed(mc, mouseX, mouseY)) {
@@ -198,7 +198,7 @@ public class MyRendererEditGuiScreen extends GuiScreen {
 
     @Override
     public void onGuiClosed() {
-        rendererPosition.savePositionToRelative(this.width - renderer.getDummyWidth(), this.height - renderer.getDummyHeight()); // (height) + 1
+        rendererPosition.savePositionToRelative(this.width - renderer.getDummyWidth(mc), this.height - renderer.getDummyHeight(mc)); // (height) + 1
         super.onGuiClosed();
     }
 

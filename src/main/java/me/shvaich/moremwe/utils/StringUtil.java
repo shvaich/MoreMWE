@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
-public class StringUtil {
+public final class StringUtil {
+    private StringUtil() {}
+
     public static String toLowerCase(String str) {
         return isEmpty(str) ? "" : str.toLowerCase(Locale.ENGLISH);
     }

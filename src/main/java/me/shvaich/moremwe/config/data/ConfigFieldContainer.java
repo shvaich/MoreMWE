@@ -6,6 +6,7 @@ import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.utils.ColorUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -35,10 +36,10 @@ public class ConfigFieldContainer {
 
         final String category = annotation.category();
         if (category.isEmpty())
-            throw new IllegalArgumentException("Category isn't allowed to be empty. At field: " + annotation.name());
+            throw new MoreMWEException().sendDebug("Category isn't allowed to be empty. At field: " + field.getName());
 
         if (!configFieldsNamesMap.computeIfAbsent(category, t -> new HashSet<>()).add(annotation.name()))
-            throw new IllegalStateException("Field " + annotation.name() + " already exists in category " + category);
+            throw new MoreMWEException().sendDebug("Field {} uses name {} which already exists in category {}", field.getName(), annotation.name(), category);
 
         this.field = field;
         this.annotation = annotation;
@@ -48,19 +49,19 @@ public class ConfigFieldContainer {
     private static ConfigProperty getConfigProperty(Field field) {
         final ConfigProperty annotation = field.getAnnotation(ConfigProperty.class);
         if (!annotation.type().isFieldValid(field))
-            throw new IllegalArgumentException("Field " + field.getName() + " is invalid. " + annotation.type() + " is incompatible with " + field.getType());
+            throw new MoreMWEException().sendDebug("Field {} is invalid. PropertyType {} is incompatible with {}", field.getName(), annotation.type().name(), field.getType());
 
         switch (annotation.type()) {
             case SELECTOR: {
                 if (annotation.options().length == 0)
-                    throw new IllegalArgumentException("Field " + field.getName() + " is invalid. SELECTOR must have at least one option");
+                    throw new MoreMWEException().sendDebug("Field {} is invalid. SELECTOR must have at least one option", field.getName());
                 break;
             }
 
             case NUMBER:
             case SLIDER: {
                 if (annotation.min() >= annotation.max())
-                    throw new IllegalArgumentException("Field " + field.getName() + " is invalid. " + annotation.type().name() + "'s minimum value must be smaller than the maximum value");
+                    throw new MoreMWEException().sendDebug("Field {} is invalid. {}'s minimum value must be smaller than the maximum value", field.getName(), annotation.type().name());
                 break;
             }
         }
@@ -101,7 +102,7 @@ public class ConfigFieldContainer {
             collection.addAll(Arrays.asList(prop.getStringList()));
             return new Property[]{prop};
         }
-        else throw new IllegalStateException("Field type (" + field.getType() + ") isn't supported");
+        else throw new MoreMWEException().sendDebug("Field type {} isn't supported", field.getType());
     }
 
     private int getValidIntFromConfig(Property prop) {
@@ -141,7 +142,7 @@ public class ConfigFieldContainer {
             final Collection<String> collection = (Collection<String>) getValue();
             theConfigProperty().set(collection.toArray(new String[0]));
         }
-        else throw new IllegalStateException("Field type (" + field.getType() + ") isn't supported");
+        else throw new MoreMWEException().sendDebug("Field type {} isn't supported", field.getType());
     }
 
     public ConfigGuiElement[] getConfigButtons(MyConfigGuiScreen screen) throws IllegalAccessException {
@@ -169,10 +170,12 @@ public class ConfigFieldContainer {
                     constructor.setAccessible(true);
                     return constructor.newInstance().getConfigGuiButtons(screen, this);
                 }
-                catch (Exception e) { throw new RuntimeException("Failed to get ConfigButtons from custom property info", e); }
+                catch (Exception e) {
+                    throw new MoreMWEException(e).sendDebug("Failed to get ConfigButtons from custom property info");
+                }
             }
 
-            default: throw new IllegalArgumentException("Config doesn't support GUI for this field. (" + annotation.type() + ")");
+            default: throw new MoreMWEException().sendDebug("Config doesn't support GUI for this PropertyType. Type [{}]", getType());
         }
         return new ConfigGuiElement[]{ singleButton };
     }
@@ -215,23 +218,23 @@ public class ConfigFieldContainer {
 
     public void setAction(Consumer<Object> action) {
         if (this.action != null)
-            throw new IllegalStateException("Field already has an action!");
+            throw new MoreMWEException().sendDebug("Field {} already has an action!", getFieldName());
         this.action = action;
     }
 
     public void setHideCondition(BooleanSupplier hideCondition) {
         if (this.hideCondition != null)
-            throw new IllegalStateException("Field already has a 'hideCondition'");
+            throw new MoreMWEException().sendDebug("Field {} already has a hideCondition", getFieldName());
         this.hideCondition = hideCondition;
     }
 
     public void setDependsOn(ConfigFieldContainer dependsOn) {
         // maybe allow null in the future
         if (dependsOn == null || (dependsOn.getType() != PropertyType.SWITCH && dependsOn.getType() != PropertyType.HUD_POSITION))
-            throw new IllegalArgumentException("Invalid dependency");
+            throw new MoreMWEException().sendDebug("Invalid dependency");
 
         if (dependsOn == this)
-            throw new IllegalArgumentException("Field cannot depend on itself (field is a loser)");
+            throw new MoreMWEException().sendDebug("Field cannot depend on itself (field is a loser)");
 
         if (this.dependsOn == dependsOn) return;
 
@@ -239,7 +242,7 @@ public class ConfigFieldContainer {
         ConfigFieldContainer parentDependency = dependsOn.dependsOn;
         while (parentDependency != null) {
             if (parentDependency == this)
-                throw new IllegalArgumentException("Dependency cycle detected: " + dependsOn.getFieldName() + " -> ... -> " + this.getFieldName());
+                throw new MoreMWEException().sendDebug("Dependency cycle detected: {} -> ... -> {}", dependsOn.getFieldName(), this.getFieldName());
             parentDependency = parentDependency.dependsOn;
         }
 

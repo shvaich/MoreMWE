@@ -1,6 +1,7 @@
 package me.shvaich.moremwe.gui.data;
 
 import me.shvaich.moremwe.utils.GuiUtil;
+import net.minecraft.client.Minecraft;
 
 public abstract class AbstractRenderer {
     protected final MyRendererPosition rendererPosition;
@@ -13,21 +14,21 @@ public abstract class AbstractRenderer {
         return rendererPosition;
     }
 
-    public abstract boolean isEnabled(long currentTimeMillis);
+    public abstract boolean isEnabled(Minecraft mc, long currentTimeMillis);
 
-    public abstract void render(int screenWidth, int screenHeight, int thisWidth, int thisHeight);
+    public abstract void render(Minecraft mc, int screenWidth, int screenHeight, int thisWidth, int thisHeight);
 
-    public abstract int getWidth();
+    public abstract int getWidth(Minecraft mc);
 
-    public abstract int getHeight();
+    public abstract int getHeight(Minecraft mc);
 
     public boolean shouldRenderDummy() { return rendererPosition.isEnabled(); }
 
-    public abstract void renderDummy(int screenWidth, int screenHeight, int thisWidth, int thisHeight);
+    public abstract void renderDummy(Minecraft mc, int screenWidth, int screenHeight, int thisWidth, int thisHeight);
 
-    public int getDummyWidth() { return getWidth(); }
+    public int getDummyWidth(Minecraft mc) { return getWidth(mc); }
 
-    public int getDummyHeight() { return getHeight(); }
+    public int getDummyHeight(Minecraft mc) { return getHeight(mc); }
 
     protected void drawBackground(int x, int y, int thisWidth, int thisHeight, int backgroundColor, int padding) {
         GuiUtil.drawRect(x - padding, y - padding, x + thisWidth + padding, y + thisHeight + padding, backgroundColor);

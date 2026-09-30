@@ -9,6 +9,7 @@ import me.shvaich.moremwe.config.gui.elements.custom.ConfigGuardableBlockButton;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraftforge.common.config.Configuration;
 
 import java.awt.Color;
@@ -257,7 +258,9 @@ public final class MoreMWEConfig extends AbstractConfig {
                     buttons[i] = new ConfigGuardableBlockButton(screen, fieldData, values[i]);
                 return buttons;
             }
-            catch (Exception e) { throw new RuntimeException("Failed to create GuardableBlock buttons", e); }
+            catch (Exception e) {
+                throw new MoreMWEException(e).sendDebug("Failed to create GuardableBlock buttons");
+            }
         }
     }
     @ConfigProperty(
@@ -476,7 +479,7 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     public static void loadConfig(File file) {
         if (instance != null)
-            throw new IllegalStateException("Config already created");
+            throw new MoreMWEException();
 
         instance = new MoreMWEConfig(file);
     }

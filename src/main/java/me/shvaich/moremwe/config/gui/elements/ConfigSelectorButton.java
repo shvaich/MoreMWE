@@ -6,6 +6,7 @@ import me.shvaich.moremwe.config.gui.elements.base.IOverlayHost;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.GuiUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -28,11 +29,11 @@ public class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHos
         super(screen, field);
         this.options = field.getAnnotation().options();
         if (options.length == 0)
-            throw new IllegalStateException("Config Selector cannot have 0 options");
+            throw new MoreMWEException().sendDebug("Config Selector cannot have 0 options");
 
         final int value = (int) field.getValue();
         if (value < 0 || value >= options.length)
-            throw new IndexOutOfBoundsException("Config Selector value is out of options bounds");
+            throw new MoreMWEException().sendDebug("Config Selector value is out of options bounds");
 
         this.selectedOptionIndex = value;
     }

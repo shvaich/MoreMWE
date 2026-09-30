@@ -36,7 +36,6 @@ public class CompassHUD extends AbstractRenderer {
     public static final int COLUMN_GAP = 6;
     private static final int ROW_GAP = 2;
 
-    private final Minecraft mc = Minecraft.getMinecraft();
     private final PlayerTrackingData[] dummyPlayers;
     private final PlayerTrackingData[] compassTrackedPlayers = new PlayerTrackingData[REAL_MAX_COMPASS_TRACKED];
     private int trackedPlayersCount;
@@ -56,7 +55,7 @@ public class CompassHUD extends AbstractRenderer {
     }
 
     @Override
-    public boolean isEnabled(long currentTimeMillis) {
+    public boolean isEnabled(Minecraft mc, long currentTimeMillis) {
         if (!rendererPosition.isEnabled()
                 || KeybindingListener.hideCompassHUDFromKey()
                 || (!MoreMWEConfig.showCompassWhenSpectator && PlayerUtil.isTheMcPlayerSpectator(mc.thePlayer))
@@ -73,7 +72,7 @@ public class CompassHUD extends AbstractRenderer {
     }
 
     @Override
-    public void render(int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
+    public void render(Minecraft mc, int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
         if (trackedPlayersCount == 0) {
             final int x = rendererPosition.getDrawX();
             final int y = rendererPosition.getDrawY();
@@ -81,25 +80,25 @@ public class CompassHUD extends AbstractRenderer {
             mc.fontRendererObj.drawStringWithShadow("None!", x, y, VanillaColors.RED);
             return;
         }
-        renderCompassHUD(compassTrackedPlayers, trackedPlayersCount, thisWidth, thisHeight);
+        renderCompassHUD(mc, compassTrackedPlayers, trackedPlayersCount, thisWidth, thisHeight);
     }
 
     @Override
-    public int getWidth() {
+    public int getWidth(Minecraft mc) {
         if (trackedPlayersCount == 0) return mc.fontRendererObj.getStringWidth("None!");
-        return getMaxColumnWidth(compassTrackedPlayers, trackedPlayersCount);
+        return getMaxColumnWidth(mc, compassTrackedPlayers, trackedPlayersCount);
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(Minecraft mc) {
         if (trackedPlayersCount == 0) return mc.fontRendererObj.FONT_HEIGHT - 1;
         return getRowHeight() * trackedPlayersCount - ROW_GAP;
     }
 
     @Override
-    public void renderDummy(int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
+    public void renderDummy(Minecraft mc, int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
         final int renderedDummiesCount = getDummiesToRenderCount();
-        renderCompassHUD(dummyPlayers, renderedDummiesCount, thisWidth, thisHeight);
+        renderCompassHUD(mc, dummyPlayers, renderedDummiesCount, thisWidth, thisHeight);
         if (renderedDummiesCount < MoreMWEConfig.maxCompassTrackedPlayers) {
             final int missing = MoreMWEConfig.maxCompassTrackedPlayers - renderedDummiesCount;
             final String text = "+" + missing + " More";
@@ -110,12 +109,12 @@ public class CompassHUD extends AbstractRenderer {
     }
 
     @Override
-    public int getDummyWidth() {
-        return getMaxColumnWidth(dummyPlayers, getDummiesToRenderCount());
+    public int getDummyWidth(Minecraft mc) {
+        return getMaxColumnWidth(mc, dummyPlayers, getDummiesToRenderCount());
     }
 
     @Override
-    public int getDummyHeight() {
+    public int getDummyHeight(Minecraft mc) {
         final int renderedDummiesCount = getDummiesToRenderCount();
         int height = getRowHeight() * renderedDummiesCount - ROW_GAP;
 
@@ -125,7 +124,7 @@ public class CompassHUD extends AbstractRenderer {
         return height;
     }
 
-    private void renderCompassHUD(PlayerTrackingData[] pArr, int length, int thisWidth, int thisHeight) {
+    private void renderCompassHUD(Minecraft mc, PlayerTrackingData[] pArr, int length, int thisWidth, int thisHeight) {
         final int x = rendererPosition.getDrawX();
         int y = rendererPosition.getDrawY();
         int distanceX = x + skinWidth;
@@ -205,7 +204,7 @@ public class CompassHUD extends AbstractRenderer {
         }
     }
 
-    private int getMaxColumnWidth(PlayerTrackingData[] pArr, int length) {
+    private int getMaxColumnWidth(Minecraft mc, PlayerTrackingData[] pArr, int length) {
         this.skinWidth = 0;
         this.longestDistanceStringWidth = 0;
         this.longestHPStringWidth = 0;
@@ -257,7 +256,8 @@ public class CompassHUD extends AbstractRenderer {
         }
         trackedPlayersCount = 0;
 
-        if (mc.theWorld == null || mc.thePlayer == null || !isEnabled(-1)) return;
+        final Minecraft mc;
+        if ((mc = Minecraft.getMinecraft()).theWorld == null || mc.thePlayer == null || !isEnabled(mc, -1)) return;
 
         final EntityPlayerSP thePlayer = mc.thePlayer;
         final boolean isInMwGame = MWEApi.Scoreboard.getScoreboardParser().isInMwGame();

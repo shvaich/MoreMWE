@@ -4,6 +4,7 @@ import me.shvaich.moremwe.config.data.ConfigFieldContainer;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.GuiUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.Minecraft;
 
@@ -111,7 +112,7 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
                 dependency = dependency.getDependsOn();
             }
         }
-        catch (Exception e) { throw new RuntimeException("Failed to get dependency boolean", e); }
+        catch (Exception e) { throw new MoreMWEException(e); }
         return false;
     }
 

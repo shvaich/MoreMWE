@@ -6,7 +6,7 @@ import net.minecraft.init.Blocks;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GuardableBlock {
+public final class GuardableBlock {
 
     private static final Map<Block, GuardableBlock> blocksMap = new HashMap<>();
     private static final GuardableBlock[] guardableBlocks;

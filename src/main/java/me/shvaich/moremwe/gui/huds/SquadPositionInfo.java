@@ -60,7 +60,7 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
             case AFTER_WALLS_FALL: return !MWEApi.Scoreboard.getScoreboardParser().isPrepPhase();
             case AFTER_FIRST_WITHER_DEATH: return MWEApi.Scoreboard.getScoreboardParser().getWitherCount() < 4;
             case DURING_DEATHMATCH: return MWEApi.Scoreboard.getScoreboardParser().isDeathmatch();
-            default: throw new IllegalStateException();
+            default: return false;
         }
     }
 

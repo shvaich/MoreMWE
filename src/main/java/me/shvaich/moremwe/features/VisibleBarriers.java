@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 
 public final class VisibleBarriers {
 
+    private VisibleBarriers() {}
+
     private static boolean isActive = false;
 
     public static boolean isActive() { return isActive; }

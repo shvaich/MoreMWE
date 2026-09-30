@@ -5,6 +5,7 @@ import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiButton;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.GuiUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.util.MathHelper;
 
 public class ConfigSliderButton extends ConfigGuiButton {
@@ -101,7 +102,7 @@ public class ConfigSliderButton extends ConfigGuiButton {
         if (isDragging) {
             this.isDragging = false;
             try { fieldData.setValue(sliderValue); }
-            catch (Exception e) { throw new RuntimeException("Failed to save slider value of field: " + fieldData.getFieldName(), e); }
+            catch (Exception e) { throw new MoreMWEException(e); }
             return true;
         }
         return false;
@@ -121,6 +122,6 @@ public class ConfigSliderButton extends ConfigGuiButton {
         this.sliderValue = MathHelper.clamp_int(sliderValue + increment, minValue, maxValue);
         this.sliderButtonOffset = MathHelper.clamp_int(SLIDER_WIDTH * (sliderValue - minValue) / (maxValue - minValue), 0, SLIDER_WIDTH);
         try { fieldData.setValue(sliderValue); }
-        catch (Exception e) { throw new RuntimeException("Failed to save slider value of field: " + fieldData.getFieldName(), e); }
+        catch (Exception e) { throw new MoreMWEException(e); }
     }
 }

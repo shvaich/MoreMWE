@@ -2,7 +2,9 @@ package me.shvaich.moremwe.utils;
 
 import net.minecraft.util.EnumChatFormatting;
 
-public class ColorUtil {
+public final class ColorUtil {
+
+    private ColorUtil() {}
 
     public static int getAlpha(int color) { return (color >> 24) & 0xFF; }
 

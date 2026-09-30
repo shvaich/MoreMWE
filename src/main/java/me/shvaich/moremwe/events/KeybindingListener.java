@@ -5,6 +5,7 @@ import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.features.VisibleBarriers;
 import me.shvaich.moremwe.utils.ChatUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -12,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import org.lwjgl.input.Keyboard;
 
-public class KeybindingListener {
+public final class KeybindingListener {
 
     private static KeybindingListener instance;
 
@@ -24,8 +25,7 @@ public class KeybindingListener {
 
     public KeybindingListener() {
         if (instance != null) {
-            MoreMWE.LOGGER.warn("Attempted to create another KeybindingListener instance. NOT ALLOWED!");
-            return;
+            throw new MoreMWEException().sendDebug("Attempted to create another KeybindingListener instance. NOT ALLOWED!");
         }
         instance = this;
         ClientRegistry.registerKeyBinding(showCompassHUDKey);

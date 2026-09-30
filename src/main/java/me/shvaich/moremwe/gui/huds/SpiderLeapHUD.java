@@ -8,6 +8,7 @@ import me.shvaich.moremwe.events.ChatListener;
 import me.shvaich.moremwe.gui.data.AbstractRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -29,40 +30,38 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
     }
 
     @Override
-    public boolean isEnabled(long currentTimeMillis) {
+    public boolean isEnabled(Minecraft mc, long currentTimeMillis) {
         return rendererPosition.isEnabled()
                 && isArrowThePrimaryLeap != null
                 && MWEApi.Scoreboard.getScoreboardParser().isInMwGame()
-                && isSpider()
+                && isSpider(mc.thePlayer)
                 && (!MoreMWEConfig.hideSpiderLeapHUDDuringPrepPhase || !MWEApi.Scoreboard.getScoreboardParser().isPrepPhase())
-                && (!MoreMWEConfig.onlyShowSpiderHUDWhenHoldingItems || isHoldingSpiderItem());
+                && (!MoreMWEConfig.onlyShowSpiderHUDWhenHoldingItems || isSpiderItem(mc.thePlayer.getHeldItem()));
     }
 
     @Override
-    public void render(int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
-        final Minecraft mc = Minecraft.getMinecraft();
+    public void render(Minecraft mc, int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
         renderLeap(mc, thisWidth, thisHeight, mc.thePlayer != null && mc.thePlayer.isSneaking());
     }
 
     @Override
-    public int getWidth() {
-        final Minecraft mc = Minecraft.getMinecraft();
+    public int getWidth(Minecraft mc) {
         return getDisplayWidth(mc, mc.thePlayer != null && mc.thePlayer.isSneaking());
     }
 
     @Override
-    public int getHeight() {
-        return Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT-1;
+    public int getHeight(Minecraft mc) {
+        return mc.fontRendererObj.FONT_HEIGHT-1;
     }
 
     @Override
-    public void renderDummy(int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
-        renderLeap(Minecraft.getMinecraft(), thisWidth, thisHeight, GuiScreen.isShiftKeyDown());
+    public void renderDummy(Minecraft mc, int screenWidth, int screenHeight, int thisWidth, int thisHeight) {
+        renderLeap(mc, thisWidth, thisHeight, false);
     }
 
     @Override
-    public int getDummyWidth() {
-        return getDisplayWidth(Minecraft.getMinecraft(), GuiScreen.isShiftKeyDown());
+    public int getDummyWidth(Minecraft mc) {
+        return getDisplayWidth(mc, false);
     }
 
     private void renderLeap(Minecraft mc, int thisWidth, int thisHeight, boolean isShifting) {
@@ -84,7 +83,7 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
 
     @Override
     public boolean processMessage(ClientChatReceivedEvent e, String formattedMsg, String msg, boolean isInMegaWalls) {
-        if (e.type == 0 && isInMegaWalls && isSpider()) {
+        if (e.type == 0 && isInMegaWalls && isSpider(Minecraft.getMinecraft().thePlayer)) {
             final Matcher matcher = primaryLeapPattern.matcher(msg);
             if (matcher.matches()) {
                 final String primaryLeapType = matcher.group(1);
@@ -101,23 +100,19 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
     @SubscribeEvent
     public void onMwGameStart(MegaWallsGameEvent e) {
         if (e.type == MegaWallsGameEvent.Type.GAME_START) {
-            this.isArrowThePrimaryLeap = isSpider() ? true : null;
+            this.isArrowThePrimaryLeap = isSpider(Minecraft.getMinecraft().thePlayer) ? true : null;
         }
         else if (e.type == MegaWallsGameEvent.Type.GAME_END) {
             this.isArrowThePrimaryLeap = null;
         }
     }
 
-    private static boolean isSpider() {
-        final Minecraft mc;
-        return (mc = Minecraft.getMinecraft()).thePlayer != null
-                && MWEApi.Player.getPlayerInfo(mc.thePlayer).getMWClass() == MWClass.SPIDER;
+    private static boolean isSpider(EntityPlayer player) {
+        return player != null && MWEApi.Player.getPlayerInfo(player).getMWClass() == MWClass.SPIDER;
     }
 
-    private static boolean isHoldingSpiderItem() {
-        final ItemStack stack = Minecraft.getMinecraft().thePlayer.getHeldItem();
-        if (stack == null) return false;
-        final Item item = stack.getItem();
-        return item instanceof ItemSword || item instanceof ItemBow || item instanceof ItemSpade;
+    private static boolean isSpiderItem(ItemStack stack) {
+        final Item item;
+        return stack != null && ((item = stack.getItem()) instanceof ItemSword || item instanceof ItemBow || item instanceof ItemSpade);
     }
 }

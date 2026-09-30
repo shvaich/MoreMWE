@@ -8,7 +8,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-public class GuiUtil {
+public final class GuiUtil {
+    private GuiUtil() {}
 
     public static final int MOUSE_LEFT = 0;
     public static final int MOUSE_RIGHT = 1;

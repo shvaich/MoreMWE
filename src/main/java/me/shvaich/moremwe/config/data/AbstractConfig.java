@@ -4,6 +4,7 @@ import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.utils.ChatUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -96,23 +97,25 @@ public class AbstractConfig {
             else { hidePropertyIfHasDisabledDependencyField = null; }
         }
         catch (Exception e) {
-            throw new RuntimeException("Failed to create config", e);
+            throw new MoreMWEException(e).sendDebug("Failed to create config");
         }
         try {
             readConfigFieldsInDeclarationOrder(configFieldsNamesMap);
-            if (hidePropertyIfHasDisabledDependencyField != null) {
-                addFieldToStructure(
-                        hidePropertyIfHasDisabledDependencyField.getCategory(),
-                        hidePropertyIfHasDisabledDependencyField.getSubcategory(),
-                        hidePropertyIfHasDisabledDependencyField.getName()
-                );
-            }
         }
         catch (Exception e) {
+            MoreMWE.LOGGER.error("Failed to sort in declaration order", e);
             configStructure.clear();
             readConfigFieldsInAlphabeticalOrder();
-            MoreMWE.LOGGER.error("Failed to sort in declaration order", e);
         }
+
+        if (hidePropertyIfHasDisabledDependencyField != null) {
+            addFieldToStructure(
+                    hidePropertyIfHasDisabledDependencyField.getCategory(),
+                    hidePropertyIfHasDisabledDependencyField.getSubcategory(),
+                    hidePropertyIfHasDisabledDependencyField.getName()
+            );
+        }
+
         setConfigPropertiesOrder();
 
         if (config.hasChanged()) config.save();
@@ -168,15 +171,16 @@ public class AbstractConfig {
             );
         }
         catch (Exception e) {
-            throw new RuntimeException("Failed to create config GUI", e);
+            throw new MoreMWEException(e).sendDebug("Failed to create config GUI");
         }
     }
 
     private void readConfigFieldsInDeclarationOrder(Map<String, Set<String>> configFieldsNamesMap) throws IOException {
         final Class<?> clazz = this.getClass();
         final InputStream is = clazz.getResourceAsStream('/' + clazz.getName().replace('.', '/') + ".class");
-        if (is == null)
-            throw new RuntimeException("failed to find config class resource");
+        if (is == null) {
+            throw new MoreMWEException();
+        }
         final ClassReader cr = new ClassReader(is);
         final ClassNode cn = new ClassNode();
         cr.accept(cn, ClassReader.SKIP_CODE);
@@ -201,8 +205,9 @@ public class AbstractConfig {
                 }
                 if (configCategory != null && configName != null) {
                     // (!configFieldsNamesMap.containsKey(configCategory) || !configFieldsNamesMap.get(configCategory).contains(configName))
-                    if (!configFieldsNamesMap.computeIfAbsent(configCategory, t -> new HashSet<>()).contains(configName))
-                        throw new IllegalStateException("config fields declaration order fuckup #1");
+                    if (!configFieldsNamesMap.computeIfAbsent(configCategory, t -> new HashSet<>()).contains(configName)) {
+                        throw new MoreMWEException();
+                    }
 
                     final List<String> subcategoryFields = configStructure.computeIfAbsent(configCategory, t -> new LinkedHashMap<>())
                         .computeIfAbsent(configSubcategory, t -> new ArrayList<>());
@@ -298,7 +303,7 @@ public class AbstractConfig {
                     return field;
             }
         }
-        throw new IllegalArgumentException("Field (" + name + ") NOT FOUND!!!");
+        throw new MoreMWEException().sendDebug("Field [{}] not found!", name);
     }
 
     protected static boolean isVersionLowerThan(String testedVersion, String referenceVersion) {

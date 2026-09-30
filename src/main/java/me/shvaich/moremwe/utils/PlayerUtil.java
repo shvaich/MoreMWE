@@ -9,7 +9,9 @@ import net.minecraft.potion.PotionEffect;
 
 import java.util.*;
 
-public class PlayerUtil {
+public final class PlayerUtil {
+    private PlayerUtil() {}
+
     public static boolean isTheMcPlayerSpectator(EntityPlayerSP thePlayer) {
         if (thePlayer == null) return false;
         if (thePlayer.isSpectator()) return true;

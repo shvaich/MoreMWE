@@ -14,7 +14,7 @@ import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 
-public class MinecraftHook_RightClickGuards {
+public final class MinecraftHook_RightClickGuards {
 
     public static boolean shouldCancelRightClick(Minecraft mc, ItemStack heldItem) {
         if (mc.objectMouseOver == null) return false;

@@ -4,6 +4,7 @@ import me.shvaich.moremwe.config.gui.elements.ConfigColorButton;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.ColorUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -181,7 +182,7 @@ public class MyColorEditGuiScreen extends GuiScreen implements GuiSlider.ISlider
             colorButton.saveColorToField();
         }
         catch (Exception e) {
-            throw new RuntimeException("Failed to save: " + colorButton.getName(), e);
+            throw new MoreMWEException(e);
         }
         super.onGuiClosed();
     }

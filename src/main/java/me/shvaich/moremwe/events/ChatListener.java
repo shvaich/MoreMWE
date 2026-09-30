@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatListener {
+public final class ChatListener {
 
     public static final ChatListener INSTANCE = new ChatListener();
     private final List<IChatListener> listeners = new ArrayList<>();
@@ -17,7 +17,10 @@ public class ChatListener {
     private ChatListener() {}
 
     public void registerListener(IChatListener listener) {
-        if (listeners.contains(listener)) throw new IllegalArgumentException();
+        if (listeners.contains(listener)) {
+            // throw new MoreMWEException().sendDebug("Chat Listener already registered");
+            return;
+        }
         listeners.add(listener);
     }
 

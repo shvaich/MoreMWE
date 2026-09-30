@@ -8,9 +8,10 @@ import me.shvaich.moremwe.config.gui.elements.*;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
 import me.shvaich.moremwe.config.gui.elements.base.IOverlayHost;
 import me.shvaich.moremwe.gui.data.ModResources;
-import me.shvaich.moremwe.utils.DelayedTask;
 import me.shvaich.moremwe.utils.GuiUtil;
 import me.shvaich.moremwe.utils.StringUtil;
+import me.shvaich.moremwe.utils.DelayedTask;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
@@ -287,7 +288,7 @@ public class MyConfigGuiScreen extends GuiScreen {
                         break scan;
                     }
                 }
-                catch (Exception e) { throw new RuntimeException("click on dropdown caused error!!!", e); }
+                catch (Exception e) { throw new MoreMWEException(e); }
                 if (openOverlay.isOverlayOpen()) {
                     overlayToClose = openOverlay;
                 }
@@ -328,7 +329,7 @@ public class MyConfigGuiScreen extends GuiScreen {
                     }
                 }
                 catch (Exception e) {
-                    throw new RuntimeException("element click caused error!!!", e);
+                    throw new MoreMWEException(e);
                 }
             }
             else if ((menuScrollbar != null && menuScrollbar.mouseClicked(mouseX, mouseY, mouseButton)) ||
@@ -468,7 +469,7 @@ public class MyConfigGuiScreen extends GuiScreen {
             if (renderedConfigElements.size() == everyElementThatShouldBeRendered.size()) return;
             resizeRenderedElements(everyElementThatShouldBeRendered);
         }
-        catch (Exception e) { throw new RuntimeException("Failed to get dependency boolean!!!", e); }
+        catch (Exception e) { throw new MoreMWEException(e); }
     }
 
     public void setSelectedCategory(String selectedCategory) {

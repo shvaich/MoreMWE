@@ -11,7 +11,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-public class PlayerEnergyDisplay {
+public final class PlayerEnergyDisplay {
 
     private int lastLevel;
 
@@ -244,14 +244,15 @@ public class PlayerEnergyDisplay {
             return "Need " + meleeHitsNeeded + " more hit" + (meleeHitsNeeded == 1 ? "" : "s");
         }
 
-        String hitsNeededStr = "";
+        final StringBuilder hitsNeededStr = new StringBuilder();
         if (meleeHitsNeeded != 0) {
-            hitsNeededStr = "Need " + meleeHitsNeeded + " melee hit" + (meleeHitsNeeded == 1 ? "" : "s");
+            hitsNeededStr.append("Need ").append(meleeHitsNeeded).append(" melee hit");
+            if (meleeHitsNeeded > 1) hitsNeededStr.append('s');
         }
         if (arrowHitsNeeded != 0) {
-            hitsNeededStr += hitsNeededStr.isEmpty() ? "Need " : " or ";
-            hitsNeededStr += arrowHitsNeeded + " arrow hit" + (arrowHitsNeeded == 1 ? "" : "s");
+            hitsNeededStr.append(hitsNeededStr.length() == 0 ? "Need " : " or ").append(arrowHitsNeeded).append(" arrow hit");
+            if (arrowHitsNeeded > 1) hitsNeededStr.append('s');
         }
-        return hitsNeededStr;
+        return hitsNeededStr.toString();
     }
 }

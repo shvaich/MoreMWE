@@ -3,8 +3,9 @@ package me.shvaich.moremwe.commands;
 import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.utils.ChatUtil;
-import me.shvaich.moremwe.utils.TimerUtil;
 import me.shvaich.moremwe.utils.StringUtil;
+import me.shvaich.moremwe.utils.TimerUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -203,8 +204,9 @@ public class CommandPlay extends MyAbstractCommand {
         public final Mode[] modes;
 
         public Game(String key, String name, String[] aliases, Mode... modes) {
-            if (modes == null || modes.length == 0)
-                throw new IllegalArgumentException("Must provide modes!");
+            if (modes == null || modes.length == 0) {
+                throw new MoreMWEException();
+            }
             this.key = key;
             this.name = name;
             this.aliases = aliases;

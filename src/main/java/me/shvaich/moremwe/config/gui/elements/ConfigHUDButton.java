@@ -11,6 +11,7 @@ import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
+import me.shvaich.moremwe.utils.MoreMWEException;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,11 +61,11 @@ public class ConfigHUDButton extends ConfigGuiButton {
                 return true;
             }
             if (editButton.mousePressed(mc, mouseX, mouseY)) {
-                final AbstractRenderer renderer = HUDManager.getInstance().getRendererFromPosition(rendererPosition);
+                final AbstractRenderer renderer = HUDManager.instance().getRendererFromPosition(rendererPosition);
                 if (renderer != null) {
                     GuiUtil.openScreen(new MyRendererEditGuiScreen(screen, renderer));
                 }
-                else { throw new RuntimeException("No HUD associated to: " + fieldData.getName()); }
+                else { throw new MoreMWEException().sendDebug("No HUD associated to: " + fieldData.getFieldName()); }
                 return true;
             }
         }
