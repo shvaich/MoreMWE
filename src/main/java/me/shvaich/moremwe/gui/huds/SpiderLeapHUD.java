@@ -72,7 +72,7 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
             drawBackground(x, y, thisWidth, thisHeight, MoreMWEConfig.spiderLeapHUDBackgroundColor);
         }
         mc.fontRendererObj.drawStringWithShadow(EnumChatFormatting.GOLD + "Leap Mode: "
-                + ((showArrow != isShifting) ? EnumChatFormatting.GREEN + "Arrow" : EnumChatFormatting.AQUA + "Arced")
+                + (showArrow ? EnumChatFormatting.GREEN + "Arrow" : EnumChatFormatting.AQUA + "Arced")
                 + (isShifting ? (EnumChatFormatting.GRAY + " (Sneak)") : ""), x, y, 0xFFFFFFFF);
     }
 
