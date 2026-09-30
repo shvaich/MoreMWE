@@ -130,7 +130,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             name = "Custom Teammate Color",
             category = "Compass",
             subcategory = "Mega Walls",
-            comment = "Uses a custom color instead of the default teammate color"
+            comment = "Uses a custom color for teammates instead of the team color"
     )
     public static boolean renderCustomTeammateColor = false;
 
@@ -139,7 +139,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             name = "Teammate Color",
             category = "Compass",
             subcategory = "Mega Walls",
-            comment = "Color used for displaying teammates in the HUD",
+            comment = "Color used when displaying teammates in the HUD",
             allowsTransparency = false
     )
     public static int customTeammateColor = ColorPalette.VanillaColors.LIGHT_PURPLE;
@@ -149,7 +149,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             name = "Show Distance Unit",
             category = "Compass",
             subcategory = "Display",
-            comment = "Display 'm' after the distance value"
+            comment = "Displays 'm' after the distance value"
     )
     public static boolean showDistanceUnitInCompassHUD = true;
 
@@ -158,7 +158,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             name = "Color Y-Distance",
             category = "Compass",
             subcategory = "Display",
-            comment = "Green if the player is above you, red if they are below you"
+            comment = "§2GREEN§r if the player is above you, §4RED§r if they are below you"
     )
     public static boolean colorYDistanceInCompassHUD = false;
 
@@ -167,7 +167,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             name = "Show HP",
             category = "Compass",
             subcategory = "Display",
-            comment = "Display the player's HP"
+            comment = "Display the player's HP in the HUD"
     )
     public static boolean showHPInCompassHUD = false;
 
@@ -217,7 +217,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             subcategory = "Display",
             comment = "The width of the gap before and after the directional arrow display",
             min = CompassHUD.COLUMN_GAP,
-            max = 16
+            max = 20
     )
     public static int compassHUDArrowMargin = 10;
 
@@ -358,7 +358,8 @@ public final class MoreMWEConfig extends AbstractConfig {
             type = PropertyType.SWITCH,
             name = "Show " + SHOVEL_GUARD + " Indicator",
             category = SHOVEL_GUARD,
-            subcategory = "Display"
+            subcategory = "Display",
+            comment = "Displays an indicator over every shovel in your hotbar"
     )
     public static boolean showShovelGuardIndicator = false;
 
@@ -412,7 +413,7 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
-            name = "Hide the HUD During Prep Phase",
+            name = "Hide During Prep Phase",
             category = "Mega Walls",
             subcategory = "Spider Leap HUD",
             comment = "Hides the HUD until the walls fall"
@@ -421,7 +422,7 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
-            name = "Only Show The HUD when Holding Leap Items",
+            name = "Only Show When Relevant",
             category = "Mega Walls",
             subcategory = "Spider Leap HUD",
             comment = "Only show the HUD when holding either a Sword, Bow or Shovel"
@@ -430,7 +431,7 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
-            name = "Show Background in Spider Leap HUD",
+            name = "Show Spider Leap HUD Background",
             category = "Mega Walls",
             subcategory = "Spider Leap HUD"
     )

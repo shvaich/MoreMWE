@@ -7,7 +7,6 @@ import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.ChatListener;
 import me.shvaich.moremwe.gui.data.AbstractRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.*;
 import net.minecraft.util.EnumChatFormatting;
