@@ -10,6 +10,7 @@ import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
 import me.shvaich.moremwe.utils.MoreMWEException;
+import net.minecraft.init.Blocks;
 import net.minecraftforge.common.config.Configuration;
 
 import java.awt.Color;
@@ -254,8 +255,14 @@ public final class MoreMWEConfig extends AbstractConfig {
                 final GuardableBlock[] values = GuardableBlock.values();
                 final int len = values.length;
                 final ConfigGuardableBlockButton[] buttons = new ConfigGuardableBlockButton[len];
-                for (int i = 0; i < len; i++)
-                    buttons[i] = new ConfigGuardableBlockButton(screen, fieldData, values[i]);
+                for (int i = 0; i < len; i++) {
+                    if (values[i].mainBlock == Blocks.crafting_table) {
+                        buttons[i] = new ConfigGuardableBlockButton.SpecialCraftingTable(screen, fieldData, values[i]);
+                    }
+                    else {
+                        buttons[i] = new ConfigGuardableBlockButton(screen, fieldData, values[i]);
+                    }
+                }
                 return buttons;
             }
             catch (Exception e) {

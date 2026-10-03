@@ -5,10 +5,17 @@ import me.shvaich.moremwe.config.data.ConfigFieldContainer;
 import me.shvaich.moremwe.config.gui.elements.ConfigBooleanButton;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.features.GuardableBlock;
+import me.shvaich.moremwe.utils.GuiUtil;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
+
+import java.util.Collections;
+import java.util.List;
 
 public class ConfigGuardableBlockButton extends ConfigBooleanButton {
+
+    private static final int BLOCK_ICON_SIZE = 16;
 
     private final GuardableBlock block;
     private final ItemStack blockItem;
@@ -32,13 +39,13 @@ public class ConfigGuardableBlockButton extends ConfigBooleanButton {
 
     @Override
     protected int getLeftPadding() {
-        return 18 + super.getLeftPadding();
+        return BLOCK_ICON_SIZE + 2 + super.getLeftPadding();
     }
 
     @Override
     public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
         super.draw(x, y, mouseX, mouseY, canMouseBeOverElement);
-        final int iconY = y + getCenterYOffset(16);
+        final int iconY = y + getCenterYOffset(BLOCK_ICON_SIZE);
         RenderHelper.enableGUIStandardItemLighting();
         mc.getRenderItem().renderItemAndEffectIntoGUI(blockItem, x + 4, iconY);
         RenderHelper.disableStandardItemLighting();
@@ -53,5 +60,30 @@ public class ConfigGuardableBlockButton extends ConfigBooleanButton {
     protected void toggleBoolean() {
         if (!MoreMWEConfig.guardedBlocks.remove(block.key))
             MoreMWEConfig.guardedBlocks.add(block.key);
+    }
+
+    public static final class SpecialCraftingTable extends ConfigGuardableBlockButton {
+
+        private int posX, posY;
+
+        public SpecialCraftingTable(MyConfigGuiScreen screen, ConfigFieldContainer fieldData, GuardableBlock block) throws IllegalAccessException {
+            super(screen, fieldData, block);
+        }
+
+        @Override
+        public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
+            this.posX = x;
+            this.posY = y;
+            super.draw(x, y, mouseX, mouseY, canMouseBeOverElement);
+        }
+
+        @Override
+        public List<String> getHoveringTextLines(int mouseX, int mouseY) {
+            final int left = posX + 4;
+            final int top = posY + getCenterYOffset(BLOCK_ICON_SIZE);
+            return (GuiUtil.isMouseInRect(mouseX, mouseY, left, top, left + BLOCK_ICON_SIZE, top + BLOCK_ICON_SIZE)) ?
+                    Collections.singletonList(EnumChatFormatting.BLUE + "Table" + EnumChatFormatting.WHITE + " de " + EnumChatFormatting.RED + "fabrication")
+                    : super.getHoveringTextLines(mouseX, mouseY);
+        }
     }
 }
