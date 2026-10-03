@@ -28,11 +28,13 @@ public final class KeybindingListener {
             throw new MoreMWEException().sendDebug("Attempted to create another KeybindingListener instance. NOT ALLOWED!");
         }
         instance = this;
-        ClientRegistry.registerKeyBinding(showCompassHUDKey);
-        ClientRegistry.registerKeyBinding(blockGuardKeyBinding);
-        ClientRegistry.registerKeyBinding(shovelGuardKeyBinding);
-        ClientRegistry.registerKeyBinding(sendPlayerEnergyMessageKey);
-        ClientRegistry.registerKeyBinding(visibleBarriersKey);
+        registerKeybinds(
+                showCompassHUDKey,
+                blockGuardKeyBinding,
+                shovelGuardKeyBinding,
+                sendPlayerEnergyMessageKey,
+                visibleBarriersKey
+        );
     }
 
     @SubscribeEvent
@@ -88,5 +90,11 @@ public final class KeybindingListener {
 
     private static KeyBinding create(String desc) {
         return create(desc, MoreMWE.NAME);
+    }
+
+    private static void registerKeybinds(KeyBinding... keybinds) {
+        for (final KeyBinding k : keybinds) {
+            ClientRegistry.registerKeyBinding(k);
+        }
     }
 }

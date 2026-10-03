@@ -7,6 +7,7 @@ import me.shvaich.moremwe.config.MWEHookConfig;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.GuiUtil;
 import me.shvaich.moremwe.utils.PlayerUtil;
+import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,7 +69,7 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
         final EnumChatFormatting yDistanceColor = (!MWEHookConfig.colorYDistanceInSquadHUDCompassInfo || yDistance == 0) ? MWEHookConfig.squadCompassInfoDefaultYDistanceColor :
                 (yDistance > 0 ? MWEHookConfig.squadCompassInfoPlayerAboveColor : MWEHookConfig.squadCompassInfoPlayerBelowColor);
         return "(" + EnumChatFormatting.LIGHT_PURPLE + distance + (MWEHookConfig.showDistanceUnitInSquadHUDCompassInfo ? "m" : "")
-                + "  " + yDistanceColor + yDistance + EnumChatFormatting.RESET + ")";
+                + "  " + yDistanceColor + StringUtil.getIntWithSign(yDistance, false) + EnumChatFormatting.RESET + ")";
     }
 }
 

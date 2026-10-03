@@ -422,7 +422,7 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
-            name = "Only Show When Relevant",
+            name = "Only Show when Relevant",
             category = "Mega Walls",
             subcategory = "Spider Leap HUD",
             comment = "Only show the HUD when holding either a Sword, Bow or Shovel"

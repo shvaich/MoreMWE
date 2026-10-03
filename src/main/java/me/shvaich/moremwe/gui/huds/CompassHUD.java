@@ -13,10 +13,8 @@ import me.shvaich.moremwe.utils.PlayerUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.EnumChatFormatting;
@@ -24,7 +22,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -119,7 +116,7 @@ public class CompassHUD extends AbstractRenderer {
         int height = getRowHeight() * renderedDummiesCount - ROW_GAP;
 
         if (renderedDummiesCount < MoreMWEConfig.maxCompassTrackedPlayers)
-            height += ROW_GAP + mc.fontRendererObj.FONT_HEIGHT;
+            height += ROW_GAP + mc.fontRendererObj.FONT_HEIGHT - 1;
 
         return height;
     }
@@ -160,18 +157,10 @@ public class CompassHUD extends AbstractRenderer {
         final int rowHeight = getRowHeight();
         final int realRowHeight = rowHeight - ROW_GAP;
         drawBackground(x, y, thisWidth, thisHeight);
-        GlStateManager.enableAlpha();
-        GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
         for (int i = 0; i < length; i++) {
             final PlayerTrackingData player = pArr[i];
             if (player.skin != null) {
-                GlStateManager.color(1, 1, 1, 1);
-                mc.getTextureManager().bindTexture(player.skin);
-                // face
-                Gui.drawScaledCustomSizeModalRect(x, y, 8, 8, 8, 8, 8, 8, 64, 64);
-                // hat
-                Gui.drawScaledCustomSizeModalRect(x, y, 40, 8, 8, 8, 8, 8, 64, 64);
+                GuiUtil.drawSkinHead(mc, player.skin, x, y);
             }
             final int teamColor = player.teamColor;
             final String distanceStr = ((int) player.distance) + (MoreMWEConfig.showDistanceUnitInCompassHUD ? "m" : "");
@@ -194,8 +183,6 @@ public class CompassHUD extends AbstractRenderer {
             }
             y += rowHeight;
         }
-        //GlStateManager.disableAlpha();
-        GlStateManager.disableBlend();
     }
 
     private void drawBackground(int left, int top, int thisWidth, int thisHeight) {

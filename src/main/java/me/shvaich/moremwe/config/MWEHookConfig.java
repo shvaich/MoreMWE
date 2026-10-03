@@ -13,16 +13,16 @@ public class MWEHookConfig {
     public static boolean showCompassInfoInSquadHUD = false;
 
     @ConfigProperty(
-            name = "Show in Spectator Mode",
+            name = "Show Compass Info in Spectator Mode",
             category = "Squad",
             subCategory = "MoreMWE - Compass Info",
-            comment = "Display while in spectator mode",
+            comment = "Display this while in spectator mode",
             dependsOn = "Show Compass Information In Squad HUD"
     )
     public static boolean showSquadHUDCompassInfoWhenSpectator = false;
 
     @ConfigProperty(
-            name = "Mega Walls Only",
+            name = "Show Compass Info Only in Mega Walls",
             category = "Squad",
             subCategory = "MoreMWE - Compass Info",
             comment = "If enabled, will only be displayed during Mega Walls matches",
@@ -31,10 +31,10 @@ public class MWEHookConfig {
     public static boolean isSquadHUDCompassInfoForMegaWallsOnly = true;
 
     @ConfigProperty(
-            name = "Active During",
+            name = "Compass Info Active During",
             category = "Squad",
             subCategory = "MoreMWE - Compass Info",
-            //comment = "Controls when to display during a Mega Walls match",
+            comment = "Controls when to display during a Mega Walls match",
             dependsOn = "Show Compass Information In Squad HUD"
     )
     public static MWCondition squadHUDCompassInfoMegaWallsRenderCondition = MWCondition.DURING_DEATHMATCH;
@@ -71,7 +71,7 @@ public class MWEHookConfig {
             category = "Squad",
             subCategory = "MoreMWE - Compass Info",
             comment = "Use a different color for the y-distance value when a player is above/below you"
-                + "\nUses the default color when the y-distance is 0",
+                + ".\nUses the default color when the y-distance is 0",
             dependsOn = "Show Compass Information In Squad HUD"
     )
     public static boolean colorYDistanceInSquadHUDCompassInfo = false;

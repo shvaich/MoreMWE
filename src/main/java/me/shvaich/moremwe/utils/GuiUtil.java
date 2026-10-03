@@ -61,6 +61,24 @@ public final class GuiUtil {
         Gui.drawModalRectWithCustomSizedTexture(left, top, 0, 0, drawWidth, drawHeight, drawWidth, drawHeight);
     }
 
+    public static void drawSkinHead(Minecraft mc, ResourceLocation skin, int x, int y) { drawSkinHead(mc, skin, x, y, 8, true); }
+
+    public static void drawSkinHead(Minecraft mc, ResourceLocation skin, int x, int y, int size, boolean renderHatLayer) {
+        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.enableAlpha();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        mc.getTextureManager().bindTexture(skin);
+        // face
+        Gui.drawScaledCustomSizeModalRect(x, y, 8, 8, 8, 8, size, size, 64, 64);
+        if (renderHatLayer) {
+            // hat
+            Gui.drawScaledCustomSizeModalRect(x, y, 40, 8, 8, 8, size, size, 64, 64);
+        }
+        // GlStateManager.disableAlpha();
+        // GlStateManager.disableBlend();
+    }
+
     public static boolean isMouseInRect(int mouseX, int mouseY, int left, int top, int right, int bottom) {
         return mouseX >= left && mouseX < right && mouseY >= top && mouseY < bottom;
     }
