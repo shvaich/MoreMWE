@@ -17,7 +17,7 @@ public class ModAnnouncement {
         if (mc.theWorld != null && mc.thePlayer != null && e.phase == TickEvent.Phase.START) {
             if (ticksDelay <= 0) {
                 MinecraftForge.EVENT_BUS.unregister(this);
-                ChatUtil.addChatMessage(ChatUtil.getCommandMessage(ChatUtil.getModTag() + EnumChatFormatting.GRAY + "view /moremwe help", "/moremwe help"));
+                ChatUtil.addChatMessage(ChatUtil.getCommandMessage(ChatUtil.getModTag() + EnumChatFormatting.GRAY + "check " + EnumChatFormatting.YELLOW + "/moremwe help" + EnumChatFormatting.GRAY + " for more information or if you run into any issues", "/moremwe help"));
             }
             ticksDelay--;
         }
