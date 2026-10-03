@@ -22,7 +22,7 @@ public final class GuardableBlock {
             new GuardableBlock("chest", "Chest", Blocks.chest, Blocks.trapped_chest),
             new GuardableBlock("furnace", "Furnace", Blocks.furnace, Blocks.lit_furnace),
             new GuardableBlock("crafting_table", "Crafting Table", EnumChatFormatting.BLUE + "Table" + EnumChatFormatting.WHITE + " de " + EnumChatFormatting.RED + "fabrication", Blocks.crafting_table),
-            new GuardableBlock("anvil", "Anvil", EnumChatFormatting.RED + "Aam" + EnumChatFormatting.WHITE + "be" + EnumChatFormatting.BLUE + "eld", Blocks.anvil),
+            new GuardableBlock("anvil", "Anvil", Blocks.anvil),
             new GuardableBlock("beacon", "Beacon", Blocks.beacon),
             new GuardableBlock("hopper", "Hopper", EnumChatFormatting.BLACK + "That thing that hops", Blocks.hopper)
         };
