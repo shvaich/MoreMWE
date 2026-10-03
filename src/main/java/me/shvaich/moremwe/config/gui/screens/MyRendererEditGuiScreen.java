@@ -211,7 +211,7 @@ public class MyRendererEditGuiScreen extends GuiScreen {
         mc.getTextureManager().bindTexture(Gui.icons);
         drawTexturedModalRect(this.width / 2 - 7, this.height / 2 - 7, 0, 0, 16, 16);
         if (drawCenterLines) {
-            final int color = 0xFFAAAAAA;
+            final int color = 0xFFFFFFFF;
             GuiUtil.drawVerticalLine(this.width / 2, 0, this.height, color);
             GuiUtil.drawHorizontalLine(0, this.width, this.height / 2, color);
         }
