@@ -2,6 +2,7 @@ package me.shvaich.moremwe.features;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumChatFormatting;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,24 +14,24 @@ public final class GuardableBlock {
 
     public final String key;
     public final String displayName;
-    public final String comment;
+    public final String specialText;
     public final Block mainBlock;
 
     static {
         guardableBlocks = new GuardableBlock[]{
-            new GuardableBlock("chest", "Chest", "Every chest (including \"trapped\")", Blocks.chest, Blocks.trapped_chest),
+            new GuardableBlock("chest", "Chest", Blocks.chest, Blocks.trapped_chest),
             new GuardableBlock("furnace", "Furnace", Blocks.furnace, Blocks.lit_furnace),
-            new GuardableBlock("crafting_table", "Crafting Table", Blocks.crafting_table),
-            new GuardableBlock("anvil", "Anvil", Blocks.anvil),
+            new GuardableBlock("crafting_table", "Crafting Table", EnumChatFormatting.BLUE + "Table" + EnumChatFormatting.WHITE + " de " + EnumChatFormatting.RED + "fabrication", Blocks.crafting_table),
+            new GuardableBlock("anvil", "Anvil", EnumChatFormatting.RED + "Aam" + EnumChatFormatting.WHITE + "be" + EnumChatFormatting.BLUE + "eld", Blocks.anvil),
             new GuardableBlock("beacon", "Beacon", Blocks.beacon),
-            new GuardableBlock("hopper", "Hopper", Blocks.hopper)
+            new GuardableBlock("hopper", "Hopper", EnumChatFormatting.BLACK + "That thing that hops", Blocks.hopper)
         };
     }
 
-    private GuardableBlock(String key, String displayName, String comment, Block... blocks) {
+    private GuardableBlock(String key, String displayName, String specialText, Block... blocks) {
         this.key = key;
         this.displayName = displayName;
-        this.comment = comment;
+        this.specialText = specialText;
         this.mainBlock = blocks[0];
         for (final Block block : blocks) {
             blocksMap.put(block, this);
