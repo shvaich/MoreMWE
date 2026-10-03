@@ -21,31 +21,37 @@ public class CommandPlay extends MyAbstractCommand {
     private static final String[] NO_ALIASES = new String[0];
 
     private static final Game[] GAMES = new Game[]{
+
+            new Game("mega_walls", "Mega Walls", new String[]{ "mw", "megawalls" },
+                    new Mode("mw_standard", "Standard", "mw", "megawalls", "mega_walls"),
+                    new Mode("mw_face_off", "Face Off", "mw_faceoff")
+            ),
+
             new Game("blitz_survival_games", "Blitz Survival Games", "bsg",
                     new Mode("blitz_solo_normal", "Solo"),
                     new Mode("blitz_teams_normal", "Teams")
             ),
 
+            new Game("sky_wars", "Sky Wars", new String[]{ "sw", "skywars" },
+                    new Mode("solo_normal", "Normal (Solo)"),
+                    new Mode("teams_normal", "Normal (Doubles)")
+            ),
+
             new Game("duels", "Duels",
-                    new Mode("bedwars_two_one_duels", "Bed Wars Duels (Normal)"),
-                    // new Mode("?", "Bed Wars Duels (Rush)"),
+                    new Mode("duels_mw_duel", "Mega Walls Duels"),
                     new Mode("duels_blitz_duel", "Blitz Duels"),
-                    new Mode("duels_bow_duel", "Bow Duels"),
-                    new Mode("duels_bowspleef_duel", "Bow Spleef Duels"),
-                    new Mode("duels_boxing_duel", "Boxing Duels"),
                     new Mode("duels_classic_duel", "Classic Duels (1v1)"),
                     new Mode("duels_classic_doubles", "Classic Duels (2v2)"),
+                    new Mode("duels_boxing_duel", "Boxing Duels"),
                     new Mode("duels_combo_duel", "Combo Duels"),
                     new Mode("duels_duel_arena", "Duel Arena"),
-                    new Mode("duels_parkour_eight", "Hypixel Parkour"),
-                    new Mode("duels_mw_duel", "Mega Walls Duels"),
                     new Mode("duels_potion_duel", "NoDebuff Duels"),
                     new Mode("duels_op_duel", "OP Duels (1v1)"),
                     new Mode("duels_op_doubles", "OP Duels (2v2)"),
-                    new Mode("duels_quake_duel", "Quakecraft Duels"),
                     new Mode("duels_sw_duel", "SkyWars Duels (1v1)"),
                     new Mode("duels_sw_doubles", "SkyWars Duels (2v2)"),
                     new Mode("duels_sumo_duel", "Sumo Duels"),
+                    new Mode("bedwars_two_one_duels", "Bed Wars Duels (Normal)"),
                     new Mode("duels_bridge_duel", "The Bridge (1v1)"),
                     new Mode("duels_bridge_doubles", "The Bridge (2v2)"),
                     new Mode("duels_bridge_threes", "The Bridge (3v3)"),
@@ -53,20 +59,8 @@ public class CommandPlay extends MyAbstractCommand {
                     new Mode("duels_uhc_duel", "UHC Duels (1v1)"),
                     new Mode("duels_uhc_doubles", "UHC Duels (2v2)"),
                     new Mode("duels_uhc_four", "UHC Duels (4v4)"),
-                    new Mode("duels_uhc_meetup", "UHC Deathmatch")
-            ),
-
-            new Game("mega_walls", "Mega Walls", new String[]{ "mw", "megawalls" },
-                    new Mode("mw_standard", "Standard", "mw", "megawalls", "mega_walls"),
-                    new Mode("mw_face_off", "Face Off", "mw_faceoff")
-            ),
-
-            new Game("sky_wars", "Sky Wars", new String[]{ "sw", "skywars" },
-                    new Mode("solo_normal", "Normal (Solo)"),
-                    new Mode("teams_normal", "Normal (Doubles)"),
-                    new Mode("solo_insane", "Insane (Solo)"),
-                    new Mode("mega_doubles", "Mega Doubles")
-                    //new Mode("?", "Mini")
+                    new Mode("duels_uhc_meetup", "UHC Deathmatch"),
+                    new Mode("duels_bow_duel", "Bow Duels")
             )
     };
 
