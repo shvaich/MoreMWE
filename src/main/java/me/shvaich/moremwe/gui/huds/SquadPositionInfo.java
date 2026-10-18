@@ -56,13 +56,7 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
         if (!MWEHookConfig.showCompassInfoInSquadHUD) return false;
         if (!MWEHookConfig.showSquadHUDCompassInfoWhenSpectator && PlayerUtil.isTheMcPlayerSpectator(mc.thePlayer)) return false;
         if (!MWEApi.Scoreboard.getScoreboardParser().isInMwGame()) return !MWEHookConfig.isSquadHUDCompassInfoForMegaWallsOnly;
-        switch (MWEHookConfig.squadHUDCompassInfoMegaWallsRenderCondition) {
-            case DURING_GAME: return true;
-            case AFTER_WALLS_FALL: return !MWEApi.Scoreboard.getScoreboardParser().isPrepPhase();
-            case AFTER_FIRST_WITHER_DEATH: return MWEApi.Scoreboard.getScoreboardParser().getWitherCount() < 4;
-            case DURING_DEATHMATCH: return MWEApi.Scoreboard.getScoreboardParser().isDeathmatch();
-            default: return false;
-        }
+        return MWEHookConfig.squadHUDCompassInfoMegaWallsRenderCondition.isActive(MWEApi.Scoreboard.getScoreboardParser());
     }
 
     private static String getDistanceText(int distance, int yDistance) {

@@ -1,7 +1,7 @@
 package me.shvaich.moremwe.config;
 
 import fr.alexdoru.configlib.api.ConfigProperty;
-import me.shvaich.moremwe.features.MWCondition;
+import me.shvaich.moremwe.features.MWGameState;
 import net.minecraft.util.EnumChatFormatting;
 
 public class MWEHookConfig {
@@ -37,7 +37,7 @@ public class MWEHookConfig {
             comment = "Controls when to display during a Mega Walls match",
             dependsOn = "Show Compass Information In Squad HUD"
     )
-    public static MWCondition squadHUDCompassInfoMegaWallsRenderCondition = MWCondition.DURING_DEATHMATCH;
+    public static MWGameState squadHUDCompassInfoMegaWallsRenderCondition = MWGameState.AFTER_SELF_WITHER_DEATH;
 
     @ConfigProperty(
             name = "Show Distance Unit",
