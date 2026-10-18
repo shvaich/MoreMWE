@@ -45,7 +45,7 @@ public class MyConfigGuiScreen extends GuiScreen {
     private int BORDER_LEFT, BORDER_TOP, BORDER_RIGHT;
     private int INNER_LEFT, INNER_RIGHT, INNER_BOTTOM;
     private int MENU_LEFT, MENU_TOP, MENU_RIGHT, MENU_BOTTOM;
-    private int CONFIG_LEFT, CONFIG_TOP, CONFIG_RIGHT, CONFIG_BOTTOM;
+    private final GuiUtil.Rect CONFIG_RECT = new GuiUtil.Rect();
 
     private Scrollbar configScrollbar;
     private Scrollbar menuScrollbar;
@@ -143,10 +143,10 @@ public class MyConfigGuiScreen extends GuiScreen {
         this.menuScrollbar = Scrollbar.create(categoryMenuEntriesHeight, MENU_TOP, INNER_BOTTOM, menuScrollbar);
         MENU_BOTTOM = this.menuScrollbar == null ? (MENU_TOP + categoryMenuEntriesHeight) : this.menuScrollbar.getTrackBottom();
 
-        CONFIG_LEFT = MENU_RIGHT + BORDER_SIZE;
-        CONFIG_TOP = MENU_TOP;
-        CONFIG_RIGHT = INNER_RIGHT;
-        //CONFIG_BOTTOM = INNER_BOTTOM;
+        CONFIG_RECT.LEFT = MENU_RIGHT + BORDER_SIZE;
+        CONFIG_RECT.TOP = MENU_TOP;
+        CONFIG_RECT.RIGHT = INNER_RIGHT;
+        //CONFIG_RECT.BOTTOM = INNER_BOTTOM;
 
         final int configElementRectWidth = getConfigElementsRectWidth();
         for (final ConfigGuiElement configGuiElement : configElements)
@@ -170,7 +170,7 @@ public class MyConfigGuiScreen extends GuiScreen {
         updateConfigScrollbar(renderedElementsHeight, this.configScrollbar);
 
         if (searchbar != null)
-            searchbar.onResize(mc, BORDER_TOP + (HEADER_HEIGHT - searchbar.getHeight()) / 2, CONFIG_RIGHT - CONFIG_HORIZONTAL_PADDING);
+            searchbar.onResize(mc, BORDER_TOP + (HEADER_HEIGHT - searchbar.getHeight()) / 2, CONFIG_RECT.RIGHT - CONFIG_HORIZONTAL_PADDING);
 
 
         final ScaledResolution res = new ScaledResolution(mc);
@@ -179,6 +179,7 @@ public class MyConfigGuiScreen extends GuiScreen {
 
         closeOpenOverlay();
         clearActiveSlider();
+        Keyboard.enableRepeatEvents(true);
         super.initGui();
     }
 
@@ -209,6 +210,11 @@ public class MyConfigGuiScreen extends GuiScreen {
         fontRendererObj.drawString(MoreMWE.NAME + " - " + MoreMWE.VERSION, menuDrawX, BORDER_TOP + ((HEADER_HEIGHT - fontRendererObj.FONT_HEIGHT) / 2) + 1, ModResources.WHITE);
 
         final boolean isMouseOverOverlay = openOverlay != null && openOverlay.isMouseOverOverlay(mouseX, mouseY);
+        //boolean isMouseOverOverlay = false;
+        //if (openOverlay != null) {
+        //    openOverlay.setOverlayPosition();
+        //    isMouseOverOverlay = openOverlay.isMouseOverOverlay(mouseX, mouseY);
+        //}
 
         if (searchbar != null) searchbar.draw(mouseX, mouseY);
 
@@ -231,15 +237,15 @@ public class MyConfigGuiScreen extends GuiScreen {
         }
 
         GL11.glScissor(
-                (int) (CONFIG_LEFT * SCREEN_WIDTH_SCALE),
-                (int) (mc.displayHeight - (CONFIG_BOTTOM * SCREEN_HEIGHT_SCALE)),
-                (int) ((CONFIG_RIGHT - CONFIG_LEFT) * SCREEN_WIDTH_SCALE),
-                (int) ((CONFIG_BOTTOM - CONFIG_TOP) * SCREEN_HEIGHT_SCALE));
+                (int) (CONFIG_RECT.LEFT * SCREEN_WIDTH_SCALE),
+                (int) (mc.displayHeight - (CONFIG_RECT.BOTTOM * SCREEN_HEIGHT_SCALE)),
+                (int) (CONFIG_RECT.getWidth() * SCREEN_WIDTH_SCALE),
+                (int) (CONFIG_RECT.getHeight() * SCREEN_HEIGHT_SCALE));
 
-        final boolean canMouseVisuallyBeOverElement = !isMouseOverOverlay && GuiUtil.isMouseInRect(mouseX, mouseY, CONFIG_LEFT, CONFIG_TOP, CONFIG_RIGHT, CONFIG_BOTTOM);
+        final boolean canMouseVisuallyBeOverElement = !isMouseOverOverlay && CONFIG_RECT.isMouseIn(mouseX, mouseY);
         List<String> hoveringTextLines = null;
-        final int drawX = CONFIG_LEFT + CONFIG_HORIZONTAL_PADDING;
-        int drawY = CONFIG_TOP + CONFIG_VERTICAL_PADDING - (hasConfigScrollbar ? configScrollbar.getScroll() : 0);
+        final int drawX = CONFIG_RECT.LEFT + CONFIG_HORIZONTAL_PADDING;
+        int drawY = CONFIG_RECT.TOP + CONFIG_VERTICAL_PADDING - (hasConfigScrollbar ? configScrollbar.getScroll() : 0);
 
         int ignoreTopMarginCount = 1;
         if (renderedConfigElements.size() > 1 && renderedConfigElements.get(0) instanceof ConfigCategoryHeader) {
@@ -250,7 +256,7 @@ public class MyConfigGuiScreen extends GuiScreen {
             if (ignoreTopMarginCount > 0) ignoreTopMarginCount--;
             else tY += element.getTopMargin();
             final int elementHeight = element.getHeight();
-            if (tY <= CONFIG_BOTTOM && (tY + elementHeight) >= CONFIG_TOP) {
+            if (tY <= CONFIG_RECT.BOTTOM && (tY + elementHeight) >= CONFIG_RECT.TOP) {
                 element.draw(drawX, tY, mouseX, mouseY, canMouseVisuallyBeOverElement);
                 if (canMouseVisuallyBeOverElement && (hoveringTextLines == null || hoveringTextLines.isEmpty()))
                     hoveringTextLines = element.getHoveringTextLines(mouseX, mouseY);
@@ -260,8 +266,8 @@ public class MyConfigGuiScreen extends GuiScreen {
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
-        if (hasMenuScrollbar) menuScrollbar.draw(MENU_RIGHT, CONFIG_LEFT, mouseY);
-        if (hasConfigScrollbar) configScrollbar.draw(CONFIG_RIGHT, BORDER_RIGHT, mouseY);
+        if (hasMenuScrollbar) menuScrollbar.draw(MENU_RIGHT, CONFIG_RECT.LEFT, mouseY);
+        if (hasConfigScrollbar) configScrollbar.draw(CONFIG_RECT.RIGHT, BORDER_RIGHT, mouseY);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
 
@@ -300,9 +306,9 @@ public class MyConfigGuiScreen extends GuiScreen {
                     if (categoryMenuEntry.mouseClicked(mouseX, mouseY, mouseButton))
                         break scan;
             }
-            else if (GuiUtil.isMouseInRect(mouseX, mouseY, CONFIG_LEFT, CONFIG_TOP, CONFIG_RIGHT, CONFIG_BOTTOM)) {
+            else if (CONFIG_RECT.isMouseIn(mouseX, mouseY)) {
                 try {
-                    int drawY = CONFIG_TOP + CONFIG_VERTICAL_PADDING - (configScrollbar != null ? configScrollbar.getScroll() : 0);
+                    int drawY = CONFIG_RECT.TOP + CONFIG_VERTICAL_PADDING - (configScrollbar != null ? configScrollbar.getScroll() : 0);
                     int ignoreTopMarginCount = 1;
                     if (renderedConfigElements.size() > 1 && renderedConfigElements.get(0) instanceof ConfigCategoryHeader) {
                         ignoreTopMarginCount++;
@@ -312,7 +318,7 @@ public class MyConfigGuiScreen extends GuiScreen {
                         if (ignoreTopMarginCount > 0) ignoreTopMarginCount--;
                         else tY += configGuiElement.getTopMargin();
                         final int elementHeight = configGuiElement.getHeight();
-                        if ((tY <= CONFIG_BOTTOM && (tY + elementHeight) >= CONFIG_TOP)
+                        if ((tY <= CONFIG_RECT.BOTTOM && (tY + elementHeight) >= CONFIG_RECT.TOP)
                                 && configGuiElement.mouseClicked(mouseX, mouseY, mouseButton)
                         ) {
                             if (configGuiElement instanceof IOverlayHost) {
@@ -411,8 +417,8 @@ public class MyConfigGuiScreen extends GuiScreen {
         final int i = Mouse.getEventDWheel();
         if (i == 0) return;
         if (menuScrollbar != null) {
-            final int mouseX = (int) (Mouse.getEventX() / SCREEN_WIDTH_SCALE);
-            final int mouseY = (int) (this.height - Mouse.getEventY() / SCREEN_HEIGHT_SCALE - 1);
+            final int mouseX = calculateMouseX();
+            final int mouseY = calculateMouseY();
             if (GuiUtil.isMouseInRect(mouseX, mouseY, MENU_LEFT, MENU_TOP, MENU_RIGHT, MENU_BOTTOM)) {
                 menuScrollbar.updateFromMouseScroll(i);
                 return;
@@ -420,18 +426,21 @@ public class MyConfigGuiScreen extends GuiScreen {
         }
         if (configScrollbar != null) {
             configScrollbar.updateFromMouseScroll(i);
-            closeOpenOverlay();
+            if (openOverlay != null && openOverlay.closeOnConfigMouseWheelScroll()) {
+                closeOpenOverlay();
+            }
             clearActiveSlider();
         }
     }
 
     @Override
     public void onGuiClosed() {
+        Keyboard.enableRepeatEvents(false);
         if (this.searchbarTask != null) {
             searchbarTask.stop();
             this.searchbarTask = null;
         }
-        //closeOpenOverlay(); // might be needed later on
+        closeOpenOverlay(); // ?
         clearActiveSlider(); // saves slider value (potentially unsaved if screen closed without mouseRelease)
         this.configHandler.save();
         super.onGuiClosed();
@@ -545,11 +554,11 @@ public class MyConfigGuiScreen extends GuiScreen {
             }
             renderedElementsHeight += CONFIG_VERTICAL_PADDING * 2 - emptyElementsMargin;
         }
-        this.configScrollbar = Scrollbar.create(renderedElementsHeight, CONFIG_TOP, INNER_BOTTOM, previousConfigScrollbar);
-        this.CONFIG_BOTTOM = this.configScrollbar == null ? (CONFIG_TOP + renderedElementsHeight) : configScrollbar.getTrackBottom();
+        this.configScrollbar = Scrollbar.create(renderedElementsHeight, CONFIG_RECT.TOP, INNER_BOTTOM, previousConfigScrollbar);
+        CONFIG_RECT.BOTTOM = this.configScrollbar == null ? (CONFIG_RECT.TOP + renderedElementsHeight) : configScrollbar.getTrackBottom();
     }
 
-    private int getConfigElementsRectWidth() { return CONFIG_RIGHT - CONFIG_HORIZONTAL_PADDING - (CONFIG_LEFT + CONFIG_HORIZONTAL_PADDING); }
+    private int getConfigElementsRectWidth() { return CONFIG_RECT.getWidth() - CONFIG_HORIZONTAL_PADDING - CONFIG_HORIZONTAL_PADDING; }
     private int getEntireElementHeight(ConfigGuiElement element) {
         return element.getTopMargin() + element.getHeight() + element.getBottomMargin();
     }
@@ -595,4 +604,9 @@ public class MyConfigGuiScreen extends GuiScreen {
     public String getSelectedCategory() { return selectedCategory; }
 
     public boolean isInSearchMode() { return searchbar != null && selectedCategory == null; }
+
+    public GuiUtil.Rect getConfigRect() { return CONFIG_RECT; }
+
+    public int calculateMouseX() { return Mouse.getEventX() * this.width / this.mc.displayWidth; }
+    public int calculateMouseY() { return this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1; }
 }

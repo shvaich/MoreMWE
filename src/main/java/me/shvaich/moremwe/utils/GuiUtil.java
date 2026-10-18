@@ -15,6 +15,18 @@ public final class GuiUtil {
     public static final int MOUSE_RIGHT = 1;
     public static final int DIGIT_AND_SIGN_WIDTH = 6;
 
+    public static final class Rect {
+        public int LEFT, TOP, RIGHT, BOTTOM;
+
+        public int getWidth() { return RIGHT - LEFT; }
+        public int getHeight() { return BOTTOM - TOP; }
+        public boolean isMouseIn(int mouseX, int mouseY) { return isMouseInRect(mouseX, mouseY, LEFT, TOP, RIGHT, BOTTOM); }
+
+        public void draw(int color) { drawRect(LEFT, TOP, RIGHT, BOTTOM, color); }
+        //public void drawBorder(int size, int color) { drawRectBorder(LEFT, TOP, RIGHT, BOTTOM, size, color); }
+        public void drawWithBorder(int color, int borderColor) { drawRectWithBorder(LEFT, TOP, RIGHT, BOTTOM, color, borderColor); }
+    }
+
     /// Gui.drawRect(left, top, right, bottom) - left & top: inclusive, right & bottom: exclusive;
 
     public static void drawHorizontalLine(int startX, int endX, int y, int size, int color) {

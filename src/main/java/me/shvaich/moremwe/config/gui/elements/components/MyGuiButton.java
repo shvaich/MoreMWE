@@ -13,7 +13,7 @@ public class MyGuiButton {
 
     public int xPosition, yPosition;
     public int width, height;
-    private boolean isHovered;
+    protected boolean isHovered;
 
     public String displayString;
     private ResourceLocation texture;

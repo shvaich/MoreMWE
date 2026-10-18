@@ -34,7 +34,7 @@ public abstract class ConfigGuiButton extends ConfigGuiElement {
     protected int contentLeft;
     private int boxHeight;
 
-    public ConfigGuiButton(MyConfigGuiScreen screen, ConfigFieldContainer fieldData) throws IllegalAccessException {
+    protected ConfigGuiButton(MyConfigGuiScreen screen, ConfigFieldContainer fieldData) throws IllegalAccessException {
         this(screen, fieldData, true);
     }
 

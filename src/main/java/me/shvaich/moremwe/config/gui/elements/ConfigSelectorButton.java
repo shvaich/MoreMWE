@@ -7,12 +7,15 @@ import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.GuiUtil;
 import me.shvaich.moremwe.utils.MoreMWEException;
+import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Objects;
 
-public class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHost {
+
+public abstract class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHost {
 
     private static final int EXPANDED_BORDER_SIZE = 2;
 
@@ -25,18 +28,60 @@ public class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHos
     private int buttonLeft, buttonTop, buttonRight, buttonBottom;
     private int dropdownLeft, dropdownTop, dropdownRight, dropdownBottom;
 
-    public ConfigSelectorButton(MyConfigGuiScreen screen, ConfigFieldContainer field) throws IllegalAccessException {
+    public static final class ForInteger extends ConfigSelectorButton {
+        public ForInteger(MyConfigGuiScreen screen, ConfigFieldContainer field) throws IllegalAccessException {
+            super(screen, field, field.getAnnotation().options(), (int) field.getValue());
+        }
+
+        @Override
+        protected void setValue(int clickedIndex) throws IllegalAccessException {
+            fieldData.setValue(clickedIndex);
+        }
+    }
+
+    public static final class ForEnum extends ConfigSelectorButton {
+        private final Enum<?>[] universe;
+
+        public ForEnum(MyConfigGuiScreen screen, ConfigFieldContainer field, Enum<?>[] universe) throws IllegalAccessException {
+            super(screen, field, getOptions(universe), ((Enum<?>) field.getValue()).ordinal());
+            this.universe = universe;
+        }
+
+        @Override
+        protected void setValue(int clickedIndex) throws IllegalAccessException {
+            fieldData.setValue(universe[clickedIndex]);
+        }
+
+        private static String[] getOptions(Enum<?>[] universe) {
+            final int len = universe.length;
+            final String[] options = new String[len];
+            for (int i = 0; i < len; i++) {
+                StringBuilder builder = null;
+                for (final String str : universe[i].name().split("_")) {
+                    if (str.isEmpty()) continue;
+                    (builder == null ? (builder = new StringBuilder()) : builder.append(' '))
+                            .append(StringUtil.capitalize(StringUtil.toLowerCase(str)));
+                }
+                options[i] = Objects.requireNonNull(builder).toString();
+            }
+            return options;
+        }
+    }
+
+    private ConfigSelectorButton(MyConfigGuiScreen screen, ConfigFieldContainer field, String[] displayOptions, int selectedIndex) throws IllegalAccessException {
         super(screen, field);
-        this.options = field.getAnnotation().options();
-        if (options.length == 0)
+        if (displayOptions.length == 0)
             throw new MoreMWEException().sendDebug("Config Selector cannot have 0 options");
 
-        final int value = (int) field.getValue();
-        if (value < 0 || value >= options.length)
+        this.options = displayOptions;
+
+        if (selectedIndex < 0 || selectedIndex >= options.length)
             throw new MoreMWEException().sendDebug("Config Selector value is out of options bounds");
 
-        this.selectedOptionIndex = value;
+        this.selectedOptionIndex = selectedIndex;
     }
+
+    protected abstract void setValue(int clickedIndex) throws IllegalAccessException;
 
     @Override
     public void onResize(int elementRectWidth) {
@@ -78,6 +123,7 @@ public class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHos
                 closeOverlay();
             }
             else {
+                // should always create a scrollbar, if it should be rendered or not should be decided in rendering code. not here
                 this.dropdownTop = buttonBottom + EXPANDED_BORDER_SIZE;
                 int maxBottom = screen.height - EXPANDED_BORDER_SIZE;
                 // bad fix to a possible issue, im lazy
@@ -165,9 +211,8 @@ public class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHos
             if (isMouseOverOverlay(mouseX, mouseY)) {
                 final int clickedIndex = getDropdownIndexFromMouse(mouseX, mouseY);
                 if (clickedIndex != -1) {
-                    final int selectedIndex = (int) this.fieldData.getValue();
-                    if (clickedIndex != selectedIndex) {
-                        this.fieldData.setValue(clickedIndex);
+                    if (clickedIndex != selectedOptionIndex) {
+                        setValue(clickedIndex);
                         this.selectedOptionIndex = clickedIndex;
                     }
                     closeOverlay();
@@ -193,8 +238,8 @@ public class ConfigSelectorButton extends ConfigGuiButton implements IOverlayHos
         if (scrollbar != null) {
             final int eventDWheel = Mouse.getEventDWheel();
             if (eventDWheel != 0) {
-                final int mouseX = (int) (Mouse.getEventX() / screen.SCREEN_WIDTH_SCALE);
-                final int mouseY = (int) (screen.height - Mouse.getEventY() / screen.SCREEN_HEIGHT_SCALE - 1);
+                final int mouseX = screen.calculateMouseX();
+                final int mouseY = screen.calculateMouseY();
                 if (GuiUtil.isMouseInRect(mouseX, mouseY, dropdownLeft, dropdownTop, dropdownRight, dropdownBottom)) {
                     scrollbar.updateFromMouseScroll(eventDWheel);
                     return true;

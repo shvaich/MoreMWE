@@ -7,14 +7,12 @@ import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.utils.ColorUtil;
 import me.shvaich.moremwe.utils.MoreMWEException;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -30,6 +28,9 @@ public class ConfigFieldContainer {
     private ConfigFieldContainer dependsOn;
     private int dependantsCount = 0;
     private BooleanSupplier hideCondition;
+
+    // cache instance instead of re-computing new one each time
+    private CustomPropertyInfo customPropertyInfo;
 
     public ConfigFieldContainer(Field field, Configuration config, Map<String, Set<String>> configFieldsNamesMap) throws IllegalAccessException {
         final ConfigProperty annotation = getConfigProperty(field);
@@ -71,12 +72,12 @@ public class ConfigFieldContainer {
     private Property[] loadConfigValueToField(Configuration config) throws IllegalAccessException {
         final String category = getCategory();
         final String name = getName();
-        if (field.getType() == boolean.class) {
+        if (field.getType() == Boolean.TYPE) {
             final Property prop = config.get(category, name, (boolean) getValue());
             field.setBoolean(null, prop.getBoolean());
             return new Property[]{prop};
         }
-        else if (field.getType() == int.class) {
+        else if (field.getType() == Integer.TYPE) {
             final Property prop = config.get(category, name, (int) getValue());
             field.setInt(null, getValidIntFromConfig(prop));
             return new Property[]{prop};
@@ -92,6 +93,28 @@ public class ConfigFieldContainer {
                 MathHelper.clamp_double(relativeYProp.getDouble(), 0.0D, 1.0D)
             );
             return new Property[]{isEnabledProp, relativeXProp, relativeYProp};
+        }
+        else if (field.getType() == EnumChatFormatting.class) {
+            final EnumChatFormatting value = (EnumChatFormatting) getValue();
+            if (!value.isColor())
+                throw new MoreMWEException().sendDebug("Field {} must be a color", getFieldName());
+            final Property prop = config.get(category, name, value.name());
+            EnumChatFormatting configValue = getEnumValue(prop.getString());
+            if (configValue == null || !configValue.isColor()) {
+                configValue = getEnumValue(prop.getDefault());
+            }
+            field.set(null, configValue);
+            return new Property[]{prop};
+        }
+        else if (field.getType().isEnum()) {
+            final Enum<?> value = (Enum<?>) getValue();
+            final Property prop = config.get(category, name, value.name());
+            Enum<?> configValue = getEnumValue(prop.getString());
+            if (configValue == null) {
+                configValue = getEnumValue(prop.getDefault());
+            }
+            field.set(null, configValue);
+            return new Property[]{prop};
         }
         else if (isFieldStringCollection()) {
             // noinspection unchecked
@@ -125,10 +148,10 @@ public class ConfigFieldContainer {
     private Property theConfigProperty() { return configProperties[0]; }
 
     public void saveFieldValueToConfig() throws IllegalAccessException {
-        if (field.getType() == boolean.class) {
+        if (field.getType() == Boolean.TYPE) {
             theConfigProperty().set((boolean) getValue());
         }
-        else if (field.getType() == int.class) {
+        else if (field.getType() == Integer.TYPE) {
             theConfigProperty().set((int) getValue());
         }
         else if (field.getType() == MyRendererPosition.class) {
@@ -136,6 +159,12 @@ public class ConfigFieldContainer {
             configProperties[0].set(rendererPosition.isEnabled());
             configProperties[1].set(rendererPosition.getRelativeX());
             configProperties[2].set(rendererPosition.getRelativeY());
+        }
+        //else if (field.getType() == EnumChatFormatting.class) {
+        //    theConfigProperty().set(((EnumChatFormatting) getValue()).name());
+        //}
+        else if (field.getType().isEnum()) {
+            theConfigProperty().set(((Enum<?>) getValue()).name());
         }
         else if (isFieldStringCollection()) {
             // noinspection unchecked
@@ -154,9 +183,19 @@ public class ConfigFieldContainer {
             case COLOR: {
                 final int defaultColor = Integer.parseInt(theConfigProperty().getDefault());
                 singleButton = new ConfigColorButton(screen, this, defaultColor);
-            } break;
+                break;
+            }
 
-            case SELECTOR: singleButton = new ConfigSelectorButton(screen, this); break;
+            case SELECTOR: singleButton = new ConfigSelectorButton.ForInteger(screen, this); break;
+
+            case ENUM_SELECTOR: {
+                Enum<?>[] universe = field.getType() == EnumChatFormatting.class ?
+                        Arrays.stream(EnumChatFormatting.values()).filter(EnumChatFormatting::isColor).toArray(EnumChatFormatting[]::new)
+                        : (Enum<?>[]) field.getType().getEnumConstants();
+
+                singleButton = new ConfigSelectorButton.ForEnum(screen, this, universe);
+                break;
+            }
 
             case HUD_POSITION: singleButton = new ConfigHUDButton(screen, this); break;
 
@@ -164,15 +203,22 @@ public class ConfigFieldContainer {
 
             case NUMBER: singleButton = new ConfigNumberButton(screen, this); break;
 
+            case MINECRAFT_COLOR: singleButton = new ConfigMinecraftColorButton(screen, this, Objects.requireNonNull(getEnumValue(theConfigProperty().getDefault()))); break;
+
             case CUSTOM: {
-                try {
-                    final Constructor<? extends CustomPropertyInfo> constructor = annotation.customPropertyClass().getDeclaredConstructor();
-                    constructor.setAccessible(true);
-                    return constructor.newInstance().getConfigGuiButtons(screen, this);
+                if (customPropertyInfo == null) {
+                    try {
+                        final Constructor<? extends CustomPropertyInfo> constructor = annotation.customPropertyClass().getDeclaredConstructor();
+                        final boolean noAccess = !constructor.isAccessible();
+                        if (noAccess) constructor.setAccessible(true);
+                        customPropertyInfo = constructor.newInstance();
+                        if (noAccess) constructor.setAccessible(false);
+                    }
+                    catch (Exception e) {
+                        throw new MoreMWEException(e).sendDebug("Failed to get custom property info");
+                    }
                 }
-                catch (Exception e) {
-                    throw new MoreMWEException(e).sendDebug("Failed to get ConfigButtons from custom property info");
-                }
+                return customPropertyInfo.getConfigGuiButtons(screen, this);
             }
 
             default: throw new MoreMWEException().sendDebug("Config doesn't support GUI for this PropertyType. Type [{}]", getType());
@@ -268,5 +314,17 @@ public class ConfigFieldContainer {
             }
         }
         return false;
+    }
+
+    private <T extends Enum<T>> T getEnumValue(String valueName) {
+        //if (!field.getType().isEnum())
+        //    throw new MoreMWEException().sendDebug("Field {} is not an Enum!", getFieldName());
+        try {
+            //noinspection unchecked
+            return Enum.valueOf((Class<T>) field.getType(), valueName);
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 }

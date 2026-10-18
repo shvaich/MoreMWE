@@ -8,6 +8,12 @@ public interface IOverlayHost {
 
     void closeOverlay();
 
+//    /**
+//     * Called before {@link #isMouseOverOverlay(int, int)} and {@link #drawOverlay(int, int)}.
+//     * If you want to set the overlay's position when it's rendered, set it here and not in {@link #drawOverlay(int, int)}
+//     */
+//    default void setOverlayPosition() {}
+
     boolean isMouseOverOverlay(int mouseX, int mouseY);
 
     void drawOverlay(int mouseX, int mouseY);
@@ -25,4 +31,6 @@ public interface IOverlayHost {
 
     /** @return {@code true} if the overlay handles the key typed */
     default boolean overlayKeyTyped(char typedChar, int keyCode) { return false; }
+
+    default boolean closeOnConfigMouseWheelScroll() { return true; }
 }
