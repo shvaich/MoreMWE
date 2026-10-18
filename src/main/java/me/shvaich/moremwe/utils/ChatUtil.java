@@ -15,6 +15,26 @@ public final class ChatUtil {
 
     private ChatUtil() {}
 
+    public enum ChatChannel {
+        DEFAULT,
+        ALL('a'),
+        PARTY('p'),
+        GUILD('g');
+
+        private final String prefix;
+
+        ChatChannel(char id) {
+            this.prefix = "/" + id + "c ";
+        }
+
+        ChatChannel() { this.prefix = ""; }
+
+        @Override
+        public String toString() {
+            return prefix;
+        }
+    }
+
     public static String getModTag() {
         return DARK_GRAY + "[" + YELLOW + MoreMWE.NAME + DARK_GRAY + "] " + RESET;
     }
