@@ -91,6 +91,16 @@ public final class GuiUtil {
         // GlStateManager.disableBlend();
     }
 
+    public static void drawScaledText(Minecraft mc, String text, float x, float y, float scale, int color) {
+        GlStateManager.pushMatrix();
+        {
+            GlStateManager.translate(x, y, 0);
+            GlStateManager.scale(scale, scale, scale);
+            mc.fontRendererObj.drawStringWithShadow(text, 0, 0, color);
+        }
+        GlStateManager.popMatrix();
+    }
+
     public static boolean isMouseInRect(int mouseX, int mouseY, int left, int top, int right, int bottom) {
         return mouseX >= left && mouseX < right && mouseY >= top && mouseY < bottom;
     }
