@@ -11,9 +11,12 @@ import java.util.*;
 
 public class CommandHypixelGroup extends MyAbstractCommand {
 
+    public static final CommandHypixelGroup FRIEND = new CommandHypixelGroup("friend");
+    public static final CommandHypixelGroup PARTY = new CommandHypixelGroup("party");
+
     private final String name;
 
-    public CommandHypixelGroup(String name) {
+    private CommandHypixelGroup(String name) {
         this.name = name;
     }
 

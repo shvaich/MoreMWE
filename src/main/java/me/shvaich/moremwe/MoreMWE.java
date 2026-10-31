@@ -54,8 +54,8 @@ public class MoreMWE {
                 new CommandMoreMWE(),
                 new CommandPlay(),
                 new CommandVisibleBarriers(),
-                new CommandHypixelGroup("friend"),
-                new CommandHypixelGroup("party")
+                CommandHypixelGroup.FRIEND,
+                CommandHypixelGroup.PARTY
         );
 
         registerEvents(
