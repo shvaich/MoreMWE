@@ -21,7 +21,7 @@ public final class PlayerEnergyDisplay {
 
         if (!MoreMWEConfig.sendEnergyMessageWhenFullyCharged
                 || !MWEApi.Scoreboard.getScoreboardParser().isInMwGame()
-                || !megaWallsCondition()
+                || !MoreMWEConfig.energyMessageMegaWallsCondition.isActive(MWEApi.Scoreboard.getScoreboardParser())
         ) {
             lastLevel = 0;
             return;
@@ -34,11 +34,11 @@ public final class PlayerEnergyDisplay {
         lastLevel = currentLevel;
     }
 
-    private static boolean megaWallsCondition() {
-        return MoreMWEConfig.energyMessageMegaWallsCondition == 0 ?
-                MWEApi.Scoreboard.getScoreboardParser().getWitherCount() < 4
-                : MWEApi.Scoreboard.getScoreboardParser().isDeathmatch();
-    }
+//    private static boolean megaWallsCondition() {
+//        return MoreMWEConfig.energyMessageMegaWallsCondition == 0 ?
+//                MWEApi.Scoreboard.getScoreboardParser().getWitherCount() < 4
+//                : MWEApi.Scoreboard.getScoreboardParser().isDeathmatch();
+//    }
 
     public static void sendEnergyMessage() {
         final EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;

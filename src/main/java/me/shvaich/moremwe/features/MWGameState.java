@@ -22,6 +22,6 @@ public enum MWGameState {
 
     MWGameState(Predicate<IScoreboardParser> predicate) { this.predicate = predicate; }
 
-    /** For correct values you must confirm {@link IScoreboardParser#isInMwGame()} is {@code true} before calling this */
+    /** For correct values you must confirm {@link IScoreboardParser#isInMwGame()} returns {@code true} before calling this */
     public boolean isActive(IScoreboardParser parser) { return predicate.test(parser); }
 }

@@ -21,7 +21,7 @@ public final class MinecraftHook_RightClickGuards {
         final EntityPlayerSP thePlayer = mc.thePlayer;
         switch (mc.objectMouseOver.typeOfHit) {
             case ENTITY: {
-                if (MoreMWEConfig.shovelEntityInteractionCondition != 2 && doShovelGuard(thePlayer, heldItem)) {
+                if (MoreMWEConfig.shovelEntityInteractionCondition != 2 && isShovelGuardEnabled(thePlayer, heldItem)) {
                     if (MoreMWEConfig.shovelEntityInteractionCondition == 1 && mc.objectMouseOver.entityHit instanceof EntityPlayer) {
                         final char thePlayerTeam = MWEApi.Player.getPlayerInfo(thePlayer).getPlayerTeamColor();
                         return thePlayerTeam != '\0' && thePlayerTeam == MWEApi.Player.getPlayerInfo((EntityPlayer) mc.objectMouseOver.entityHit).getPlayerTeamColor();
@@ -36,7 +36,7 @@ public final class MinecraftHook_RightClickGuards {
                 final BlockPos blockPos = mc.objectMouseOver.getBlockPos();
                 GuardableBlock guardableBlock = null;
                 boolean hasFetchedGuardableBlock = false;
-                if (MoreMWEConfig.areBlocksGuarded && !MoreMWEConfig.guardedBlocks.isEmpty() && isBlockGuardWantedNow()) {
+                if (isBlockGuardEnabled()) {
                     final Block clickedBlock = theWorld.getBlockState(blockPos).getBlock();
                     if (!clickedBlock.isAir(theWorld, blockPos)) {
                         if (MoreMWEConfig.canPickaxeOverrideBlockGuard && heldItem != null && heldItem.getItem() instanceof ItemPickaxe) {
@@ -53,31 +53,27 @@ public final class MinecraftHook_RightClickGuards {
                     }
                 }
 
-                if (doShovelGuard(thePlayer, heldItem)) {
+                if (isShovelGuardEnabled(thePlayer, heldItem)) {
                     return !MoreMWEConfig.canOverrideShovelGuard
                             || (hasFetchedGuardableBlock ? guardableBlock : GuardableBlock.fromBlock(theWorld.getBlockState(blockPos).getBlock())) == null;
                 }
                 return false;
             }
         }
-        return doShovelGuard(thePlayer, heldItem);
+        return isShovelGuardEnabled(thePlayer, heldItem);
     }
 
-    private static boolean doShovelGuard(EntityPlayerSP thePlayer, ItemStack heldItem) {
+    private static boolean isBlockGuardEnabled() {
+        return MoreMWEConfig.areBlocksGuarded
+                && !MoreMWEConfig.guardedBlocks.isEmpty()
+                && MWEApi.Scoreboard.getScoreboardParser().isInMwGame() ? MoreMWEConfig.blockGuardMegaWallsCondition.isActive(MWEApi.Scoreboard.getScoreboardParser()) : !MoreMWEConfig.isBlockGuardForMegaWallsOnly;
+    }
+
+    private static boolean isShovelGuardEnabled(EntityPlayerSP thePlayer, ItemStack heldItem) {
         return MoreMWEConfig.isShovelGuarded
                 && heldItem != null
                 && heldItem.getItem() instanceof ItemSpade
                 && MWEApi.Scoreboard.getScoreboardParser().isInMwGame()
                 && MWEApi.Player.getPlayerInfo(thePlayer).getMWClass() == MWClass.MOLEMAN;
-    }
-
-    private static boolean isBlockGuardWantedNow() {
-        if (!MWEApi.Scoreboard.getScoreboardParser().isInMwGame()) return !MoreMWEConfig.isBlockGuardForMegaWallsOnly;
-        switch (MoreMWEConfig.blockGuardMegaWallsCondition) {
-            case 0: return true;
-            case 1: return !MWEApi.Scoreboard.getScoreboardParser().isPrepPhase();
-            case 2: return MWEApi.Scoreboard.getScoreboardParser().isDeathmatch();
-            default: return false; // never run
-        }
     }
 }

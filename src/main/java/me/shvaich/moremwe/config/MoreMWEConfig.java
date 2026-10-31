@@ -7,6 +7,7 @@ import me.shvaich.moremwe.features.GuardableBlock;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
 import me.shvaich.moremwe.config.gui.elements.custom.ConfigGuardableBlockButton;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
+import me.shvaich.moremwe.features.MWGameState;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
 import me.shvaich.moremwe.utils.MoreMWEException;
@@ -102,19 +103,14 @@ public final class MoreMWEConfig extends AbstractConfig {
     public static boolean isCompassForMegaWallsOnly = true;
 
     @ConfigProperty(
-            type = PropertyType.SELECTOR,
+            type = PropertyType.ENUM_SELECTOR,
             name = "Active During",
             category = "Compass",
             subcategory = "Mega Walls",
-            options = {
-                    "During Match",
-                    "After Walls Fall",
-                    "After First Wither Dies",
-                    "During Deathmatch"
-            },
+            //options = { "During Match", "After Walls Fall", "After First Wither Dies", "During Deathmatch" },
             comment = "Controls when the HUD is displayed during a Mega Walls match"
     )
-    public static int compassMegaWallsRenderCondition = 1;
+    public static MWGameState compassMegaWallsRenderCondition = MWGameState.AFTER_WALLS_FALL; // 1;
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
@@ -284,18 +280,14 @@ public final class MoreMWEConfig extends AbstractConfig {
     public static boolean isBlockGuardForMegaWallsOnly = true;
 
     @ConfigProperty(
-            type = PropertyType.SELECTOR,
+            type = PropertyType.ENUM_SELECTOR,
             name = "Active During",
             category = BLOCK_GUARD,
             subcategory = "Mega Walls",
-            options = {
-                    "During Match",
-                    "After Walls Fall",
-                    "During Deathmatch"
-            },
+            //options = { "During Match", "After Walls Fall", "During Deathmatch" },
             comment = "Controls when BlockGuard is active during a Mega Walls match"
     )
-    public static int blockGuardMegaWallsCondition = 1;
+    public static MWGameState blockGuardMegaWallsCondition = MWGameState.AFTER_WALLS_FALL; // 1;
 
 
     @ConfigProperty(
@@ -392,17 +384,15 @@ public final class MoreMWEConfig extends AbstractConfig {
     public static boolean sendEnergyMessageWhenFullyCharged = false;
 
     @ConfigProperty(
-            type = PropertyType.SELECTOR,
+            type = PropertyType.ENUM_SELECTOR,
             name = "Announce Full Energy During",
             category = "Mega Walls",
             subcategory = "Energy Status",
-            comment = "Controls when automatic full energy announcements are active",
-            options = {
-                    "After First Wither Dies",
-                    "During Deathmatch"
-            }
+            //options = { "After First Wither Dies", "During Deathmatch" },
+            comment = "Controls when automatic full energy announcements are active"
     )
     public static int energyMessageMegaWallsCondition = 1;
+    public static MWGameState energyMessageMegaWallsCondition = MWGameState.DURING_DEATHMATCH; // 1;
 
     @ConfigProperty(
             type = PropertyType.HUD_POSITION,

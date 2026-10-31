@@ -58,14 +58,9 @@ public class CompassHUD extends AbstractRenderer {
                 || (!MoreMWEConfig.showCompassWhenSpectator && PlayerUtil.isTheMcPlayerSpectator(mc.thePlayer))
         ) return false;
 
-        if (!MWEApi.Scoreboard.getScoreboardParser().isInMwGame()) return !MoreMWEConfig.isCompassForMegaWallsOnly;
-        switch (MoreMWEConfig.compassMegaWallsRenderCondition) {
-            case 0: return true;
-            case 1: return !MWEApi.Scoreboard.getScoreboardParser().isPrepPhase();
-            case 2: return MWEApi.Scoreboard.getScoreboardParser().getWitherCount() < 4;
-            case 3: return MWEApi.Scoreboard.getScoreboardParser().isDeathmatch();
-            default: return false; // will never run
-        }
+        return MWEApi.Scoreboard.getScoreboardParser().isInMwGame() ?
+                MoreMWEConfig.compassMegaWallsRenderCondition.isActive(MWEApi.Scoreboard.getScoreboardParser())
+                : !MoreMWEConfig.isCompassForMegaWallsOnly;
     }
 
     @Override
