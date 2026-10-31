@@ -3,8 +3,8 @@ package me.shvaich.moremwe.config.gui.elements;
 import me.shvaich.moremwe.config.data.ConfigCategoryContainer;
 import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
 import me.shvaich.moremwe.gui.data.ModResources;
+import me.shvaich.moremwe.utils.GuiUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,14 +42,8 @@ public class ConfigCategoryHeader extends ConfigGuiElement {
     public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
         final Minecraft mc = Minecraft.getMinecraft();
         final int centerX = x + elementRectWidth / 2;
-        GlStateManager.pushMatrix();
-        {
-            final int drawX = centerX - mc.fontRendererObj.getStringWidth(this.categoryName);
-            GlStateManager.translate(drawX, y, 0);
-            GlStateManager.scale(2, 2, 2);
-            mc.fontRendererObj.drawStringWithShadow(this.categoryName, 0, 0, ModResources.WHITE);
-        }
-        GlStateManager.popMatrix();
+        final int headerX = centerX - mc.fontRendererObj.getStringWidth(this.categoryName);
+        GuiUtil.drawScaledText(mc, this.categoryName, headerX, y, 2, ModResources.WHITE);
         if (hasComment) {
             int drawY = y + mc.fontRendererObj.FONT_HEIGHT * 2 + COMMENT_TOP_MARGIN;
             for (final String commentLine : commentLines) {

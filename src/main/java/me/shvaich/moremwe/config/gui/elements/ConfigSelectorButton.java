@@ -250,14 +250,8 @@ public abstract class ConfigSelectorButton extends ConfigGuiButton implements IO
     }
 
     private void drawScaledText(String text, int left, int top, int color) {
-        GlStateManager.pushMatrix();
-        {
-            final float scale = 0.75f;
-            GlStateManager.translate(left, top + ((buttonHeight - mc.fontRendererObj.FONT_HEIGHT*scale) / 2f), 0);
-            GlStateManager.scale(scale, scale, scale);
-            mc.fontRendererObj.drawStringWithShadow(text, 0, 0, color);
-        }
-        GlStateManager.popMatrix();
+        final float scale = 0.75f;
+        GuiUtil.drawScaledText(mc, text, left, top + ((buttonHeight - (mc.fontRendererObj.FONT_HEIGHT * scale)) / 2), scale, color);
     }
 
     private int getDropdownIndexFromMouse(int mouseX, int mouseY) {
