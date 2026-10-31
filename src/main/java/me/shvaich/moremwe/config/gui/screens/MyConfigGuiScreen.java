@@ -400,7 +400,6 @@ public class MyConfigGuiScreen extends GuiScreen {
         }
         if (activeSlider != null && (keyCode == Keyboard.KEY_LEFT || keyCode == Keyboard.KEY_RIGHT)) {
             activeSlider.updateSliderFromIncrement(keyCode == Keyboard.KEY_LEFT ? -1 : 1);
-            GuiUtil.playButtonPressSound(mc);
             return;
         }
         super.keyTyped(typedChar, keyCode);
