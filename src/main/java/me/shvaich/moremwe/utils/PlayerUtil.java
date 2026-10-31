@@ -1,9 +1,12 @@
 package me.shvaich.moremwe.utils;
 
+import fr.alexdoru.mwe.api.MWEApi;
+import fr.alexdoru.mwe.api.enums.MWTeam;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
@@ -55,5 +58,11 @@ public final class PlayerUtil {
             ) return false;
         }
         return true;
+    }
+
+    public static MWTeam getPlayerTeam(EntityPlayer player) {
+        if (player == null) return null;
+        final char teamChar = MWEApi.Player.getPlayerInfo(player).getPlayerTeamColor();
+        return teamChar != '\0' ? MWTeam.fromColorChar(teamChar) : null;
     }
 }
