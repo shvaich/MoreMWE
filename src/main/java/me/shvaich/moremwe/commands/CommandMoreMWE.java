@@ -2,10 +2,8 @@ package me.shvaich.moremwe.commands;
 
 import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.MoreMWEConfig;
-import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
-import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -33,22 +31,6 @@ public class CommandMoreMWE extends MyAbstractCommand {
                 printCommandHelp();
                 return;
             }
-
-            if (isEnergySubcommand(subcommand)) {
-                if (args.length > 1) {
-                    switch (StringUtil.toLowerCase(args[1])) {
-                        case "t":
-                        case "toggle": {
-                            MoreMWEConfig.sendEnergyMessageWhenFullyCharged = !MoreMWEConfig.sendEnergyMessageWhenFullyCharged;
-                            ChatUtil.addPropertyMessage("Automatically Announce Full Energy", MoreMWEConfig.sendEnergyMessageWhenFullyCharged);
-                            MoreMWEConfig.instance().saveOnlyOneProperty("sendEnergyMessageWhenFullyCharged");
-                            return;
-                        }
-                    }
-                }
-                PlayerEnergyDisplay.sendEnergyMessage();
-                return;
-            }
         }
         GuiUtil.openScreen(MoreMWEConfig.instance().getConfigGuiScreen());
     }
@@ -56,10 +38,7 @@ public class CommandMoreMWE extends MyAbstractCommand {
     @Override
     protected List<String> onTabComplete(ICommandSender sender, String[] args) {
         if (args.length <= 1) {
-            return getListOfStringsMatchingLastWord(args, "energy", "help");
-        }
-        else if (args.length == 2 && isEnergySubcommand(args[0])) {
-            return getListOfStringsMatchingLastWord(args, "toggle");
+            return getListOfStringsMatchingLastWord(args, "help");
         }
         return Collections.emptyList();
     }
@@ -69,9 +48,7 @@ public class CommandMoreMWE extends MyAbstractCommand {
         final String bar = EnumChatFormatting.DARK_GRAY + ChatUtil.bar();
         ChatUtil.addChatMessage(bar);
         printCommandHelpBlock(MoreMWE.NAME + " Help", new String[][]{
-                { slashCommand, "Opens the configuration GUI" },
-                { slashCommand + " energy", "Sends a chat message with your current energy" },
-                { slashCommand + " energy toggle", "Toggles automatic full energy announcement" }
+                { slashCommand, "Opens the configuration GUI" }
         });
         ChatUtil.addChatMessage("");
         printCommandHelpBlock(MoreMWE.NAME + "'s Commands", new String[][]{
@@ -84,9 +61,5 @@ public class CommandMoreMWE extends MyAbstractCommand {
                 { "/party", "See /party moremwe_help", "/party moremwe_help" }
         });
         ChatUtil.addChatMessage(bar);
-    }
-
-    private static boolean isEnergySubcommand(String str) {
-        return "e".equalsIgnoreCase(str) || "energy".equalsIgnoreCase(str);
     }
 }
