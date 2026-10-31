@@ -60,11 +60,11 @@ public class MoreMWE {
 
         registerEvents(
                 new ModAnnouncement(),
-                new KeybindingListener(),
-                new PlayerEnergyDisplay(),
-                new HUDManager(),
+                KeybindingListener.instance(),
+                PlayerEnergyDisplay.instance(),
+                HUDManager.instance(),
                 new ShovelGuardIndicator(),
-                ChatListener.INSTANCE
+                ChatListener.instance(),
         );
 
         MWEApi.Hud.registerSquadHUDExtraRenderer(new SquadPositionInfo());

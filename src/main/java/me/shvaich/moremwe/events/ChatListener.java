@@ -11,10 +11,17 @@ import java.util.List;
 
 public final class ChatListener {
 
-    public static final ChatListener INSTANCE = new ChatListener();
+    private static ChatListener instance;
+
     private final List<IChatListener> listeners = new ArrayList<>();
 
     private ChatListener() {}
+
+    public static ChatListener instance() {
+        ChatListener i = instance;
+        if (i == null) instance = i = new ChatListener();
+        return i;
+    }
 
     public void registerListener(IChatListener listener) {
         if (listeners.contains(listener)) {

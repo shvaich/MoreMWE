@@ -24,7 +24,7 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
 
     public SpiderLeapHUD() {
         super(MoreMWEConfig.spiderLeapHUDPosition);
-        ChatListener.INSTANCE.registerListener(this);
+        ChatListener.instance().registerListener(this);
         MinecraftForge.EVENT_BUS.register(this);
     }
 

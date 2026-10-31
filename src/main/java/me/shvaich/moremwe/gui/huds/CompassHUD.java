@@ -54,7 +54,7 @@ public class CompassHUD extends AbstractRenderer {
     @Override
     public boolean isEnabled(Minecraft mc, long currentTimeMillis) {
         if (!rendererPosition.isEnabled()
-                || KeybindingListener.hideCompassHUDFromKey()
+                || (MoreMWEConfig.compassKeybindMode == 1 && KeybindingListener.instance().isCompassHUDKeyAssignedAndNotHeldDown())
                 || (!MoreMWEConfig.showCompassWhenSpectator && PlayerUtil.isTheMcPlayerSpectator(mc.thePlayer))
         ) return false;
 

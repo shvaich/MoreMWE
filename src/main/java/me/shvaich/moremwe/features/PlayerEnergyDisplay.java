@@ -13,7 +13,17 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public final class PlayerEnergyDisplay {
 
+    private static PlayerEnergyDisplay instance;
+
     private int lastLevel;
+
+    private PlayerEnergyDisplay() {}
+
+    public static PlayerEnergyDisplay instance() {
+        PlayerEnergyDisplay i = instance;
+        if (i == null) instance = i = new PlayerEnergyDisplay();
+        return i;
+    }
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent e) {
@@ -40,7 +50,7 @@ public final class PlayerEnergyDisplay {
 //                : MWEApi.Scoreboard.getScoreboardParser().isDeathmatch();
 //    }
 
-    public static void sendEnergyMessage() {
+    public void sendEnergyMessage() {
         final EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
         if (thePlayer == null) {
             MoreMWE.LOGGER.error("Failed to send energy message.");

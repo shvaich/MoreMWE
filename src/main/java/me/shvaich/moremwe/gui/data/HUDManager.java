@@ -4,7 +4,6 @@ import me.shvaich.moremwe.config.gui.screens.MyRendererEditGuiScreen;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
 import me.shvaich.moremwe.gui.huds.ShovelGuardHUD;
 import me.shvaich.moremwe.gui.huds.SpiderLeapHUD;
-import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -15,11 +14,7 @@ public final class HUDManager {
     private static HUDManager instance;
     private final AbstractRenderer[] registeredRenderers;
 
-    public HUDManager() {
-        if (instance != null) {
-            throw new MoreMWEException();
-        }
-        instance = this;
+    private HUDManager() {
         registeredRenderers = new AbstractRenderer[]{
                 new CompassHUD(),
                 new SpiderLeapHUD(),
@@ -27,7 +22,11 @@ public final class HUDManager {
         };
     }
 
-    public static HUDManager instance() { return instance; }
+    public static HUDManager instance() {
+        HUDManager i = instance;
+        if (i == null) instance = i = new HUDManager();
+        return i;
+    }
 
     @SubscribeEvent
     public void onRenderGUI(RenderGameOverlayEvent.Post e) {

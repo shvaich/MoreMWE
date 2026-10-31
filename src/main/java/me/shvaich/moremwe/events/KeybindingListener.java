@@ -5,7 +5,6 @@ import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.features.VisibleBarriers;
 import me.shvaich.moremwe.utils.ChatUtil;
-import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -23,11 +22,7 @@ public final class KeybindingListener {
     private final KeyBinding sendPlayerEnergyMessageKey = create("Send Energy Status");
     private final KeyBinding visibleBarriersKey = create("Toggle Visible Barriers");
 
-    public KeybindingListener() {
-        if (instance != null) {
-            throw new MoreMWEException().sendDebug("Attempted to create another KeybindingListener instance. NOT ALLOWED!");
-        }
-        instance = this;
+    private KeybindingListener() {
         registerKeybinds(
                 showCompassHUDKey,
                 blockGuardKeyBinding,
@@ -35,6 +30,12 @@ public final class KeybindingListener {
                 sendPlayerEnergyMessageKey,
                 visibleBarriersKey
         );
+    }
+
+    public static KeybindingListener instance() {
+        KeybindingListener i = instance;
+        if (i == null) instance = i = new KeybindingListener();
+        return i;
     }
 
     @SubscribeEvent
@@ -79,10 +80,6 @@ public final class KeybindingListener {
         MoreMWEConfig.instance().saveOnlyOneProperty(fieldName);
     }
 
-    public static boolean hideCompassHUDFromKey() {
-        if (MoreMWEConfig.compassKeybindMode != 1) return false;
-        return instance.showCompassHUDKey.getKeyCode() != Keyboard.KEY_NONE && !instance.showCompassHUDKey.isKeyDown();
-    }
 
     private static KeyBinding create(String desc, String name) {
         return new KeyBinding(desc, Keyboard.KEY_NONE, name);
