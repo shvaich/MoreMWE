@@ -10,6 +10,7 @@ import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.features.MWGameState;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
+import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraftforge.common.config.Configuration;
 
@@ -373,6 +374,16 @@ public final class MoreMWEConfig extends AbstractConfig {
     )
     public static int shovelGuardIndicatorColor = new Color(0xFF, 0, 0, 0x55).getRGB();
 
+
+    @ConfigProperty(
+            type = PropertyType.ENUM_SELECTOR,
+            name = "Energy Status Chat Channel",
+            category = "Mega Walls",
+            subcategory = "Energy Status",
+            comment = "The chat channel status messages are sent to"
+                    + ".\n\"Default\" uses your currently selected chat channel"
+    )
+    public static ChatUtil.ChatChannel energyMessageChatChannel = ChatUtil.ChatChannel.DEFAULT;
 
     @ConfigProperty(
             type = PropertyType.SWITCH,

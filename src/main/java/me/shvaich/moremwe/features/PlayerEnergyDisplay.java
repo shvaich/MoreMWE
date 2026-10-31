@@ -236,12 +236,12 @@ public final class PlayerEnergyDisplay {
         }
         final int energy = thePlayer.experienceLevel;
         if (energy >= 100) {
-            thePlayer.sendChatMessage("✫ " + abilityName + " is fully charged! (100%)");
+            thePlayer.sendChatMessage(MoreMWEConfig.energyMessageChatChannel + "✫ " + abilityName + " is fully charged! (100%)");
         }
         else {
             final String chargeTier = energy < 35 ? "low" : energy < 70 ? "medium" : "high";
             final String hitsNeededStr = getHitsNeededString(energy, energyPerMeleeHit, energyPerArrowHit);
-            thePlayer.sendChatMessage(abilityName + " is at " + chargeTier + " charge. (" + energy + "%) -> (" + hitsNeededStr + ")");
+            thePlayer.sendChatMessage(MoreMWEConfig.energyMessageChatChannel + abilityName + " is at " + chargeTier + " charge. (" + energy + "%) -> (" + hitsNeededStr + ")");
         }
     }
 
