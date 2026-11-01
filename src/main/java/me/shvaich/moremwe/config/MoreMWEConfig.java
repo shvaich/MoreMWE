@@ -402,7 +402,6 @@ public final class MoreMWEConfig extends AbstractConfig {
             //options = { "After First Wither Dies", "During Deathmatch" },
             comment = "Controls when automatic full energy announcements are active"
     )
-    public static int energyMessageMegaWallsCondition = 1;
     public static MWGameState energyMessageMegaWallsCondition = MWGameState.DURING_DEATHMATCH; // 1;
 
     @ConfigProperty(
