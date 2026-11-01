@@ -22,6 +22,10 @@ public class MWCommandEnergy extends AbstractMWCommand {
     public void onCommand(String[] args) {
         if (args.length > 0) {
             final String subcommand = args[0];
+            if (isHelpSubcommand(subcommand)) {
+                printHelp();
+                return;
+            }
             if ("t".equalsIgnoreCase(subcommand) || "toggle".equalsIgnoreCase(subcommand)) {
                 MoreMWEConfig.sendEnergyMessageWhenFullyCharged = !MoreMWEConfig.sendEnergyMessageWhenFullyCharged;
                 ChatUtil.addPropertyMessage("Automatically Announce Full Energy", MoreMWEConfig.sendEnergyMessageWhenFullyCharged);
@@ -34,12 +38,15 @@ public class MWCommandEnergy extends AbstractMWCommand {
 
     @Override
     public List<String> onTabComplete(String[] args) {
-        if (args.length <= 1) return getListOfStringsMatchingLastWord(args, "toggle");
+        if (args.length <= 1) return getListOfStringsMatchingLastWord(args, "toggle", "help");
         return Collections.emptyList();
     }
 
-//    printCommandHelpBlock("Energy Help", new String[][]{
-//        { "/energy", "Sends a chat message with your current energy" },
-//        { "/energy toggle", "Toggles automatic full energy announcement" }
-//    });
+    @Override
+    protected void printHelp(String slashCommand) {
+        printHelpBlock("Energy", new String[][]{
+                { slashCommand, "Sends a chat message with your current energy" },
+                { slashCommand + " toggle", "Toggles automatic full energy announcement" }
+        });
+    }
 }
