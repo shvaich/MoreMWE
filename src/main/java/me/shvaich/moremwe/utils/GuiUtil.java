@@ -5,6 +5,9 @@ import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -89,6 +92,11 @@ public final class GuiUtil {
         }
         // GlStateManager.disableAlpha();
         // GlStateManager.disableBlend();
+    }
+
+    public static void drawCenteredScaledText(Minecraft mc, String text, float x, float y, float scale, int color) {
+        x -= (mc.fontRendererObj.getStringWidth(text) * scale) / 2f;
+        drawScaledText(mc, text, x, y, scale, color);
     }
 
     public static void drawScaledText(Minecraft mc, String text, float x, float y, float scale, int color) {
@@ -185,21 +193,32 @@ public final class GuiUtil {
                     1.0F
             );
 
-            final float halfWidth = 2.5F; // ; 5 / 2.0F
-            final float halfHeight = 3.0F; // ; 6 / 2.0F
+            final double halfWidth = 2.5D; // ; 5 / 2.0D
+            final double halfHeight = 3.0D; // ; 6 / 2.0D
 
             GL11.glLineWidth(2.0F);
-            //GlStateManager.translate(x + 4.0F, y + 4.0F, 0.0F);
+            //GlStateManager.translate(x + 2.5F, y + 3.0F, 0.0F);
             GlStateManager.translate(x + halfWidth, y + halfHeight, 0.0F);
             GlStateManager.rotate(rotation, 0.0F, 0.0F, 1.0F);
-            GL11.glBegin(GL11.GL_LINE_STRIP);
-            //GL11.glVertex2f(-2.5F, 2.5F);
-            //GL11.glVertex2f(0.0F, -3.5F);
-            //GL11.glVertex2f(2.5F, 2.5F);
-            GL11.glVertex2f(-halfWidth, halfHeight);
-            GL11.glVertex2f(0.0F, -halfHeight);
-            GL11.glVertex2f(halfWidth, halfHeight);
-            GL11.glEnd();
+
+            final Tessellator tessellator = Tessellator.getInstance();
+            final WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+
+            worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+
+            //worldRenderer.pos(-2.5D, 2.5D, 0.0D).endVertex();
+            //worldRenderer.pos(0.0D, -3.5D, 0.0D).endVertex();
+            //worldRenderer.pos(2.5D, 2.5D, 0.0D).endVertex();
+            worldRenderer.pos(-halfWidth, halfHeight, 0.0D).endVertex();
+            worldRenderer.pos(0.0D, -halfHeight, 0.0D).endVertex();
+            worldRenderer.pos(halfWidth, halfHeight, 0.0D).endVertex();
+            tessellator.draw();
+
+            //GL11.glBegin(GL11.GL_LINE_STRIP);
+            //GL11.glVertex2f(-halfWidth, halfHeight);
+            //GL11.glVertex2f(0.0F, -halfHeight);
+            //GL11.glVertex2f(halfWidth, halfHeight);
+            //GL11.glEnd();
 
             GL11.glDisable(GL11.GL_LINE_SMOOTH);
             GL11.glLineWidth(1.0F);

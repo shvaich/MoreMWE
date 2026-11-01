@@ -42,8 +42,7 @@ public class ConfigCategoryHeader extends ConfigGuiElement {
     public void draw(int x, int y, int mouseX, int mouseY, boolean canMouseBeOverElement) {
         final Minecraft mc = Minecraft.getMinecraft();
         final int centerX = x + elementRectWidth / 2;
-        final int headerX = centerX - mc.fontRendererObj.getStringWidth(this.categoryName);
-        GuiUtil.drawScaledText(mc, this.categoryName, headerX, y, 2, ModResources.WHITE);
+        GuiUtil.drawCenteredScaledText(mc, this.categoryName, centerX, y, 2, ModResources.WHITE);
         if (hasComment) {
             int drawY = y + mc.fontRendererObj.FONT_HEIGHT * 2 + COMMENT_TOP_MARGIN;
             for (final String commentLine : commentLines) {
