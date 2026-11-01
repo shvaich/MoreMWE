@@ -12,6 +12,7 @@ import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
 import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.MoreMWEException;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.config.Configuration;
 
 import java.awt.Color;
@@ -413,6 +414,15 @@ public final class MoreMWEConfig extends AbstractConfig {
     public static boolean enableMWCommands = true;
 
     @ConfigProperty(
+            type = PropertyType.MINECRAFT_COLOR,
+            name = "MW Commands Tab Color",
+            category = "Mega Walls",
+            subcategory = "Commands",
+            comment = "The color of mw commands in the chat when you press [TAB]"
+    )
+    public static EnumChatFormatting mwCommandsTabColor = EnumChatFormatting.GRAY;
+
+    @ConfigProperty(
             type = PropertyType.HUD_POSITION,
             name = "Spider Leap HUD",
             category = "Mega Walls",
@@ -556,6 +566,7 @@ public final class MoreMWEConfig extends AbstractConfig {
 
         addDependency("energyMessageMegaWallsCondition", "sendEnergyMessageWhenFullyCharged");
 
+        addDependency("mwCommandsTabColor", "enableMWCommands");
 
         Arrays.asList(
                 "hideSpiderLeapHUDDuringPrepPhase",

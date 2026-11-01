@@ -1,5 +1,6 @@
 package me.shvaich.moremwe.asm.hooks;
 
+import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.features.MWCommandHandler;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumChatFormatting;
@@ -24,7 +25,7 @@ public class GuiChatHook_MWCommand {
             tabCompleteOptions = null;
         }
         else {
-            o.replaceAll(s -> EnumChatFormatting.GRAY + s + EnumChatFormatting.RESET);
+            o.replaceAll(s -> MoreMWEConfig.mwCommandsTabColor + s + EnumChatFormatting.RESET);
             tabCompleteOptions = o;
         }
     }
