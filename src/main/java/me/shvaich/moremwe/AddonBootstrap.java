@@ -19,6 +19,7 @@ public class AddonBootstrap implements IFMLLoadingPlugin {
 
         registerTransformers(
                 "mc.MinecraftTransformer_RightClickGuards",
+                "mc.chat.GuiChatTransformer_MWCommand",
 
                 "mc.visiblebarriers.BarrierParticleTransformer_DisableRender",
                 "mc.visiblebarriers.BlockBarrierTransformer_VisibleBarrier",
