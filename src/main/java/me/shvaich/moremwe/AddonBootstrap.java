@@ -19,6 +19,9 @@ public class AddonBootstrap implements IFMLLoadingPlugin {
 
         registerTransformers(
                 "mc.MinecraftTransformer_RightClickGuards",
+                "mc.MinecraftTransformer_DisableKeysUnpressedInScreensThatAllowPlayerKeyInput",
+                "mc.gui.GuiScreenTransformer_DisableKeyInputConsumedInScreensThatAllowPlayerKeyInput",
+
                 "mc.chat.GuiChatTransformer_MWCommand",
 
                 "mc.visiblebarriers.BarrierParticleTransformer_DisableRender",
