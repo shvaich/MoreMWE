@@ -56,12 +56,10 @@ public class AddonBootstrap implements IFMLLoadingPlugin {
     private static void registerTransformers(String... transformerPaths) {
         Object o = Launch.blackboard.computeIfAbsent("mwe.transformers", (k) -> new ArrayList<String>());
         if (o instanceof List) {
-            final int len = transformerPaths.length;
-            final String[] classPaths = new String[len];
-            for (int i = 0; i < len; i++) {
-                classPaths[i] = "me.shvaich.moremwe.asm.transformers." + transformerPaths[i];
+            for (int i = 0; i < transformerPaths.length; i++) {
+                transformerPaths[i] = "me.shvaich.moremwe.asm.transformers." + transformerPaths[i];
             }
-            ((List) o).addAll(Arrays.asList(classPaths));
+            ((List) o).addAll(Arrays.asList(transformerPaths));
         }
     }
 }

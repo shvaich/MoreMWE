@@ -111,7 +111,8 @@ public class SpiderLeapHUD extends AbstractRenderer implements ChatListener.ICha
     }
 
     private static boolean isSpiderItem(ItemStack stack) {
-        final Item item;
-        return stack != null && ((item = stack.getItem()) instanceof ItemSword || item instanceof ItemBow || item instanceof ItemSpade);
+        if (stack == null) return false;
+        final Item item = stack.getItem();
+        return item instanceof ItemSword || item instanceof ItemBow || item instanceof ItemSpade;
     }
 }
