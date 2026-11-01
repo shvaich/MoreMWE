@@ -405,6 +405,14 @@ public final class MoreMWEConfig extends AbstractConfig {
     public static MWGameState energyMessageMegaWallsCondition = MWGameState.DURING_DEATHMATCH; // 1;
 
     @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Enable MW Commands",
+            category = "Mega Walls",
+            subcategory = "Commands"
+    )
+    public static boolean enableMWCommands = true;
+
+    @ConfigProperty(
             type = PropertyType.HUD_POSITION,
             name = "Spider Leap HUD",
             category = "Mega Walls",

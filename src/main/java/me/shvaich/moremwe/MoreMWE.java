@@ -3,6 +3,7 @@ package me.shvaich.moremwe;
 
 import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.commands.*;
+import me.shvaich.moremwe.commands.mwcommands.AbstractMWCommand;
 import me.shvaich.moremwe.config.MWEHookConfig;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.*;
@@ -79,6 +80,12 @@ public class MoreMWE {
     private static void registerEvents(Object... events) {
         for (final Object event : events) {
             MinecraftForge.EVENT_BUS.register(event);
+        }
+    }
+
+    private static void registerMWCommands(AbstractMWCommand... mwCommands) {
+        for (final AbstractMWCommand mwCommand : mwCommands) {
+            MWCommandHandler.INSTANCE.registerCommand(mwCommand);
         }
     }
 }
