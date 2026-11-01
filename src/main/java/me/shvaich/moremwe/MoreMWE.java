@@ -4,6 +4,7 @@ package me.shvaich.moremwe;
 import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.commands.*;
 import me.shvaich.moremwe.commands.mwcommands.AbstractMWCommand;
+import me.shvaich.moremwe.commands.mwcommands.MWCommandEnergy;
 import me.shvaich.moremwe.config.MWEHookConfig;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.*;
@@ -68,6 +69,9 @@ public class MoreMWE {
                 ChatListener.instance(),
         );
 
+        registerMWCommands(
+                new MWCommandEnergy(),
+        );
         MWEApi.Hud.registerSquadHUDExtraRenderer(new SquadPositionInfo());
     }
 
