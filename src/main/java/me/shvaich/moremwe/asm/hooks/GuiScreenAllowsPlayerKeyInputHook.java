@@ -15,8 +15,12 @@ public class GuiScreenAllowsPlayerKeyInputHook {
         return isScreenThatAllowsPlayerKeyInput(mc.currentScreen);
     }
 
-    public static void unPressAllKeysIfNeeded(GuiScreen previousScreen, GuiScreen newScreen) {
-        if (isScreenThatAllowsPlayerKeyInput(previousScreen) && !isScreenThatAllowsPlayerKeyInput(newScreen)) {
+    public static void handleScreenChange(GuiScreen previousScreen, GuiScreen newScreen) {
+        if (newScreen == null) return;
+        if (isScreenThatAllowsPlayerKeyInput(newScreen)) {
+            newScreen.allowUserInput = true;
+        }
+        else if (isScreenThatAllowsPlayerKeyInput(previousScreen)) {
             KeyBinding.unPressAllKeys();
         }
     }

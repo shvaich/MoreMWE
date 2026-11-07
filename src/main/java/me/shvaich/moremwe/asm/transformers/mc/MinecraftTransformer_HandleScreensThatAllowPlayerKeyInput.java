@@ -6,7 +6,7 @@ import org.objectweb.asm.tree.*;
 
 import java.util.HashMap;
 
-public class MinecraftTransformer_DisableKeysUnpressedInScreensThatAllowPlayerKeyInput extends MyTransformer {
+public class MinecraftTransformer_HandleScreensThatAllowPlayerKeyInput extends MyTransformer {
 
     @Override
     public String[] getTargetClassName() {
@@ -34,7 +34,7 @@ public class MinecraftTransformer_DisableKeysUnpressedInScreensThatAllowPlayerKe
                     list.add(new MethodInsnNode(
                             INVOKESTATIC,
                             getHookClass("GuiScreenAllowsPlayerKeyInputHook"),
-                            "unPressAllKeysIfNeeded",
+                            "handleScreenChange",
                             "(Lnet/minecraft/client/gui/GuiScreen;Lnet/minecraft/client/gui/GuiScreen;)V",
                             false
                     ));
