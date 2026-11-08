@@ -3,7 +3,7 @@ package me.shvaich.moremwe;
 
 import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.commands.*;
-import me.shvaich.moremwe.commands.mwcommands.AbstractMWCommand;
+import me.shvaich.moremwe.commands.mwcommands.IMWCommand;
 import me.shvaich.moremwe.commands.mwcommands.MWCommandEnergy;
 import me.shvaich.moremwe.config.MWEHookConfig;
 import me.shvaich.moremwe.config.MoreMWEConfig;
@@ -87,8 +87,8 @@ public class MoreMWE {
         }
     }
 
-    private static void registerMWCommands(AbstractMWCommand... mwCommands) {
-        for (final AbstractMWCommand mwCommand : mwCommands) {
+    private static void registerMWCommands(IMWCommand... mwCommands) {
+        for (final IMWCommand mwCommand : mwCommands) {
             MWCommandHandler.INSTANCE.registerCommand(mwCommand);
         }
     }

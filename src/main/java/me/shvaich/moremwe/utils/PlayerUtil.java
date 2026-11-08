@@ -1,6 +1,7 @@
 package me.shvaich.moremwe.utils;
 
 import fr.alexdoru.mwe.api.MWEApi;
+import fr.alexdoru.mwe.api.enums.MWClass;
 import fr.alexdoru.mwe.api.enums.MWTeam;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -64,5 +65,10 @@ public final class PlayerUtil {
         if (player == null) return null;
         final char teamChar = MWEApi.Player.getPlayerInfo(player).getPlayerTeamColor();
         return teamChar != '\0' ? MWTeam.fromColorChar(teamChar) : null;
+    }
+
+    /** Convenient way to get a player's MWClass without worrying about {@link NullPointerException} */
+    public static MWClass getPlayerMWClass(EntityPlayer player) {
+        return player == null ? null : MWEApi.Player.getPlayerInfo(player).getMWClass();
     }
 }

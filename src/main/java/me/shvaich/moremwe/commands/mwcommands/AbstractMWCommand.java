@@ -1,5 +1,6 @@
 package me.shvaich.moremwe.commands.mwcommands;
 
+import fr.alexdoru.mwe.api.enums.MWClass;
 import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.command.CommandBase;
@@ -9,26 +10,13 @@ import net.minecraft.util.IChatComponent;
 
 import java.util.*;
 
-public abstract class AbstractMWCommand {
+abstract class AbstractMWCommand implements IMWCommand {
 
-//    private final EnumSet<MWClass> allowedClasses;
-//
-//    protected AbstractMWCommand() {
-//        this.allowedClasses = null;
-//    }
-//
-//    protected AbstractMWCommand(MWClass... allowedClasses) {
-//        this.allowedClasses = EnumSet.noneOf(MWClass.class);
-//        Collections.addAll(this.allowedClasses, allowedClasses);
-//    }
-
-    public abstract String getCommandName();
-
+    @Override
     public List<String> getCommandAliases() { return Collections.emptyList(); }
 
-    public abstract void onCommand(String[] args);
-
-    public abstract List<String> onTabComplete(String[] args);
+    @Override
+    public boolean isMWClassAllowed(MWClass mwClass) { return true; }
 
     protected final void printHelp() { printHelp("/" + getCommandName()); }
 
@@ -85,10 +73,9 @@ public abstract class AbstractMWCommand {
     }
 
     protected static List<String> getChatChannelAutocomplete() {
-        final ChatUtil.ChatChannel[] values = ChatUtil.ChatChannel.values();
-        final List<String> l = new ArrayList<>(values.length);
-        for (int i = 0; i < values.length; i++) {
-            l.set(i, StringUtil.toLowerCase(values[i].name()));
+        final List<String> l = new ArrayList<>();
+        for (ChatUtil.ChatChannel value : ChatUtil.ChatChannel.values()) {
+            l.add(StringUtil.toLowerCase(value.name()));
         }
         return l;
     }
