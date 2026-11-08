@@ -24,7 +24,7 @@ minecraft {
     mappings = "stable_22"
     makeObfSourceJar = false
 
-    ['mod_id', 'mod_name', 'mod_version', 'target_mwe_version'].each { property ->
+    ['mod_id', 'mod_name', 'mod_version', 'mod_url', 'target_mwe_version'].each { property ->
         replace "@${property.toUpperCase()}@", project.hasProperty(property) ? project[property] : null
     }
 }

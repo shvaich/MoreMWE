@@ -4,7 +4,7 @@
     "name": "${mod_name}",
     "description": "view /moremwe help",
     "version": "${mod_version}",
-    "url": "https://github.com/shvaich/MoreMWE",
+    "url": "${mod_url}",
     "authorList": ["shvaich"],
     "credits": "shvaich",
     "logoFile": ""
