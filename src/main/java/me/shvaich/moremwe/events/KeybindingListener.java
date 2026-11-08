@@ -2,6 +2,8 @@ package me.shvaich.moremwe.events;
 
 import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.MoreMWEConfig;
+import me.shvaich.moremwe.features.MWMapLocationHandler;
+import me.shvaich.moremwe.features.PingWheelHandler;
 import me.shvaich.moremwe.features.PlayerEnergyDisplay;
 import me.shvaich.moremwe.features.VisibleBarriers;
 import me.shvaich.moremwe.utils.ChatUtil;
@@ -21,6 +23,7 @@ public final class KeybindingListener {
     private final MyKeyBinding[] allKeybinds;
 
     private final MyKeyBinding compassHUDKey;
+    private final MyKeyBinding pingKey;
 
     private KeybindingListener() {
         this.allKeybinds = new MyKeyBinding[]{
@@ -44,7 +47,13 @@ public final class KeybindingListener {
 
                 new MyKeyBinding("Send Energy Status").withPress(mc -> PlayerEnergyDisplay.instance().sendEnergyMessage()),
 
-                new MyKeyBinding("Toggle Visible Barriers").withPress(mc -> VisibleBarriers.toggle())
+                new MyKeyBinding("Toggle Visible Barriers").withPress(mc -> VisibleBarriers.toggle()),
+
+                new MyKeyBinding("Send Help Message").withPress(mc -> MWMapLocationHandler.instance().sendMcPlayerMessage(mc, MoreMWEConfig.mcPlayerBaseLocationMessageChatChannel, MWMapLocationHandler.McPlayerMessage.HELP)),
+
+                new MyKeyBinding("Send Your Location Message").withPress(mc -> MWMapLocationHandler.instance().sendMcPlayerMessage(mc, MoreMWEConfig.mcPlayerBaseLocationMessageChatChannel, MWMapLocationHandler.McPlayerMessage.STATUS)),
+
+                this.pingKey = new MyKeyBinding("Ping").withPress(mc -> PingWheelHandler.instance().schedulePress())
         };
     }
 
@@ -68,6 +77,8 @@ public final class KeybindingListener {
     public boolean isCompassHUDKeyAssignedAndNotHeldDown() {
         return compassHUDKey.keyBinding.getKeyCode() != Keyboard.KEY_NONE && !compassHUDKey.keyBinding.isKeyDown();
     }
+
+    public boolean isPingKeyDown() { return pingKey.keyBinding.isKeyDown(); }
 
     private static final class MyKeyBinding {
         public final KeyBinding keyBinding;

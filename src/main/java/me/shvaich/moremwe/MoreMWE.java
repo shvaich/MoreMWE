@@ -5,11 +5,11 @@ import fr.alexdoru.mwe.api.MWEApi;
 import me.shvaich.moremwe.commands.*;
 import me.shvaich.moremwe.commands.mwcommands.IMWCommand;
 import me.shvaich.moremwe.commands.mwcommands.MWCommandEnergy;
+import me.shvaich.moremwe.commands.mwcommands.MWCommandMyMapLocation;
 import me.shvaich.moremwe.config.MWEHookConfig;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.*;
-import me.shvaich.moremwe.features.MyModUpdater;
-import me.shvaich.moremwe.features.PlayerEnergyDisplay;
+import me.shvaich.moremwe.features.*;
 import me.shvaich.moremwe.gui.data.HUDManager;
 import me.shvaich.moremwe.gui.huds.ShovelGuardIndicator;
 import me.shvaich.moremwe.gui.huds.SquadPositionInfo;
@@ -66,7 +66,9 @@ public class MoreMWE {
                 PlayerEnergyDisplay.instance(),
                 HUDManager.instance(),
                 new ShovelGuardIndicator(),
+                MWMapLocationHandler.instance(),
                 ChatListener.instance(),
+                PingWheelHandler.instance()
         );
 
         if (MoreMWEConfig.showModLaunchMessage) {
@@ -75,6 +77,8 @@ public class MoreMWE {
 
         registerMWCommands(
                 new MWCommandEnergy(),
+                MWCommandMyMapLocation.STATUS,
+                MWCommandMyMapLocation.HELP
         );
         MWEApi.Hud.registerSquadHUDExtraRenderer(new SquadPositionInfo());
     }

@@ -8,6 +8,7 @@ import me.shvaich.moremwe.config.gui.elements.base.ConfigGuiElement;
 import me.shvaich.moremwe.config.gui.elements.custom.ConfigGuardableBlockButton;
 import me.shvaich.moremwe.config.gui.screens.MyConfigGuiScreen;
 import me.shvaich.moremwe.features.MWGameState;
+import me.shvaich.moremwe.features.MWMapLocationHandler;
 import me.shvaich.moremwe.gui.data.MyRendererPosition;
 import me.shvaich.moremwe.gui.huds.CompassHUD;
 import me.shvaich.moremwe.utils.ChatUtil;
@@ -514,6 +515,53 @@ public final class MoreMWEConfig extends AbstractConfig {
             subcategory = "Spider Leap HUD"
     )
     public static int spiderLeapHUDBackgroundColor = DEFAULT_HUD_BACKGROUND_COLOR;
+
+
+    @ConfigCategory(comment = "Currently this feature is only available during Mega Walls matches")
+    public static final String LOCATION_CATEGORY = "Location Chat";
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Show Detailed Base Location",
+            category = LOCATION_CATEGORY
+    )
+    public static boolean detailedBaseLocationMessage = false;
+
+    @ConfigProperty(
+            type = PropertyType.ENUM_SELECTOR,
+            name = "Personal Map Location Status Chat Channel",
+            category = LOCATION_CATEGORY,
+            comment = "The chat channel that messages about YOUR location are sent to"
+                    + ".\n\"Default\" uses your currently selected chat channel"
+    )
+    public static ChatUtil.ChatChannel mcPlayerBaseLocationMessageChatChannel = ChatUtil.ChatChannel.DEFAULT;
+
+    @ConfigProperty(
+            type = PropertyType.ENUM_SELECTOR,
+            name = "Ping Map Location Status Chat Channel",
+            category = LOCATION_CATEGORY,
+            subcategory = "Ping",
+            comment = "The chat channel PING messages are sent to"
+                    + ".\n\"Default\" uses your currently selected chat channel"
+    )
+    public static ChatUtil.ChatChannel pingBaseLocationMessageChatChannel = ChatUtil.ChatChannel.DEFAULT;
+
+    @ConfigProperty(
+            type = PropertyType.ENUM_SELECTOR,
+            name = "Default Ping Message Type",
+            category = LOCATION_CATEGORY,
+            subcategory = "Ping"
+    )
+    public static MWMapLocationHandler.PingMessage defaultPingMessageType = MWMapLocationHandler.PingMessage.STATUS;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Ping on Mouse Middle Click",
+            category = LOCATION_CATEGORY,
+            subcategory = "Ping",
+            comment = "Enable the Ping feature to work with the middle mouse button (wheel)"
+    )
+    public static boolean pingOnMouseMiddleClick = false;
 
 
     @ConfigProperty(
