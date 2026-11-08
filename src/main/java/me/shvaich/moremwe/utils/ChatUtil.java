@@ -7,40 +7,46 @@ import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
-
-import static net.minecraft.util.EnumChatFormatting.*;
 
 public final class ChatUtil {
 
     private ChatUtil() {}
 
     public enum ChatChannel {
-        DEFAULT,
-        ALL('a'),
-        PARTY('p'),
-        GUILD('g');
+        DEFAULT("", EnumChatFormatting.DARK_GRAY),
+        ALL(EnumChatFormatting.GRAY),
+        PARTY(EnumChatFormatting.BLUE),
+        GUILD(EnumChatFormatting.DARK_GREEN);
 
         private final String prefix;
+        private final EnumChatFormatting color;
 
-        ChatChannel(char id) {
-            this.prefix = "/" + id + "c ";
+        ChatChannel(String prefix, EnumChatFormatting color) {
+            this.prefix = prefix;
+            this.color = color;
         }
 
-        ChatChannel() { this.prefix = ""; }
+        ChatChannel(EnumChatFormatting color) {
+            this.prefix = "/" + StringUtil.toLowerCase(name().charAt(0)) + "c ";
+            this.color = color;
+        }
 
         @Override
         public String toString() {
             return prefix;
         }
+
+        public String getDisplayText() { return color + "[" + name() + "]"; }
     }
 
     public static String getModTag() {
-        return DARK_GRAY + "[" + YELLOW + MoreMWE.NAME + DARK_GRAY + "] " + RESET;
+        return EnumChatFormatting.DARK_GRAY + "[" + EnumChatFormatting.YELLOW + MoreMWE.NAME + EnumChatFormatting.DARK_GRAY + "] " + EnumChatFormatting.RESET;
     }
 
     public static String getBooleanMsg(boolean bool) {
-        return bool ? GREEN + "Enabled" : RED + "Disabled";
+        return bool ? EnumChatFormatting.GREEN + "Enabled" : EnumChatFormatting.RED + "Disabled";
     }
 
     /** Delegates to {@link ChatUtil#addChatMessage(IChatComponent)} */
@@ -58,19 +64,19 @@ public final class ChatUtil {
     }
 
     public static void addErrorMessage(String msg, boolean withModTag) {
-        addChatMessage((withModTag ? getModTag() : "") + RED + msg);
+        addChatMessage((withModTag ? getModTag() : "") + EnumChatFormatting.RED + msg);
     }
 
     public static void addDebugMessage(String msg) {
-        addChatMessage(AQUA + "[Debug]: " + RESET + msg);
+        addChatMessage(EnumChatFormatting.AQUA + "[Debug]: " + EnumChatFormatting.RESET + msg);
     }
 
     public static void addPropertyMessage(String name, boolean value) {
-        addChatMessage(getModTag() + name + DARK_GRAY + ": " + getBooleanMsg(value));
+        addChatMessage(getModTag() + name + EnumChatFormatting.DARK_GRAY + ": " + getBooleanMsg(value));
     }
 
     public static String bar() {
-        return STRIKETHROUGH + repeatToChatWidth('-');
+        return EnumChatFormatting.STRIKETHROUGH + repeatToChatWidth('-');
     }
 
     public static String centerLine(String msg) {
@@ -97,11 +103,11 @@ public final class ChatUtil {
 
 
     public static IChatComponent getURLMessage(String msg, String url) {
-        return getActionMessage(msg, ClickEvent.Action.OPEN_URL, url, YELLOW + url);
+        return getActionMessage(msg, ClickEvent.Action.OPEN_URL, url, EnumChatFormatting.YELLOW + url);
     }
 
     public static IChatComponent getCommandMessage(String msg, String command) {
-        return getActionMessage(msg, ClickEvent.Action.SUGGEST_COMMAND, command, GRAY + "Click to put the command in chat.");
+        return getActionMessage(msg, ClickEvent.Action.SUGGEST_COMMAND, command, EnumChatFormatting.GRAY + "Click to put the command in chat.");
     }
 
     private static IChatComponent getActionMessage(String msg, ClickEvent.Action action, String actionValue, String hoverMsg) {
