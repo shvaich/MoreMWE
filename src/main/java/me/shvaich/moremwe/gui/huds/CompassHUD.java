@@ -155,7 +155,7 @@ public class CompassHUD extends AbstractRenderer {
         int arrowX = distanceX + longestDistanceStringWidth + MoreMWEConfig.compassHUDArrowMargin;
         int healthX = 0;
         float thePlayerMaxHP = 0;
-        final boolean renderEnergy = MoreMWEConfig.showEnergyInCompassHUD;// && MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
+        final boolean renderEnergy = MoreMWEConfig.showEnergyInCompassHUD && MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
         final boolean showHP = MoreMWEConfig.showHPInCompassHUD;
         if (showHP) {
             thePlayerMaxHP = mc.thePlayer.getMaxHealth();
@@ -229,7 +229,7 @@ public class CompassHUD extends AbstractRenderer {
         this.longestEnergyStringWidth = 0;
         int longestYDistanceStringWidth = 0;
         this.hasNonZeroYDistanceValue = false;
-        final boolean renderEnergy = MoreMWEConfig.showEnergyInCompassHUD; //&& MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
+        final boolean renderEnergy = MoreMWEConfig.showEnergyInCompassHUD && MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
         for (int i = 0; i < length; i++) {
             final PlayerTrackingData p = pArr[i];
 
