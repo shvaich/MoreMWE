@@ -58,6 +58,16 @@ public class MWEHookConfig {
 //    public static EnumChatFormatting squadCompassInfoMainColor = EnumChatFormatting.LIGHT_PURPLE;
 
     @ConfigProperty(
+            name = "Show Y-Distance Arrow Signs",
+            category = "Squad",
+            subCategory = "MoreMWE - Compass Info",
+            comment = "Displays ▲/▼ before the y-distance value when a player is above/below you"
+                    + ".\nDefault is +/-",
+            dependsOn = "Show Compass Information In Squad HUD"
+    )
+    public static boolean showYDistanceArrowsInSquadHUDCompassInfo = false;
+
+    @ConfigProperty(
             name = "Default Y-Distance Color",
             category = "Squad",
             subCategory = "MoreMWE - Compass Info",

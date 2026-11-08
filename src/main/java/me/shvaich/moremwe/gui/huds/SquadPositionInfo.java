@@ -7,7 +7,6 @@ import me.shvaich.moremwe.config.MWEHookConfig;
 import me.shvaich.moremwe.gui.data.ModResources;
 import me.shvaich.moremwe.utils.GuiUtil;
 import me.shvaich.moremwe.utils.PlayerUtil;
-import me.shvaich.moremwe.utils.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,9 +23,17 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
         if (entityPlayer == null) return 0;
         final Minecraft mc = Minecraft.getMinecraft();
         if (mc.thePlayer == null || mc.thePlayer == entityPlayer || !isEnabled(mc)) return 0;
-        final int distance = (int) entityPlayer.getDistanceToEntity(mc.thePlayer);
+        final int distance = (int) Math.sqrt(entityPlayer.getDistanceSqToEntity(mc.thePlayer));
         final int yDistance = (int) (entityPlayer.posY - mc.thePlayer.posY);
-        return mc.fontRendererObj.getStringWidth(getDistanceText(distance, yDistance)) + ARROW_LEFT_MARGIN + 5 + 2;
+
+        int width = (mc.fontRendererObj.getCharWidth('(') * 2)
+                + GuiUtil.getNumberWidth(distance)
+                + (mc.fontRendererObj.getCharWidth(' ') * 2) // 8
+                + CompassHUD.getYDistanceTextWidth(yDistance, MWEHookConfig.showYDistanceArrowsInSquadHUDCompassInfo)
+                + ARROW_LEFT_MARGIN + 5 + 2; // '5' - width of arrow, '2' - padding
+
+        if (MWEHookConfig.showDistanceUnitInSquadHUDCompassInfo) width += mc.fontRendererObj.getCharWidth('m');
+        return width;
     }
 
     @Override
@@ -47,7 +54,20 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
         rotation -= 180;
 
         int drawX = x;
-        drawX = mc.fontRendererObj.drawStringWithShadow(getDistanceText(distance, (int) distY), drawX, y, ModResources.WHITE);
+
+        String distanceText = EnumChatFormatting.LIGHT_PURPLE.toString() + distance;
+        if (MWEHookConfig.showDistanceUnitInSquadHUDCompassInfo) distanceText += 'm';
+
+        final int yDistance = (int) distY;
+        final EnumChatFormatting yDistanceColor = (yDistance == 0 || !MWEHookConfig.colorYDistanceInSquadHUDCompassInfo) ? MWEHookConfig.squadCompassInfoDefaultYDistanceColor : (yDistance > 0 ? MWEHookConfig.squadCompassInfoPlayerAboveColor : MWEHookConfig.squadCompassInfoPlayerBelowColor);
+        final String yDistanceText = yDistanceColor + CompassHUD.getYDistanceText(yDistance, MWEHookConfig.showYDistanceArrowsInSquadHUDCompassInfo);
+
+        drawX = mc.fontRendererObj.drawStringWithShadow(
+                "(" + distanceText + "  " + yDistanceText + EnumChatFormatting.RESET + ")",
+                drawX,
+                y,
+                ModResources.WHITE
+        );
         drawX += ARROW_LEFT_MARGIN;
         GuiUtil.drawDirectionArrow(drawX, y + 1, rotation, ColorPalette.VanillaColors.LIGHT_PURPLE);
     }
@@ -55,15 +75,9 @@ public class SquadPositionInfo implements ISquadInfoRenderer {
     private static boolean isEnabled(Minecraft mc) {
         if (!MWEHookConfig.showCompassInfoInSquadHUD) return false;
         if (!MWEHookConfig.showSquadHUDCompassInfoWhenSpectator && PlayerUtil.isTheMcPlayerSpectator(mc.thePlayer)) return false;
-        if (!MWEApi.Scoreboard.getScoreboardParser().isInMwGame()) return !MWEHookConfig.isSquadHUDCompassInfoForMegaWallsOnly;
-        return MWEHookConfig.squadHUDCompassInfoMegaWallsRenderCondition.isActive(MWEApi.Scoreboard.getScoreboardParser());
-    }
-
-    private static String getDistanceText(int distance, int yDistance) {
-        final EnumChatFormatting yDistanceColor = (!MWEHookConfig.colorYDistanceInSquadHUDCompassInfo || yDistance == 0) ? MWEHookConfig.squadCompassInfoDefaultYDistanceColor :
-                (yDistance > 0 ? MWEHookConfig.squadCompassInfoPlayerAboveColor : MWEHookConfig.squadCompassInfoPlayerBelowColor);
-        return "(" + EnumChatFormatting.LIGHT_PURPLE + distance + (MWEHookConfig.showDistanceUnitInSquadHUDCompassInfo ? "m" : "")
-                + "  " + yDistanceColor + StringUtil.getIntWithSign(yDistance, false) + EnumChatFormatting.RESET + ")";
+        return MWEApi.Scoreboard.getScoreboardParser().isInMwGame() ?
+                MWEHookConfig.squadHUDCompassInfoMegaWallsRenderCondition.isActive(MWEApi.Scoreboard.getScoreboardParser())
+                : !MWEHookConfig.isSquadHUDCompassInfoForMegaWallsOnly;
     }
 }
 
