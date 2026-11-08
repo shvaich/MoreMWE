@@ -543,6 +543,15 @@ public final class MoreMWEConfig extends AbstractConfig {
     )
     public static boolean automaticUpdate = false;
 
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Show Mod Message",
+            category = GENERAL_CATEGORY,
+            subcategory = "Info",
+            comment = "Shows a message about the mod in chat when you join a world for the first time"
+    )
+    public static boolean showModLaunchMessage = true;
+
 
     private static MoreMWEConfig instance;
 

@@ -62,13 +62,16 @@ public class MoreMWE {
         );
 
         registerEvents(
-                new ModAnnouncement(),
                 KeybindingListener.instance(),
                 PlayerEnergyDisplay.instance(),
                 HUDManager.instance(),
                 new ShovelGuardIndicator(),
                 ChatListener.instance(),
         );
+
+        if (MoreMWEConfig.showModLaunchMessage) {
+            MinecraftForge.EVENT_BUS.register(new ModAnnouncement());
+        }
 
         registerMWCommands(
                 new MWCommandEnergy(),

@@ -5,6 +5,7 @@ import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.GuiUtil;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class CommandMoreMWE extends MyAbstractCommand {
         if (args.length > 0) {
             final String subcommand = args[0];
             if (isHelpSubcommand(subcommand)) {
-                printCommandHelp();
+                printModHelpMessage();
                 return;
             }
         }
@@ -43,23 +44,11 @@ public class CommandMoreMWE extends MyAbstractCommand {
         return Collections.emptyList();
     }
 
-    @Override
-    protected void printCommandHelp(String slashCommand) {
-        final String bar = EnumChatFormatting.DARK_GRAY + ChatUtil.bar();
-        ChatUtil.addChatMessage(bar);
-        printCommandHelpBlock(MoreMWE.NAME + " Help", new String[][]{
-                { slashCommand, "Opens the configuration GUI" }
-        });
-        ChatUtil.addChatMessage("");
-        printCommandHelpBlock(MoreMWE.NAME + "'s Commands", new String[][]{
-                { "/visiblebarriers", "See /visiblebarriers help", "/visiblebarriers help" }
-        });
-        ChatUtil.addChatMessage("");
-        printCommandHelpBlock("Hypixel Command Helpers", new String[][]{
-                { "/play", "See /play help", "/play help" },
-                { "/friend", "See /friend moremwe_help", "/friend moremwe_help" },
-                { "/party", "See /party moremwe_help", "/party moremwe_help" }
-        });
-        ChatUtil.addChatMessage(bar);
+    public static void printModHelpMessage() {
+        ChatUtil.addChatMessage(
+                new ChatComponentText(ChatUtil.getModTag())
+                        .appendSibling(ChatUtil.getURLMessage(EnumChatFormatting.YELLOW + "Click here", MoreMWE.MOD_URL))
+                        .appendText(EnumChatFormatting.GRAY + " to visit the mod's GitHub page for a list of all features, more information, or help with any issues you encounter")
+        );
     }
 }
