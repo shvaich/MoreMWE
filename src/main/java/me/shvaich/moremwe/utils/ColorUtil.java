@@ -1,6 +1,6 @@
 package me.shvaich.moremwe.utils;
 
-import net.minecraft.util.EnumChatFormatting;
+import fr.alexdoru.configlib.api.ColorPalette;
 
 public final class ColorUtil {
 
@@ -59,12 +59,11 @@ public final class ColorUtil {
         return alpha << 24 | red << 16 | green << 8 | blue;
     }
 
-    public static EnumChatFormatting getHPColor(float maxHP, float hp) {
-        if (hp > maxHP) return EnumChatFormatting.DARK_GREEN;
-        final float one_fourth = maxHP / 4f;
-        if (hp > one_fourth * 3) return EnumChatFormatting.GREEN;
-        if (hp > one_fourth * 2) return EnumChatFormatting.YELLOW;
-        if (hp > one_fourth) return EnumChatFormatting.RED;
-        return EnumChatFormatting.DARK_RED;
+    public static int getValueColor(float maxValue, float value) {
+        if (value > maxValue) return ColorPalette.VanillaColors.DARK_GREEN;
+        else if (value > maxValue * (3.0F / 4.0F)) return ColorPalette.VanillaColors.GREEN;
+        else if (value > maxValue / 2.0F) return ColorPalette.VanillaColors.YELLOW;
+        else if (value > maxValue / 4.0F) return ColorPalette.VanillaColors.RED;
+        else return ColorPalette.VanillaColors.DARK_RED;
     }
 }

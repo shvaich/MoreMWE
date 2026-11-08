@@ -125,16 +125,9 @@ public final class GuiUtil {
         return isHovered ? ColorUtil.brighter(color, 0.12F) : color;
     }
 
-    /** Only works correctly for n in range [-999, 999] */
     public static int getNumberWidth(int n, boolean withPositiveSign, boolean withZeroSign) {
         if (n == 0) return ((withPositiveSign && withZeroSign) ? 2 : 1) * DIGIT_AND_SIGN_WIDTH;
-        int sign = 0;
-        if (n < 0) {
-            n = -n;
-            sign = 1;
-        }
-        else if (withPositiveSign) sign = 1;
-        return (sign + (n < 10 ? 1 : (n < 100 ? 2 : 3))) * DIGIT_AND_SIGN_WIDTH;
+        return getNumberWithoutSignWidth(n) + ((n < 0 || withPositiveSign) ? DIGIT_AND_SIGN_WIDTH : 0);
     }
 
     /**
@@ -143,6 +136,22 @@ public final class GuiUtil {
      */
     public static int getNumberWidth(int n) {
         return getNumberWidth(n, false, false);
+    }
+
+    public static int getNumberWithoutSignWidth(int n) {
+        if (n == Integer.MIN_VALUE) return 10 * DIGIT_AND_SIGN_WIDTH;
+        if (n < 0) n = -n;
+        final int size =
+                n < 10 ? 1 :
+                n < 100 ? 2 :
+                n < 1_000 ? 3 :
+                n < 10_000 ? 4 :
+                n < 100_000 ? 5 :
+                n < 1_000_000 ? 6 :
+                n < 10_000_000 ? 7 :
+                n < 100_000_000 ? 8 :
+                n < 1_000_000_000 ? 9 : 10;
+        return size * DIGIT_AND_SIGN_WIDTH;
     }
 
     /**

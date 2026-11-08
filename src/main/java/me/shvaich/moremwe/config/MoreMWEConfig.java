@@ -153,12 +153,53 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
+            name = "Show Y-Distance Arrow Signs",
+            category = "Compass",
+            subcategory = "Display",
+            comment = "Displays ▲/▼ before the y-distance value when a player is above/below you"
+                    + ".\nDefault is +/-"
+    )
+    public static boolean showYDistanceArrowsInCompassHUD = false;
+
+    @ConfigProperty(
+            type = PropertyType.COLOR,
+            name = "Default Y-Distance Color",
+            category = "Compass",
+            subcategory = "Display",
+            comment = "The default color for the y-distance value",
+            allowsTransparency = false
+    )
+    public static int compassHUDDefaultYDistanceColor = ColorPalette.VanillaColors.GRAY;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
             name = "Color Y-Distance",
             category = "Compass",
             subcategory = "Display",
-            comment = "§2GREEN§r if the player is above you, §4RED§r if they are below you"
+            comment = "Use a different color for the y-distance value when a player is above/below you"
+                    + ".\nUses the default color when the y-distance is 0"
     )
     public static boolean colorYDistanceInCompassHUD = false;
+
+    @ConfigProperty(
+            type = PropertyType.COLOR,
+            name = "Player Above Color",
+            category = "Compass",
+            subcategory = "Display",
+            comment = "Color of the y-distance value when a player is above you",
+            allowsTransparency = false
+    )
+    public static int compassHUDPlayerAboveColor = ColorPalette.VanillaColors.DARK_GREEN;
+
+    @ConfigProperty(
+            type = PropertyType.COLOR,
+            name = "Player Below Color",
+            category = "Compass",
+            subcategory = "Display",
+            comment = "Color of the y-distance value when a player is below you",
+            allowsTransparency = false
+    )
+    public static int compassHUDPlayerBelowColor = ColorPalette.VanillaColors.DARK_RED;
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
@@ -176,7 +217,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             subcategory = "Display",
             comment = "Position of the HP value",
             options = {
-                    "Last",
+                    "After Y-Distance",
                     "Before Distance",
                     "After Distance",
             }
@@ -191,6 +232,16 @@ public final class MoreMWEConfig extends AbstractConfig {
             comment = "Display a heart after the HP value"
     )
     public static boolean showHPIconInCompassHUD = true;
+
+    @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Show Energy",
+            category = "Compass",
+            subcategory = "Display",
+            comment = "Display the player's energy in the HUD"
+                    + ".\nOnly available during Mega Walls matches"
+    )
+    public static boolean showEnergyInCompassHUD = false;
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
@@ -529,13 +580,18 @@ public final class MoreMWEConfig extends AbstractConfig {
                 "prioritizeUniqueTeams",
                 "renderCustomTeammateColor",
                 "showDistanceUnitInCompassHUD",
+                "showYDistanceArrowsInCompassHUD",
+                "compassHUDDefaultYDistanceColor",
                 "colorYDistanceInCompassHUD",
                 "showHPInCompassHUD",
+                "showEnergyInCompassHUD",
                 "showCompassHUDBackground",
                 "compassHUDArrowMargin"
         ).forEach(dependantName -> addDependency(dependantName, "compassHUDPosition"));
 
         addDependency("ignoreOtherSpectators", "showCompassWhenSpectator");
+        addDependency("compassHUDPlayerAboveColor", "colorYDistanceInCompassHUD");
+        addDependency("compassHUDPlayerBelowColor", "colorYDistanceInCompassHUD");
         addDependency("hpCompassDisplayPosition", "showHPInCompassHUD");
         addDependency("showHPIconInCompassHUD", "showHPInCompassHUD");
         addDependency("compassHUDBackgroundColor", "showCompassHUDBackground");

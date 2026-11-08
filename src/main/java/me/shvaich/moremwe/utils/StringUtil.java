@@ -11,6 +11,10 @@ public final class StringUtil {
         return isEmpty(str) ? "" : str.toLowerCase(Locale.ENGLISH);
     }
 
+    public static char toLowerCase(char ch) {
+        return ch >= 'A' && ch <= 'Z' ? ((char) (ch + ('a' - 'A'))) : ch;
+    }
+
     public static String toUpperCase(String str) { return isEmpty(str) ? "" : str.toUpperCase(Locale.ENGLISH); }
 
     public static String defaultIfEmpty(String str, String fallback) {
@@ -20,6 +24,10 @@ public final class StringUtil {
     public static String getIntWithSign(int value, boolean withZeroSign) {
         if (value == 0) return withZeroSign ? "+0" : "0";
         return (value > 0 ? "+" : "") + value;
+    }
+
+    public static String getIntWithoutSign(int value) {
+        return value == Integer.MIN_VALUE ? "2147483648" : String.valueOf(Math.abs(value));
     }
 
     public static boolean isEmpty(CharSequence cs) { return cs == null || cs.length() == 0; }
