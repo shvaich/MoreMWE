@@ -12,24 +12,40 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import org.lwjgl.input.Keyboard;
 
+import java.util.function.Consumer;
+
 public final class KeybindingListener {
 
     private static KeybindingListener instance;
 
-    private final KeyBinding showCompassHUDKey = create("Compass HUD Control");
-    private final KeyBinding blockGuardKeyBinding = create("Toggle " + MoreMWEConfig.BLOCK_GUARD);
-    private final KeyBinding shovelGuardKeyBinding = create("Toggle " + MoreMWEConfig.SHOVEL_GUARD);
-    private final KeyBinding sendPlayerEnergyMessageKey = create("Send Energy Status");
-    private final KeyBinding visibleBarriersKey = create("Toggle Visible Barriers");
+    private final MyKeyBinding[] allKeybinds;
+
+    private final MyKeyBinding compassHUDKey;
 
     private KeybindingListener() {
-        registerKeybinds(
-                showCompassHUDKey,
-                blockGuardKeyBinding,
-                shovelGuardKeyBinding,
-                sendPlayerEnergyMessageKey,
-                visibleBarriersKey
-        );
+        this.allKeybinds = new MyKeyBinding[]{
+                this.compassHUDKey = new MyKeyBinding("Compass HUD Control").withPress(mc -> {
+                    if (MoreMWEConfig.compassKeybindMode == 0) {
+                        MoreMWEConfig.compassHUDPosition.setEnabled(!MoreMWEConfig.compassHUDPosition.isEnabled());
+                        ChatUtil.addPropertyMessage("Compass HUD", MoreMWEConfig.compassHUDPosition.isEnabled());
+                        MoreMWEConfig.instance().save();
+                    }
+                }),
+
+                new MyKeyBinding("Toggle " + MoreMWEConfig.BLOCK_GUARD).withPress(mc -> {
+                    ChatUtil.addPropertyMessage(MoreMWEConfig.BLOCK_GUARD, MoreMWEConfig.areBlocksGuarded = !MoreMWEConfig.areBlocksGuarded);
+                    MoreMWEConfig.instance().save();
+                }),
+
+                new MyKeyBinding("Toggle " + MoreMWEConfig.SHOVEL_GUARD).withPress(mc -> {
+                    ChatUtil.addPropertyMessage(MoreMWEConfig.SHOVEL_GUARD, MoreMWEConfig.isShovelGuarded = !MoreMWEConfig.isShovelGuarded);
+                    MoreMWEConfig.instance().save();
+                }),
+
+                new MyKeyBinding("Send Energy Status").withPress(mc -> PlayerEnergyDisplay.instance().sendEnergyMessage()),
+
+                new MyKeyBinding("Toggle Visible Barriers").withPress(mc -> VisibleBarriers.toggle())
+        };
     }
 
     public static KeybindingListener instance() {
@@ -44,54 +60,35 @@ public final class KeybindingListener {
 
         if (mc.theWorld == null || mc.thePlayer == null) return;
 
-        if (sendPlayerEnergyMessageKey.isPressed()) {
-            PlayerEnergyDisplay.sendEnergyMessage();
-            return;
+        for (final MyKeyBinding keyBinding : allKeybinds) {
+            keyBinding.onInput(mc);
         }
-
-        if (visibleBarriersKey.isPressed()) {
-            VisibleBarriers.toggle();
-            return;
-        }
-
-        if (showCompassHUDKey.isPressed() && MoreMWEConfig.compassKeybindMode == 0) {
-            MoreMWEConfig.compassHUDPosition.setEnabled(!MoreMWEConfig.compassHUDPosition.isEnabled());
-            ChatUtil.addPropertyMessage("Compass HUD", MoreMWEConfig.compassHUDPosition.isEnabled());
-            return;
-        }
-
-        final boolean value;
-        final String fieldName;
-        final String guard;
-
-        if (blockGuardKeyBinding.isPressed()) {
-            value = MoreMWEConfig.areBlocksGuarded = !MoreMWEConfig.areBlocksGuarded;
-            fieldName = "areBlocksGuarded";
-            guard = MoreMWEConfig.BLOCK_GUARD;
-        }
-        else if (shovelGuardKeyBinding.isPressed()) {
-            value = MoreMWEConfig.isShovelGuarded = !MoreMWEConfig.isShovelGuarded;
-            fieldName = "isShovelGuarded";
-            guard = MoreMWEConfig.SHOVEL_GUARD;
-        }
-        else return;
-
-        ChatUtil.addPropertyMessage(guard, value);
-        MoreMWEConfig.instance().saveOnlyOneProperty(fieldName);
     }
 
-
-    private static KeyBinding create(String desc, String name) {
-        return new KeyBinding(desc, Keyboard.KEY_NONE, name);
+    public boolean isCompassHUDKeyAssignedAndNotHeldDown() {
+        return compassHUDKey.keyBinding.getKeyCode() != Keyboard.KEY_NONE && !compassHUDKey.keyBinding.isKeyDown();
     }
 
-    private static KeyBinding create(String desc) {
-        return create(desc, MoreMWE.NAME);
-    }
+    private static final class MyKeyBinding {
+        public final KeyBinding keyBinding;
+        private Consumer<Minecraft> onPress;
+        private boolean isPressed;
 
-    private static void registerKeybinds(KeyBinding... keybinds) {
-        for (final KeyBinding k : keybinds) {
-            ClientRegistry.registerKeyBinding(k);
+        public MyKeyBinding(String desc, String category) {
+            this.keyBinding = new KeyBinding(desc, Keyboard.KEY_NONE, category);
+            ClientRegistry.registerKeyBinding(keyBinding);
+        }
+
+        public MyKeyBinding(String desc) { this(desc, MoreMWE.NAME); }
+
+        public MyKeyBinding withPress(Consumer<Minecraft> onPress) { this.onPress = onPress; return this; }
+
+        public void onInput(Minecraft mc) {
+            final boolean isDown = keyBinding.isKeyDown();
+            if (isDown && !isPressed) {
+                if (onPress != null) onPress.accept(mc);
+            }
+            isPressed = isDown;
         }
     }
 }
