@@ -75,13 +75,29 @@ it allows you to right-click with a shovel without activating your ability.
 <summary>Mega Walls</summary>
 
 ### Mega Walls
+* **Energy Messages Chat Channel** - The chat channel energy messages will be sent to
 * **Automatically Announce Full Energy** - Automatically send a chat message when your energy reaches 100%
 * **Announce Full Energy During** - when automatic full energy announcements are active during a Mega Walls match
+* **Enabled MW Commands** - Enables MW commands to be accessible during Mega Walls matches
 * **Spider Leap HUD** - A HUD displaying your current leap mode
 * **Hide During Prep Phase** - Hides the HUD until the walls fall
 * **Only Show when Relevant** - Only show the HUD when holding either a Sword, Bow or Shovel
 
 </details>
+
+
+<details>
+<summary>Location Chat</summary>
+
+### Location Chat
+* **Show Detailed Base Location** - Displays a little bit more information about the position inside the base
+* **Personal Map Location Status Chat Channel** - The chat channel that messages about YOUR location are sent to
+* **Ping on Mouse Middle Click** - Enable the Ping feature to work with the middle mouse button (wheel)
+* **Ping Map Location Status Chat Channel** - The chat channel PING messages are sent to
+* **Default Ping Message Type** - The type of ping message that will be sent when you ping without holding
+
+</details>
+
 
 <details>
 <summary>Hypixel</summary>
@@ -97,6 +113,7 @@ it allows you to right-click with a shovel without activating your ability.
 ### General
 * **Check for Update** - Checks if an update is available. and if it is, informs you about it
 * **Automatic Update** - Updates the mod automatically
+* **Show Mod Message** - Shows a message about the mod in chat when you join a world for the first time
 * **Hide Property when Dependency is Disabled** - Hides a property in the GUI when a property it depends on is disabled
 
 </details>
@@ -151,10 +168,41 @@ under the `Squad` category and `MoreMWE - Compass Info` subcategory.
 
 All keybinds are configurable in the Controls menu and set to `NONE` by default
 
-* **Compass HUD** - Keybind for Compass HUD (action can be controller by the player)
+* **Compass HUD Control** - Keybind for Compass HUD (action can be controller by the player)
+* **Compass HUD Toggle Different Teams** - Toggles the `Prefer Different Teams` property
 * **BlockGuard** - Toggles BlockGuard
 * **ShovelGuard** - Toggles ShovelGuard
 * **Energy Status** - Sends a chat message of your current energy
 * **Visible Barriers** - Toggles Visible Barriers
+* **Help** - Sends a "help" message with your current location
+* **Whereami** - Sends a message of your current location
+* **Ping** - Single press sends a "ping" message, holding opens the Ping Wheel
+
+</details>
+
+<details>
+<summary>Commands</summary>
+
+### Commands
+
+All commands support the `help` subcommand to show more details about the command.
+example: `/command help`.
+
+(Most commands support shortcuts, feel free to experiment)
+
+* `/moremwe` - Opens the configuration menu
+* `/visiblebarriers` - Control over the visible barriers feature
+* `/play` - Helper to navigate Hypixel's `play` command
+* `/friend` - See `/friend moremwe_help`
+* `/party` - See `/party moremwe_help`
+
+
+#### MW Commands
+
+these commands are only available during Mega Walls matches and if you have the `Enable MW Commands` property enabled
+
+* `/energy` - Sends a chat message with your current energy
+* `/help` - Sends a "help" chat message in chat with your current location
+* `/whereami` - Sends a chat message in chat with your current location
 
 </details>
