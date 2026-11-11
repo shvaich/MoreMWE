@@ -42,7 +42,7 @@ public final class MWMapLocationHandler {
         HELP("Help me at", "please"); // Help me at [PLACE] (? please)
 
         private final String message, transformationAddon;
-        private final boolean isPrefix = true;
+        private final boolean isPrefix = false;
 
         McPlayerMessage(String message, String transformationAddon) {
             this.message = message;
@@ -216,58 +216,59 @@ public final class MWMapLocationHandler {
     }
 
     private String getBaseLocation(double x, double z) {
-        final double middleWidth = currentMap.eastLimit - currentMap.westLimit;
-        final double middleHeight = currentMap.southLimit - currentMap.northLimit;
-        MWTeam base = null;
-        double relativeSpawnDistance = 0, relativeEntranceDistance = 0;
-        if (z < currentMap.northLimit && x > currentMap.westLimit && x < currentMap.eastLimit) {
+        final MWTeam base;
+        final double spawnDistance, entranceDistance;
+        if (z < currentMap.northLimit && x > currentMap.westLimit /* && x < currentMap.eastLimit */) {
             base = currentMap.northBase;
-            relativeSpawnDistance = (currentMap.eastLimit - x) / middleWidth;
-            relativeEntranceDistance = (currentMap.northLimit - z) / middleHeight;
+            spawnDistance = currentMap.eastLimit - x;
+            entranceDistance = currentMap.northLimit - z;
         }
-        else if (x > currentMap.eastLimit && z > currentMap.northLimit && z < currentMap.southLimit) {
+        else if (x > currentMap.eastLimit && z > currentMap.northLimit /* && z < currentMap.southLimit */) {
             base = currentMap.eastBase;
-            relativeSpawnDistance = (currentMap.southLimit - z) / middleHeight;
-            relativeEntranceDistance = (x - currentMap.eastLimit) / middleWidth;
+            spawnDistance = currentMap.southLimit - z;
+            entranceDistance = x - currentMap.eastLimit;
         }
-        else if (z > currentMap.southLimit && x > currentMap.westLimit && x < currentMap.eastLimit) {
+        else if (z > currentMap.southLimit && x < currentMap.eastLimit /* && x > currentMap.westLimit */) {
             base = currentMap.southBase;
-            relativeSpawnDistance = (x - currentMap.westLimit) / middleWidth;
-            relativeEntranceDistance = (z - currentMap.southLimit) / middleHeight;
+            spawnDistance = x - currentMap.westLimit;
+            entranceDistance = z - currentMap.southLimit;
         }
-        else if (x < currentMap.westLimit && z > currentMap.northLimit && z < currentMap.southLimit) {
+        else if (x < currentMap.westLimit && z < currentMap.southLimit /* z > currentMap.northLimit && */) {
             base = currentMap.westBase;
-            relativeSpawnDistance = (z - currentMap.northLimit) / middleHeight;
-            relativeEntranceDistance = (currentMap.westLimit - x) / middleWidth;
+            spawnDistance = z - currentMap.northLimit;
+            entranceDistance = currentMap.westLimit - x;
         }
-        if (base == null) return null;
-        if (!MoreMWEConfig.detailedBaseLocationMessage) return base.getName();
+        else return null;
+        String location = base.getName() + " Base";
+        if (MoreMWEConfig.detailedBaseLocationMessage) {
+            final double baseSize = currentMap.eastLimit - currentMap.westLimit;
+            final double edgesSize = baseSize * 0.20;
 
-        final double third = 1 / 3.0d;
-        final boolean isInSpawnSide = relativeSpawnDistance < third;
-        String str;
+            final boolean isInSpawnSide = spawnDistance <= edgesSize;
+            final boolean isInFarSide = spawnDistance >= (baseSize - edgesSize);
+            String str;
+            final boolean isInEntrance = entranceDistance <= edgesSize;
+            if (isInEntrance || entranceDistance >= (baseSize - edgesSize)) {
+                str = (isInEntrance ? "Entrance" : "Rear") + " - " + (isInSpawnSide ? "Spawn Side" : (isInFarSide ? "Far Side" : "Center"));
+            }
+            else {
+                str = "Center";
+                if (isInSpawnSide || isInFarSide) str += " - " + (isInSpawnSide ? "Spawn Side" : "Far Side");
+            }
 
-        if (relativeEntranceDistance < third) {
-            str = "PRE - " + (isInSpawnSide ? "SPAWN-SIDE" : (relativeSpawnDistance < (third + third) ? "CENTER" : "FAR-SIDE"));
+            /* Add Neighbor:
+                final MWTeam neighbor;
+                if (base == currentMap.northBase) neighbor = isInSpawnSide ? currentMap.eastBase : currentMap.westBase;
+                else if (base == east) neighbor = isInSpawnSide ? currentMap.southBase : currentMap.northBase;
+                else if (base == south) neighbor = isInSpawnSide ? currentMap.westBase : currentMap.eastBase;
+                else neighbor = isInSpawnSide ? currentMap.northBase : currentMap.southBase;
+
+                str += " N|" + neighbor.getName();
+            */
+
+            location += " (" + str + ")";
         }
-        else if (relativeEntranceDistance < (third + third)) {
-            str = isInSpawnSide ? "SPAWN" : (relativeSpawnDistance < (third + third) ? "FRONT-WITHER" : "MAIN - FAR-SIDE");
-        }
-        else {
-            str = isInSpawnSide ? "REAR - SPAWN-SIDE" : (relativeSpawnDistance < (third + third) ? "WITHER" : "REAR - FAR-SIDE");
-        }
-
-        /* Add Neighbor:
-            final MWTeam neighbor;
-            if (base == currentMap.northBase) neighbor = isInSpawnSide ? currentMap.eastBase : currentMap.westBase;
-            else if (base == east) neighbor = isInSpawnSide ? currentMap.southBase : currentMap.northBase;
-            else if (base == south) neighbor = isInSpawnSide ? currentMap.westBase : currentMap.eastBase;
-            else neighbor = isInSpawnSide ? currentMap.northBase : currentMap.southBase;
-
-            str += " N|" + neighbor.getName();
-        */
-
-        return base.getName() + " (" + str + ")";
+        return location;
     }
 
     @SubscribeEvent
@@ -280,6 +281,8 @@ public final class MWMapLocationHandler {
         if (e.type == MegaWallsGameEvent.Type.GAME_START || e.type == MegaWallsGameEvent.Type.GAME_END) {
             Arrays.fill(previousMessages, null);
             this.oldestMessagePos = 0;
+            messagesTimes.clear();
+            messageTimer.reset();
         }
     }
 
