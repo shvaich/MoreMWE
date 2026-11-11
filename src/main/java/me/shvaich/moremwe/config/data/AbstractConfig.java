@@ -149,17 +149,17 @@ public class AbstractConfig {
         if (config.hasChanged()) config.save();
     }
 
-    public void saveOnlyOneProperty(String name) {
-        final ConfigFieldContainer field = getConfigFieldOrThrow(name);
-        try {
-            field.saveFieldValueToConfig();
-        }
-        catch (Exception e) {
-            ChatUtil.addErrorMessage("Failed to save config value!");
-            MoreMWE.LOGGER.error("Failed in updating config field", e);
-        }
-        if (config.hasChanged()) config.save();
-    }
+//    public void saveOnlyOneProperty(String name) {
+//        final ConfigFieldContainer field = getConfigFieldOrThrow(name);
+//        try {
+//            field.saveFieldValueToConfig();
+//        }
+//        catch (Exception e) {
+//            ChatUtil.addErrorMessage("Failed to save config value!");
+//            MoreMWE.LOGGER.error("Failed in updating config field", e);
+//        }
+//        if (config.hasChanged()) config.save();
+//    }
 
     public GuiScreen getConfigGuiScreen() {
         try {
@@ -314,6 +314,17 @@ public class AbstractConfig {
         return config.hasKey(StringUtil.toLowerCase(category), name);
     }
 
+    protected final Property getConfigProperty(String category, String name) {
+        category = StringUtil.toLowerCase(category);
+        if (config.hasCategory(category)) {
+            return config.getCategory(category).get(name);
+        }
+        else {
+            MoreMWE.LOGGER.debug("Cannot get property from config file ; category {} doesn't exist in config", category);
+            return null;
+        }
+    }
+
     /** @return the previous property associated with the category and name, or null if there was no mapping for the category and name. */
     protected final Property removeConfigProperty(String category, String name) {
         category = StringUtil.toLowerCase(category);
@@ -331,7 +342,7 @@ public class AbstractConfig {
         if (config.hasKey(category, oldName)) {
             final net.minecraftforge.common.config.ConfigCategory configCategory = config.getCategory(category);
             final Property oldProperty = configCategory.remove(oldName);
-            if (oldProperty != null && !configCategory.containsKey(newName)) {
+            if (oldProperty != null /* && !configCategory.containsKey(newName) */) {
                 oldProperty.setName(newName);
                 configCategory.put(newName, oldProperty);
             }

@@ -15,6 +15,7 @@ import me.shvaich.moremwe.utils.ChatUtil;
 import me.shvaich.moremwe.utils.MoreMWEException;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 
 import java.awt.Color;
 import java.io.File;
@@ -623,6 +624,11 @@ public final class MoreMWEConfig extends AbstractConfig {
             migratePropertyName(SHOVEL_GUARD, SHOVEL_GUARD + " HUD Style", SHOVEL_GUARD + " Indicator Style");
             migratePropertyName(SHOVEL_GUARD, SHOVEL_GUARD + " HUD Color", SHOVEL_GUARD + " Indicator Color");
         }
+        if (isVersionLowerThan(savedVersion, "2.0")) {
+            migrateMWGameStatePropertyFromIntToEnum(config, "Compass", "Active During", MWGameState.DURING_GAME, MWGameState.AFTER_WALLS_FALL, MWGameState.AFTER_FIRST_WITHER_DEATH, MWGameState.DURING_DEATHMATCH); // 0
+            migrateMWGameStatePropertyFromIntToEnum(config, BLOCK_GUARD, "Active During", MWGameState.DURING_GAME, MWGameState.AFTER_WALLS_FALL, MWGameState.DURING_DEATHMATCH); // 2
+            migrateMWGameStatePropertyFromIntToEnum(config, "Mega Walls", "Announce Full Energy During", MWGameState.AFTER_FIRST_WITHER_DEATH, MWGameState.DURING_DEATHMATCH); // 0
+        }
     }
 
     private MoreMWEConfig(File file) {
@@ -691,5 +697,17 @@ public final class MoreMWEConfig extends AbstractConfig {
 
 
         addDependency("automaticUpdate", "checkForUpdate");
+    }
+
+    private void migrateMWGameStatePropertyFromIntToEnum(Configuration config, String category, String name, MWGameState... oldOptions) {
+        final Property oldIntegerProp = getConfigProperty(category, name);
+        if (oldIntegerProp != null && oldIntegerProp.getType() == Property.Type.INTEGER) {
+            final int configValue = oldIntegerProp.getInt();
+
+            final MWGameState state = (configValue < 0 || configValue >= oldOptions.length) ? oldOptions[0] : oldOptions[configValue];
+
+            removeConfigProperty(category, name);
+            config.get(category, name, state.name()).setValue(state.name());
+        }
     }
 }
