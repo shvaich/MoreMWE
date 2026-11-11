@@ -234,15 +234,15 @@ public final class MoreMWEConfig extends AbstractConfig {
     )
     public static boolean showHPIconInCompassHUD = true;
 
-    @ConfigProperty(
-            type = PropertyType.SWITCH,
-            name = "Show Energy",
-            category = "Compass",
-            subcategory = "Display",
-            comment = "Display the player's energy in the HUD"
-                    + ".\nOnly available during Mega Walls matches"
-    )
-    public static boolean showEnergyInCompassHUD = false;
+//    @ConfigProperty(
+//            type = PropertyType.SWITCH,
+//            name = "Show Energy",
+//            category = "Compass",
+//            subcategory = "Display",
+//            comment = "Display the player's energy in the HUD"
+//                    + ".\nOnly available during Mega Walls matches"
+//    )
+//    public static boolean showEnergyInCompassHUD = false;
 
     @ConfigProperty(
             type = PropertyType.SWITCH,
@@ -641,7 +641,7 @@ public final class MoreMWEConfig extends AbstractConfig {
                 "compassHUDDefaultYDistanceColor",
                 "colorYDistanceInCompassHUD",
                 "showHPInCompassHUD",
-                "showEnergyInCompassHUD",
+                //"showEnergyInCompassHUD",
                 "showCompassHUDBackground",
                 "compassHUDArrowMargin"
         ).forEach(dependantName -> addDependency(dependantName, "compassHUDPosition"));

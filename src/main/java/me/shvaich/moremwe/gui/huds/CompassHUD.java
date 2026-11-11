@@ -54,7 +54,7 @@ public class CompassHUD extends AbstractRenderer {
 
     private int longestDistanceStringWidth;
     private int longestHPStringWidth;
-    private int longestEnergyStringWidth;
+    //private int longestEnergyStringWidth;
     private boolean hasNonZeroYDistanceValue;
 
     public CompassHUD() {
@@ -70,10 +70,10 @@ public class CompassHUD extends AbstractRenderer {
         }
 
         this.dummyPlayers = new PlayerTrackingData[]{
-                new PlayerTrackingData(new ResourceLocation("textures/entity/steve.png"), VanillaColors.GREEN, 0, 0, 40, 65),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/alex.png"), VanillaColors.BLUE, 1, 1, 20, 31),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie/zombie.png"), VanillaColors.RED, 5, -1, 10, 17),
-                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie_pigman.png"), VanillaColors.YELLOW, 1, 5, 5, 84)
+                new PlayerTrackingData(new ResourceLocation("textures/entity/steve.png"), VanillaColors.GREEN, 0, 0, 40 /*, 65 */),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/alex.png"), VanillaColors.BLUE, 1, 1, 20 /*, 31 */),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie/zombie.png"), VanillaColors.RED, 5, -1, 10 /*, 17 */),
+                new PlayerTrackingData(new ResourceLocation("textures/entity/zombie_pigman.png"), VanillaColors.YELLOW, 1, 5, 5 /*, 84 */)
         };
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -155,16 +155,14 @@ public class CompassHUD extends AbstractRenderer {
         int arrowX = distanceX + longestDistanceStringWidth + MoreMWEConfig.compassHUDArrowMargin;
         int healthX = 0;
         float thePlayerMaxHP = 0;
-        final boolean renderEnergy = MoreMWEConfig.showEnergyInCompassHUD && MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
+        //final boolean renderEnergy = MoreMWEConfig.showEnergyInCompassHUD && MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
         final boolean showHP = MoreMWEConfig.showHPInCompassHUD;
         if (showHP) {
             thePlayerMaxHP = mc.thePlayer.getMaxHealth();
             switch (MoreMWEConfig.hpCompassDisplayPosition) {
                 case 0: {
                     healthX = x + thisWidth - longestHPStringWidth;
-                    if (renderEnergy) {
-                        healthX -= longestEnergyStringWidth + COLUMN_GAP;
-                    }
+                    //if (renderEnergy) { healthX -= longestEnergyStringWidth + COLUMN_GAP; }
                     break;
                 }
 
@@ -210,9 +208,7 @@ public class CompassHUD extends AbstractRenderer {
                 }
                 mc.fontRendererObj.drawStringWithShadow(text, healthX, y, ColorUtil.getValueColor(thePlayerMaxHP, player.health));
             }
-            if (renderEnergy) {
-                mc.fontRendererObj.drawStringWithShadow(String.valueOf(player.experienceLevel), x + thisWidth - longestEnergyStringWidth, y, ColorUtil.getValueColor(100, player.experienceLevel));
-            }
+            //if (renderEnergy) { mc.fontRendererObj.drawStringWithShadow(String.valueOf(player.experienceLevel), x + thisWidth - longestEnergyStringWidth, y, ColorUtil.getValueColor(100, player.experienceLevel)); }
             y += rowHeight;
         }
     }
@@ -226,10 +222,10 @@ public class CompassHUD extends AbstractRenderer {
     private int getMaxColumnWidth(Minecraft mc, PlayerTrackingData[] pArr, int length) {
         this.longestDistanceStringWidth = 0;
         this.longestHPStringWidth = 0;
-        this.longestEnergyStringWidth = 0;
+        //this.longestEnergyStringWidth = 0;
         int longestYDistanceStringWidth = 0;
         this.hasNonZeroYDistanceValue = false;
-        final boolean renderEnergy = MoreMWEConfig.showEnergyInCompassHUD && MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
+        //final boolean renderEnergy = MoreMWEConfig.showEnergyInCompassHUD && MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
         for (int i = 0; i < length; i++) {
             final PlayerTrackingData p = pArr[i];
 
@@ -245,10 +241,10 @@ public class CompassHUD extends AbstractRenderer {
                 if (hpStringWidth > longestHPStringWidth) longestHPStringWidth = hpStringWidth;
             }
 
-            if (renderEnergy) {
-                final int experienceStringWidth = GuiUtil.getNumberWidth(p.experienceLevel);
-                if (experienceStringWidth > longestEnergyStringWidth) longestEnergyStringWidth = experienceStringWidth;
-            }
+            //if (renderEnergy) {
+            //    final int experienceStringWidth = GuiUtil.getNumberWidth(p.experienceLevel);
+            //    if (experienceStringWidth > longestEnergyStringWidth) longestEnergyStringWidth = experienceStringWidth;
+            //}
         }
         if (longestDistanceStringWidth != 0 && MoreMWEConfig.showDistanceUnitInCompassHUD) {
             final int charWidth = mc.fontRendererObj.getCharWidth('m');
@@ -258,9 +254,15 @@ public class CompassHUD extends AbstractRenderer {
             longestHPStringWidth += mc.fontRendererObj.getStringWidth(" ❤");
         }
 
-        int maxColumnWidth = SKIN_WIDTH + longestDistanceStringWidth + longestYDistanceStringWidth + MoreMWEConfig.compassHUDArrowMargin + 5 + MoreMWEConfig.compassHUDArrowMargin + longestHPStringWidth + longestEnergyStringWidth;
+        int maxColumnWidth = SKIN_WIDTH
+                + longestDistanceStringWidth
+                + longestYDistanceStringWidth
+                + MoreMWEConfig.compassHUDArrowMargin + 5 + MoreMWEConfig.compassHUDArrowMargin
+                + longestHPStringWidth;
+                //+ longestEnergyStringWidth;
+
         if (longestHPStringWidth != 0) maxColumnWidth += COLUMN_GAP;
-        if (renderEnergy) maxColumnWidth += COLUMN_GAP;
+        //if (renderEnergy) maxColumnWidth += COLUMN_GAP;
         return maxColumnWidth;
     }
 
@@ -501,7 +503,7 @@ public class CompassHUD extends AbstractRenderer {
         public double distance;
         public float relativeYaw;
         public float health;
-        public int experienceLevel;
+        //public int experienceLevel;
 
         public PlayerTrackingData() { this.skin = DefaultPlayerSkin.getDefaultSkinLegacy(); }
 
@@ -513,7 +515,7 @@ public class CompassHUD extends AbstractRenderer {
             this.distance = Math.sqrt(distX * distX + distY * distY + distZ * distZ);
 
             this.health = trackedPlayer.getHealth();
-            this.experienceLevel = trackedPlayer.experienceLevel;
+            //this.experienceLevel = trackedPlayer.experienceLevel;
 
             final float angle = (float) Math.toDegrees(Math.atan2(distZ, distX)) - 90;
             float relativeYaw = angle - theMcPlayer.rotationYaw;
@@ -537,14 +539,14 @@ public class CompassHUD extends AbstractRenderer {
         }
 
         // create dummy
-        private PlayerTrackingData(ResourceLocation skin, int teamColor, double distance, int distanceY, float health, int experienceLevel) {
+        private PlayerTrackingData(ResourceLocation skin, int teamColor, double distance, int distanceY, float health /*, int experienceLevel */) {
             this.skin = skin;
             this.teamColor = teamColor;
             this.distanceY = distanceY;
             this.distance = distance;
             this.health = health;
             this.relativeYaw = 0;
-            this.experienceLevel = experienceLevel;
+            //this.experienceLevel = experienceLevel;
         }
     }
 }
