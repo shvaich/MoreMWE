@@ -27,8 +27,8 @@ public class CommandPlay extends MyAbstractCommand {
                     new Mode("mw_face_off", "Face Off", "mw_faceoff")
             ),
 
-            new Game("blitz_survival_games", "Blitz Survival Games", "bsg",
-                    new Mode("blitz_solo_normal", "Solo"),
+            new Game("blitz_survival_games", "Blitz Survival Games", new String[]{ "bsg", "blitz" },
+                    new Mode("blitz_solo_normal", "Solo", "bsg", "blitz"),
                     new Mode("blitz_teams_normal", "Teams")
             ),
 
