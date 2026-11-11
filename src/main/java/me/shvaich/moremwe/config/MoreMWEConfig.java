@@ -433,7 +433,7 @@ public final class MoreMWEConfig extends AbstractConfig {
             name = "Energy Status Chat Channel",
             category = "Mega Walls",
             subcategory = "Energy Status",
-            comment = "The chat channel status messages are sent to"
+            comment = "The chat channel energy messages are sent to"
                     + ".\n\"Default\" uses your currently selected chat channel"
     )
     public static ChatUtil.ChatChannel energyMessageChatChannel = ChatUtil.ChatChannel.DEFAULT;
@@ -467,7 +467,7 @@ public final class MoreMWEConfig extends AbstractConfig {
 
     @ConfigProperty(
             type = PropertyType.MINECRAFT_COLOR,
-            name = "MW Commands Tab Color",
+            name = "MW Commands Autocomplete Color",
             category = "Mega Walls",
             subcategory = "Commands",
             comment = "The color of mw commands in the chat when you press [TAB]"
@@ -537,6 +537,15 @@ public final class MoreMWEConfig extends AbstractConfig {
     public static ChatUtil.ChatChannel mcPlayerBaseLocationMessageChatChannel = ChatUtil.ChatChannel.DEFAULT;
 
     @ConfigProperty(
+            type = PropertyType.SWITCH,
+            name = "Ping on Mouse Middle Click",
+            category = LOCATION_CATEGORY,
+            subcategory = "Ping",
+            comment = "Enable the Ping feature to work with the middle mouse button (wheel)"
+    )
+    public static boolean pingOnMouseMiddleClick = false;
+
+    @ConfigProperty(
             type = PropertyType.ENUM_SELECTOR,
             name = "Ping Map Location Status Chat Channel",
             category = LOCATION_CATEGORY,
@@ -553,15 +562,6 @@ public final class MoreMWEConfig extends AbstractConfig {
             subcategory = "Ping"
     )
     public static MWMapLocationHandler.PingMessage defaultPingMessageType = MWMapLocationHandler.PingMessage.STATUS;
-
-    @ConfigProperty(
-            type = PropertyType.SWITCH,
-            name = "Ping on Mouse Middle Click",
-            category = LOCATION_CATEGORY,
-            subcategory = "Ping",
-            comment = "Enable the Ping feature to work with the middle mouse button (wheel)"
-    )
-    public static boolean pingOnMouseMiddleClick = false;
 
 
     @ConfigProperty(
