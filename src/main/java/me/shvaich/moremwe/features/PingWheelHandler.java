@@ -17,7 +17,7 @@ public final class PingWheelHandler {
 
     private enum State { IDLE, PRESSED, WHEEL, WAIT_RELEASE }
 
-    private static final int HOLD_TICKS = 4;
+    private static final int HOLD_TICKS = 3;
 
     private static PingWheelHandler instance;
 
