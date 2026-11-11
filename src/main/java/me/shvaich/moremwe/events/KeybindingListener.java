@@ -30,19 +30,20 @@ public final class KeybindingListener {
                 this.compassHUDKey = new MyKeyBinding("Compass HUD Control").withPress(mc -> {
                     if (MoreMWEConfig.compassKeybindMode == 0) {
                         MoreMWEConfig.compassHUDPosition.setEnabled(!MoreMWEConfig.compassHUDPosition.isEnabled());
-                        ChatUtil.addPropertyMessage("Compass HUD", MoreMWEConfig.compassHUDPosition.isEnabled());
-                        MoreMWEConfig.instance().save();
+                        updateProperty("Compass HUD", MoreMWEConfig.compassHUDPosition.isEnabled());
                     }
                 }),
 
+                new MyKeyBinding("Compass HUD Toggle Different Teams").withPress(mc -> {
+                    updateProperty("Prefer Different Teams", MoreMWEConfig.prioritizeUniqueTeams = !MoreMWEConfig.prioritizeUniqueTeams);
+                }),
+
                 new MyKeyBinding("Toggle " + MoreMWEConfig.BLOCK_GUARD).withPress(mc -> {
-                    ChatUtil.addPropertyMessage(MoreMWEConfig.BLOCK_GUARD, MoreMWEConfig.areBlocksGuarded = !MoreMWEConfig.areBlocksGuarded);
-                    MoreMWEConfig.instance().save();
+                    updateProperty(MoreMWEConfig.BLOCK_GUARD, MoreMWEConfig.areBlocksGuarded = !MoreMWEConfig.areBlocksGuarded);
                 }),
 
                 new MyKeyBinding("Toggle " + MoreMWEConfig.SHOVEL_GUARD).withPress(mc -> {
-                    ChatUtil.addPropertyMessage(MoreMWEConfig.SHOVEL_GUARD, MoreMWEConfig.isShovelGuarded = !MoreMWEConfig.isShovelGuarded);
-                    MoreMWEConfig.instance().save();
+                    updateProperty(MoreMWEConfig.SHOVEL_GUARD, MoreMWEConfig.isShovelGuarded = !MoreMWEConfig.isShovelGuarded);
                 }),
 
                 new MyKeyBinding("Send Energy Status").withPress(mc -> PlayerEnergyDisplay.instance().sendEnergyMessage()),
@@ -79,6 +80,11 @@ public final class KeybindingListener {
     }
 
     public boolean isPingKeyDown() { return pingKey.keyBinding.isKeyDown(); }
+
+    private static void updateProperty(String name, boolean value) {
+        ChatUtil.addPropertyMessage(name, value);
+        MoreMWEConfig.instance().save();
+    }
 
     private static final class MyKeyBinding {
         public final KeyBinding keyBinding;
