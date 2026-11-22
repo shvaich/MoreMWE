@@ -4,6 +4,7 @@ package me.shvaich.moremwe.gui.huds;
 import fr.alexdoru.configlib.api.ColorPalette.VanillaColors;
 import fr.alexdoru.mwe.api.MWEApi;
 import fr.alexdoru.mwe.api.enums.MWTeam;
+import me.shvaich.moremwe.MoreMWE;
 import me.shvaich.moremwe.config.MoreMWEConfig;
 import me.shvaich.moremwe.events.KeybindingListener;
 import me.shvaich.moremwe.gui.data.AbstractRenderer;
@@ -301,26 +302,21 @@ public class CompassHUD extends AbstractRenderer {
             return;
         }
 
+        mc.mcProfiler.startSection(MoreMWE.NAME + " Compass HUD");
         final EntityPlayerSP thePlayer = mc.thePlayer;
         final boolean isInMwGame = MWEApi.Scoreboard.getScoreboardParser().isInMwGame();
-        try {
-            final char selfTeamChar = (isInMwGame && MoreMWEConfig.renderCustomTeammateColor) ? MWEApi.Player.getPlayerInfo(thePlayer).getPlayerTeamColor() : '\0';
-            final NetHandlerPlayClient netHandler = mc.getNetHandler();
-            final int trackedCount = populateTrackedPlayers(mc, thePlayer, isInMwGame);
-            for (int i = 0; i < trackedCount; i++) {
-                compassTrackedPlayers[i].update(mc, netHandler, isInMwGame, thePlayer, scratchPlayers[i], selfTeamChar);
-                scratchPlayers[i] = null;
-                //scratchPlayerDistancesSq[i] = 0;
-                //scratchPlayerToTeamIndex[i] = 0;
-            }
-            Arrays.sort(compassTrackedPlayers, 0, trackedCount, HUD_ORDER);
-            trackedPlayersCount = trackedCount;
+        final char selfTeamChar = (isInMwGame && MoreMWEConfig.renderCustomTeammateColor) ? MWEApi.Player.getPlayerInfo(thePlayer).getPlayerTeamColor() : '\0';
+        final NetHandlerPlayClient netHandler = mc.getNetHandler();
+        final int trackedCount = populateTrackedPlayers(mc, thePlayer, isInMwGame);
+        for (int i = 0; i < trackedCount; i++) {
+            compassTrackedPlayers[i].update(mc, netHandler, isInMwGame, thePlayer, scratchPlayers[i], selfTeamChar);
+            scratchPlayers[i] = null;
+            //scratchPlayerDistancesSq[i] = 0;
+            //scratchPlayerToTeamIndex[i] = 0;
         }
-        catch (Throwable t) {
-            Arrays.fill(scratchPlayers, null);
-            trackedPlayersCount = 0;
-            throw t;
-        }
+        Arrays.sort(compassTrackedPlayers, 0, trackedCount, HUD_ORDER);
+        trackedPlayersCount = trackedCount;
+        mc.mcProfiler.endSection();
     }
 
     private int populateTrackedPlayers(Minecraft mc, EntityPlayerSP thePlayer, boolean isInMwGame) {
