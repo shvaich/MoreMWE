@@ -96,6 +96,8 @@ it allows you to right-click with a shovel without activating your ability.
 * **Ping Map Location Status Chat Channel** - The chat channel PING messages are sent to
 * **Default Ping Message Type** - The type of ping message that will be sent when you ping without holding
 
+**Note:** Hold the "ping" keybind (or mouse middle button) to open the "ping wheel" to choose the message type of that ping (like Apex Legends)
+
 </details>
 
 
