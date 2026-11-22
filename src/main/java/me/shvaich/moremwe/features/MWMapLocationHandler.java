@@ -1,6 +1,7 @@
 package me.shvaich.moremwe.features;
 
 import com.google.common.base.Predicates;
+import fr.alexdoru.mwe.api.IScoreboardParser;
 import fr.alexdoru.mwe.api.MWEApi;
 import fr.alexdoru.mwe.api.enums.MWMap;
 import fr.alexdoru.mwe.api.enums.MWTeam;
@@ -25,7 +26,6 @@ import java.util.Queue;
 
 public final class MWMapLocationHandler {
 
-    private static final String COOLDOWN_MSG_START = "Location messages are on a cooldown for ";
     private static final long MSG_WAIT_TIME = 120_000; // 2m
 
     private static MWMapLocationHandler instance;
@@ -94,7 +94,7 @@ public final class MWMapLocationHandler {
         return i;
     }
 
-    public boolean isActive() { return MWEApi.Scoreboard.getScoreboardParser().isInMwGame() && currentMap != null; }
+    public boolean isActive() { return inMWEnv() && currentMap != null; }
 
     public void sendPingMessage(Minecraft mc, ChatUtil.ChatChannel chatChannel, PingMessage type) {
         if (!canSendMessage(mc)) return;
@@ -172,8 +172,8 @@ public final class MWMapLocationHandler {
             return false;
         }
 
-        if (!MWEApi.Scoreboard.getScoreboardParser().isInMwGame()) {
-            ChatUtil.addErrorMessage("Location messages only works during Mega Walls matches");
+        if (!inMWEnv()) {
+            ChatUtil.addErrorMessage("Location messages only works during Mega Walls matches or replays");
             return false;
         }
 
@@ -182,21 +182,27 @@ public final class MWMapLocationHandler {
             return false;
         }
 
-        if (!messageTimer.update()) {
-            ChatUtil.addErrorMessage(COOLDOWN_MSG_START + messageTimer.getTimeLeftText());
-            return false;
-        }
-
         final long now = System.currentTimeMillis();
         while (!messagesTimes.isEmpty() && (now - messagesTimes.peek()) >= MSG_WAIT_TIME) {
             messagesTimes.poll();
         }
+
+        long cooldown = -1;
         if (messagesTimes.size() >= 5) {
-            final String timeText = TimerUtil.getTimeText(MSG_WAIT_TIME - (now - messagesTimes.peek()));
-            ChatUtil.addErrorMessage(COOLDOWN_MSG_START + timeText);
+            cooldown = MSG_WAIT_TIME - (now - messagesTimes.peek());
+        }
+
+        if (!messageTimer.hasElapsed()) {
+            cooldown = Math.max(cooldown, messageTimer.getTimeLeft());
+        }
+
+        if (cooldown >= 0) {
+            ChatUtil.addErrorMessage("Location messages are on a cooldown for " + TimerUtil.getTimeText(cooldown));
             return false;
         }
+
         messagesTimes.offer(now);
+        messageTimer.restart();
         return true;
     }
 
@@ -218,22 +224,22 @@ public final class MWMapLocationHandler {
     private String getBaseLocation(double x, double z) {
         final MWTeam base;
         final double spawnDistance, entranceDistance;
-        if (z < currentMap.northLimit && x > currentMap.westLimit /* && x < currentMap.eastLimit */) {
+        if (z <= currentMap.northLimit && x >= currentMap.westLimit /* && x < currentMap.eastLimit */) {
             base = currentMap.northBase;
             spawnDistance = currentMap.eastLimit - x;
             entranceDistance = currentMap.northLimit - z;
         }
-        else if (x > currentMap.eastLimit && z > currentMap.northLimit /* && z < currentMap.southLimit */) {
+        else if (x >= currentMap.eastLimit && z >= currentMap.northLimit /* && z < currentMap.southLimit */) {
             base = currentMap.eastBase;
             spawnDistance = currentMap.southLimit - z;
             entranceDistance = x - currentMap.eastLimit;
         }
-        else if (z > currentMap.southLimit && x < currentMap.eastLimit /* && x > currentMap.westLimit */) {
+        else if (z >= currentMap.southLimit && x <= currentMap.eastLimit /* && x > currentMap.westLimit */) {
             base = currentMap.southBase;
             spawnDistance = x - currentMap.westLimit;
             entranceDistance = z - currentMap.southLimit;
         }
-        else if (x < currentMap.westLimit && z < currentMap.southLimit /* z > currentMap.northLimit && */) {
+        else if (x <= currentMap.westLimit && z <= currentMap.southLimit /* z > currentMap.northLimit && */) {
             base = currentMap.westBase;
             spawnDistance = z - currentMap.northLimit;
             entranceDistance = currentMap.westLimit - x;
@@ -242,7 +248,7 @@ public final class MWMapLocationHandler {
         String location = base.getName() + " Base";
         if (MoreMWEConfig.detailedBaseLocationMessage) {
             final double baseSize = currentMap.eastLimit - currentMap.westLimit;
-            final double edgesSize = baseSize * 0.20;
+            final double edgesSize = baseSize * 0.25d;
 
             final boolean isInSpawnSide = spawnDistance <= edgesSize;
             final boolean isInFarSide = spawnDistance >= (baseSize - edgesSize);
@@ -284,6 +290,11 @@ public final class MWMapLocationHandler {
             messagesTimes.clear();
             messageTimer.reset();
         }
+    }
+
+    private static boolean inMWEnv() {
+        final IScoreboardParser parser = MWEApi.Scoreboard.getScoreboardParser();
+        return parser.isInMwGame() || parser.isMWReplay();
     }
 
     private static MovingObjectPosition getObjectInView(Minecraft mc) {

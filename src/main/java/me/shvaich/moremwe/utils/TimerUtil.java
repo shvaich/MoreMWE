@@ -26,14 +26,27 @@ public class TimerUtil {
         return false;
     }
 
+    /**
+     * @return {@code true} if the {@link #period} has elapsed since the last update
+     */
+    public boolean hasElapsed() { return System.currentTimeMillis() - lastUpdate > period; }
+
+    public void restart() { this.lastUpdate = System.currentTimeMillis(); }
+
     public void reset() {
         this.lastUpdate = 0;
     }
 
     /** Can be used safely after {@link #update}, otherwise check not null */
     public String getTimeLeftText() {
+        final long timeLeft = getTimeLeft();
+        return timeLeft < 0 ? null : getTimeText(timeLeft);
+    }
+
+    /** Can be used safely after {@link #update()}, otherwise check {@code >= 0} */
+    public long getTimeLeft() {
         final long timePassed = System.currentTimeMillis() - lastUpdate;
-        return timePassed > period ? null : getTimeText(period - timePassed);
+        return timePassed > period ? -1 : (period - timePassed);
     }
 
     public static String getTimeText(long time, boolean recursive, int maxUnits, String separator) {
@@ -45,9 +58,9 @@ public class TimerUtil {
                 { 's', 1000L },
                 { 'm', 60_000L },
                 { 'h', 3_600_000L },
-                { 'd', 86_400_000L },
-                { 'w', 604_800_000L },
-                { 'm', 2_592_000_000L }
+                { 'd', 86_400_000L }
+                //{ 'w', 604_800_000L },
+                //{ 'm', 2_592_000_000L }
         };
 
         final StringBuilder text = new StringBuilder();
