@@ -29,6 +29,8 @@ import java.io.File;
     modid = MoreMWE.MOD_ID,
     name = MoreMWE.NAME,
     version = MoreMWE.VERSION,
+    acceptedMinecraftVersions = "[1.8.9]",
+    clientSideOnly = true,
     dependencies = "required-after:mwenhancements@[" + MoreMWE.TARGET_MWE_VERSION + ",);"
 )
 public class MoreMWE {
