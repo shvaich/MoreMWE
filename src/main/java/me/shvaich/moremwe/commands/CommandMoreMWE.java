@@ -47,7 +47,7 @@ public class CommandMoreMWE extends MyAbstractCommand {
     public static void printModHelpMessage() {
         ChatUtil.addChatMessage(
                 new ChatComponentText(ChatUtil.getModTag())
-                        .appendSibling(ChatUtil.getURLMessage(EnumChatFormatting.YELLOW + "Click here", MoreMWE.MOD_URL))
+                        .appendSibling(ChatUtil.getURLMessage(EnumChatFormatting.AQUA + "Click here", MoreMWE.MOD_URL))
                         .appendText(EnumChatFormatting.GRAY + " to visit the mod's GitHub page for a list of all features, more information, or help with any issues you encounter")
         );
     }
